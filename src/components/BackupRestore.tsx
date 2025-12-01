@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Download, Upload, Clock, Database, Play, Check, AlertCircle, Trash2, Calendar } from 'lucide-react';
 
-export default function BackupRestore() {
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+export default function BackupRestore({ selectedDatabase }: { selectedDatabase?: string }) {
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [backupInProgress, setBackupInProgress] = useState(false);
 
@@ -125,20 +125,32 @@ export default function BackupRestore() {
       {/* Quick Backup */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-gray-900 mb-4">Create Manual Backup</h3>
+        <h3 className="text-gray-900 mb-4">Створити резервну копію вручну</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Database</label>
-            <select
-              value={selectedDatabase}
-              onChange={(e) => setSelectedDatabase(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="production_db">production_db</option>
-              <option value="staging_db">staging_db</option>
-              <option value="analytics_db">analytics_db</option>
-              <option value="test_db">test_db</option>
-            </select>
-          </div>
+          {!selectedDatabase && (
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Database</label>
+              <label className="block text-sm text-gray-700 mb-2">База даних</label>
+              <select
+                value={currentDatabase}
+                onChange={(e) => setCurrentDatabase(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="production_db">production_db</option>
+                <option value="staging_db">staging_db</option>
+                <option value="analytics_db">analytics_db</option>
+                <option value="test_db">test_db</option>
+              </select>
+            </div>
+          )}
+          {selectedDatabase && (
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">База даних</label>
+              <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
+                {selectedDatabase}
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm text-gray-700 mb-2">Backup Type</label>
             <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">

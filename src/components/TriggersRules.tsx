@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Plus, Edit, Trash2, Zap, Shield, Search, AlertCircle } from 'lucide-react';
 
-export default function TriggersRules() {
+export default function TriggersRules({ selectedDatabase }: { selectedDatabase?: string }) {
   const [activeView, setActiveView] = useState<'triggers' | 'rules'>('triggers');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [showCreateTrigger, setShowCreateTrigger] = useState(false);
   const [showCreateRule, setShowCreateRule] = useState(false);
 
@@ -110,15 +110,22 @@ export default function TriggersRules() {
           <p className="text-gray-600">Керування тригерами та правилами бази даних</p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={selectedDatabase}
-            onChange={(e) => setSelectedDatabase(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="production_db">production_db</option>
-            <option value="staging_db">staging_db</option>
-            <option value="analytics_db">analytics_db</option>
-          </select>
+          {!selectedDatabase && (
+            <select
+              value={currentDatabase}
+              onChange={(e) => setCurrentDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="production_db">production_db</option>
+              <option value="staging_db">staging_db</option>
+              <option value="analytics_db">analytics_db</option>
+            </select>
+          )}
+          {selectedDatabase && (
+            <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
+              {selectedDatabase}
+            </div>
+          )}
           {activeView === 'triggers' ? (
             <button
               onClick={() => setShowCreateTrigger(true)}

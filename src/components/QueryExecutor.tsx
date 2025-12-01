@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Play, Save, Clock, Database } from 'lucide-react';
 
-export default function QueryExecutor() {
+export default function QueryExecutor({ selectedDatabase }: { selectedDatabase?: string }) {
   const [query, setQuery] = useState('SELECT * FROM users LIMIT 10;');
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [results, setResults] = useState<any>(null);
   const [isExecuting, setIsExecuting] = useState(false);
 
@@ -43,18 +43,26 @@ export default function QueryExecutor() {
         <div>
           <h2 className="text-gray-900">SQL Query Editor</h2>
           <p className="text-gray-600">Execute SQL queries directly on your databases</p>
+          <p className="text-gray-600">Виконуйте SQL запити безпосередньо в базі даних</p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={selectedDatabase}
-            onChange={(e) => setSelectedDatabase(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="production_db">production_db</option>
-            <option value="staging_db">staging_db</option>
-            <option value="analytics_db">analytics_db</option>
-            <option value="test_db">test_db</option>
-          </select>
+          {!selectedDatabase && (
+            <select
+              value={currentDatabase}
+              onChange={(e) => setCurrentDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="production_db">production_db</option>
+              <option value="staging_db">staging_db</option>
+              <option value="analytics_db">analytics_db</option>
+              <option value="test_db">test_db</option>
+            </select>
+          )}
+          {selectedDatabase && (
+            <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
+              База даних: {selectedDatabase}
+            </div>
+          )}
         </div>
       </div>
 

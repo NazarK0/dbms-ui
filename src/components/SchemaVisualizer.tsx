@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Search, Download, ZoomIn, ZoomOut, Maximize2, RefreshCw, Database } from 'lucide-react';
 
-export default function SchemaVisualizer() {
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+export default function SchemaVisualizer({ selectedDatabase }: { selectedDatabase?: string }) {
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [zoom, setZoom] = useState(100);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -82,15 +82,22 @@ export default function SchemaVisualizer() {
           <p className="text-gray-600">Діаграма зв'язків між таблицями та структура даних</p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={selectedDatabase}
-            onChange={(e) => setSelectedDatabase(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="production_db">production_db</option>
-            <option value="staging_db">staging_db</option>
-            <option value="analytics_db">analytics_db</option>
-          </select>
+          {!selectedDatabase && (
+            <select
+              value={currentDatabase}
+              onChange={(e) => setCurrentDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="production_db">production_db</option>
+              <option value="staging_db">staging_db</option>
+              <option value="analytics_db">analytics_db</option>
+            </select>
+          )}
+          {selectedDatabase && (
+            <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
+              {selectedDatabase}
+            </div>
+          )}
           <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <RefreshCw className="w-4 h-4" />
             Оновити

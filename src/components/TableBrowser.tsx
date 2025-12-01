@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Database, Table2, Search } from 'lucide-react';
 
-export default function TableBrowser() {
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+export default function TableBrowser({ selectedDatabase }: { selectedDatabase?: string }) {
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -44,7 +44,7 @@ export default function TableBrowser() {
     ],
   };
 
-  const currentTables = databases[selectedDatabase as keyof typeof databases] || [];
+  const currentTables = databases[currentDatabase as keyof typeof databases] || [];
   const filteredTables = currentTables.filter((table) =>
     table.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -54,21 +54,24 @@ export default function TableBrowser() {
       {/* Sidebar */}
       <div className="lg:col-span-1 space-y-4">
         {/* Database Selector */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <label className="block text-sm text-gray-700 mb-2">Select Database</label>
-          <select
-            value={selectedDatabase}
-            onChange={(e) => {
-              setSelectedDatabase(e.target.value);
-              setSelectedTable(null);
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="production_db">production_db</option>
-            <option value="staging_db">staging_db</option>
-            <option value="analytics_db">analytics_db</option>
-          </select>
-        </div>
+        {!selectedDatabase && (
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <label className="block text-sm text-gray-700 mb-2">Select Database</label>
+            <label className="block text-sm text-gray-700 mb-2">Оберіть базу даних</label>
+            <select
+              value={currentDatabase}
+              onChange={(e) => {
+                setCurrentDatabase(e.target.value);
+                setSelectedTable(null);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="production_db">production_db</option>
+              <option value="staging_db">staging_db</option>
+              <option value="analytics_db">analytics_db</option>
+            </select>
+          </div>
+        )}
 
         {/* Table List */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -111,7 +114,7 @@ export default function TableBrowser() {
                 <div>
                   <h2 className="text-gray-900">{selectedTable}</h2>
                   <p className="text-gray-600">
-                    {selectedDatabase} • {(tableSchema[selectedTable as keyof typeof tableSchema] || []).length} columns
+                    {currentDatabase} • {(tableSchema[selectedTable as keyof typeof tableSchema] || []).length} columns
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

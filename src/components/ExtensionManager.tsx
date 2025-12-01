@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Plus, Trash2, RefreshCw, Search, CheckCircle, AlertCircle, Download } from 'lucide-react';
 
-export default function ExtensionManager() {
+export default function ExtensionManager({ selectedDatabase }: { selectedDatabase?: string }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDatabase, setSelectedDatabase] = useState('production_db');
+  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
 
   const installedExtensions = [
     {
@@ -104,16 +104,23 @@ export default function ExtensionManager() {
           <p className="text-gray-600">Керування розширеннями PostgreSQL</p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={selectedDatabase}
-            onChange={(e) => setSelectedDatabase(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="production_db">production_db</option>
-            <option value="staging_db">staging_db</option>
-            <option value="analytics_db">analytics_db</option>
-            <option value="test_db">test_db</option>
-          </select>
+          {!selectedDatabase && (
+            <select
+              value={currentDatabase}
+              onChange={(e) => setCurrentDatabase(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="production_db">production_db</option>
+              <option value="staging_db">staging_db</option>
+              <option value="analytics_db">analytics_db</option>
+              <option value="test_db">test_db</option>
+            </select>
+          )}
+          {selectedDatabase && (
+            <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
+              {selectedDatabase}
+            </div>
+          )}
           <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <RefreshCw className="w-4 h-4" />
             Оновити
