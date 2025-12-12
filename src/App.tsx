@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Database, Users, LayoutDashboard, Copy, Activity, TrendingUp, FileText, Server, Shield, History, Settings, Terminal, Eye } from 'lucide-react';
+import { Database, Users, LayoutDashboard, Copy, Activity, TrendingUp, FileText, Server, Shield, History, Settings, Terminal, Eye, Home, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Badge } from './components/ui/badge';
@@ -15,15 +15,19 @@ import SystemMonitor from './components/SystemMonitor';
 import ReplicaClusters from './components/ReplicaClusters';
 import PerformanceAnalyzer from './components/PerformanceAnalyzer';
 import Logs from './components/Logs';
+import HomePage from './components/HomePage';
+import { UserApplication } from './components/user';
 import { Card, CardHeader, CardTitle, CardDescription } from './components/ui/card';
 import { Bell, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Monitor } from 'lucide-react';
 
 type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'userui' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
+type View = 'home' | 'admin' | 'user';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [currentView, setCurrentView] = useState<View>('home');
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -58,6 +62,17 @@ export default function App() {
     );
   }
 
+  // Home Page
+  if (currentView === 'home') {
+    return <HomePage onNavigate={setCurrentView} />;
+  }
+
+  // User UI (будемо створювати)
+  if (currentView === 'user') {
+    return <UserApplication onBack={() => setCurrentView('home')} />;
+  }
+
+  // Admin Panel
   return (
     <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-yellow-50">
       {/* Mobile Warning */}
@@ -82,6 +97,15 @@ export default function App() {
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentView('home')}
+                  className="gap-2"
+                >
+                  <Home className="w-4 h-4" />
+                  Home
+                </Button>
                 <div className="w-10 h-10 bg-gradient-to-br from-lime-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Database className="w-6 h-6 text-white" />
                 </div>
