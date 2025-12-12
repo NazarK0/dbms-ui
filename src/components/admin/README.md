@@ -1,223 +1,234 @@
-# Admin Components
+# Admin Components Directory
 
-Компоненти для адміністративної панелі управління DBMS.
+This directory contains all admin-panel-specific components for the PostgreSQL DBMS management system.
 
-## Структура
+## 📁 Directory Structure
 
 ```
 /components/admin/
-├── RolesManager.tsx          # Головний компонент управління ролями
-├── index.ts                  # Barrel export для зручного імпорту
-├── README.md                 # Ця документація
-└── roles/                    # Підкомпоненти для управління ролями
-    ├── RoleCard.tsx          # Картка окремої ролі (admin/user)
-    ├── RolesGrid.tsx         # Сітка карток ролей
-    ├── AdminRolesPanel.tsx   # Панель адміністративних ролей
-    ├── UserRolesPanel.tsx    # Панель користувацьких ролей
-    ├── StatsCards.tsx        # Статистичні картки (header)
-    ├── CreateRoleModal.tsx   # Модальне вікно створення ролі
-    ├── RBACMatrix.tsx        # Матриця прав доступу RBAC
-    ├── RoleHistory.tsx       # Історія змін ролей
-    └── index.ts              # Barrel export
+├── layout/                         # Layout components
+│   ├── AdminHeader.tsx            # Main admin header (Logo, Home, Notifications)
+│   ├── AdminTabsList.tsx          # Navigation tabs (12 admin tabs)
+│   └── index.ts
+│
+├── dashboard/                      # Dashboard widgets
+│   ├── StatCard.tsx               # Statistics card (databases, users, etc.)
+│   ├── ActivityItem.tsx           # Activity log item
+│   ├── ConnectionItem.tsx         # Active connection item
+│   └── index.ts
+│
+├── database/                       # Database management components
+│   ├── DatabaseRow.tsx            # Database table row
+│   └── index.ts
+│
+├── roles/                          # Role management components
+│   ├── RoleCard.tsx               # Individual role card
+│   ├── RolesGrid.tsx              # Grid of role cards
+│   ├── AdminRolesPanel.tsx        # Admin roles panel
+│   ├── UserRolesPanel.tsx         # User roles panel
+│   ├── CreateRoleModal.tsx        # Create/Edit role modal
+│   ├── StatsCards.tsx             # Role statistics cards
+│   ├── RBACMatrix.tsx             # RBAC permissions matrix
+│   ├── RoleHistory.tsx            # Role change history
+│   └── index.ts
+│
+├── users/                          # User management components
+│   ├── UserTable.tsx              # User list table
+│   ├── CreateUserModal.tsx        # Create/Edit user modal
+│   └── index.ts
+│
+├── hooks/                          # Custom React hooks
+│   └── useDashboardCustomization.ts
+│
+├── data/                           # Mock data and constants
+│   └── mockAdminData.ts
+│
+├── AdminHeader.tsx                 # (source file)
+├── AdminTabsList.tsx               # (source file)
+├── RolesManager.tsx                # Main roles manager page
+├── Logs.tsx                        # System logs viewer
+├── index.ts                        # Main export file
+└── README.md                       # This file
 ```
 
-## Компоненти
+## 🎯 Main Admin Pages
 
-### RolesManager
-Головний контейнер для управління ролями.
+These pages are re-exported from `/components/admin/index.ts`:
 
-**Функціонал:**
-- Відображення статистики
-- Розділення admin/user ролей
-- Створення/редагування/видалення ролей
-- Матриця RBAC
-- Історія змін
+| Component | Path | Description |
+|-----------|------|-------------|
+| Dashboard | `/Dashboard.tsx` | Main admin dashboard |
+| DatabaseManager | `/DatabaseManager.tsx` | Database management interface |
+| UsersManager | `/UsersManager.tsx` | User management interface |
+| RolesManager | `/admin/RolesManager.tsx` | Role & RBAC management |
+| AuditLog | `/AuditLog.tsx` | System audit logs |
+| PostgresConfig | `/PostgresConfig.tsx` | PostgreSQL configuration |
+| CLI | `/CLI.tsx` | Command-line interface |
+| SystemMonitor | `/SystemMonitor.tsx` | System performance monitor |
+| ReplicaClusters | `/ReplicaClusters.tsx` | Replica cluster management |
+| PerformanceAnalyzer | `/PerformanceAnalyzer.tsx` | Performance analysis tools |
+| Logs | `/admin/Logs.tsx` | System logs viewer |
+| UserUIPreview | `/UserUIPreview.tsx` | Preview of user interface |
 
-**Використання:**
+## 🔧 Sub-Components (Database Tools)
+
+Used by DatabaseManager and other pages:
+
+- **QueryExecutor** - SQL query execution interface
+- **TableBrowser** - Browse and edit table data
+- **SchemaVisualizer** - Visualize database schema
+- **SchemasManager** - Manage database schemas
+- **ExtensionManager** - Manage PostgreSQL extensions
+- **FunctionsManager** - Manage database functions
+- **TriggersRules** - Manage triggers and rules
+- **BackupRestore** - Backup and restore operations
+
+## 📦 Import Examples
+
+### Import from organized structure:
 ```tsx
-import { RolesManager } from '@/components/admin';
+// Layout components
+import { AdminHeader, AdminTabsList } from '@/components/admin/layout';
 
-function AdminPanel() {
-  return <RolesManager />;
-}
+// Dashboard components
+import { StatCard, ActivityItem, ConnectionItem } from '@/components/admin/dashboard';
+
+// Database components
+import { DatabaseRow } from '@/components/admin/database';
+
+// Roles components
+import { RoleCard, RolesGrid, CreateRoleModal } from '@/components/admin/roles';
+
+// Users components
+import { UserTable, CreateUserModal } from '@/components/admin/users';
+
+// Hooks
+import { useDashboardCustomization } from '@/components/admin/hooks';
+
+// Mock data
+import { statsData, recentActivity, activeConnections } from '@/components/admin/data';
 ```
 
-### StatsCards
-Статистичні картки в header секції.
-
-**Props:**
-- `totalRoles: number` - загальна кількість ролей
-- `totalAdmins: number` - кількість адміністраторів
-- `totalUsers: number` - кількість користувачів
-- `totalPermissions?: number` - кількість унікальних прав (default: 47)
-
-### AdminRolesPanel
-Панель з адміністративними ролями (зелена колірна схема).
-
-**Props:**
-- `roles: Role[]` - масив admin ролей
-- `onEdit: (role: Role) => void` - callback редагування
-- `onSelect: (name: string) => void` - callback вибору ролі
-- `onDelete?: (role: Role) => void` - callback видалення
-- `onCreateClick: () => void` - callback створення нової ролі
-
-### UserRolesPanel
-Панель з користувацькими ролями (фіолетова колірна схема).
-
-**Props:**
-- `roles: Role[]` - масив user ролей
-- `onEdit: (role: Role) => void` - callback редагування
-- `onSelect: (name: string) => void` - callback вибору ролі
-- `onDelete?: (role: Role) => void` - callback видалення
-- `onCreateClick: () => void` - callback створення нової ролі
-
-### RoleCard
-Картка окремої ролі з messenger-style badge.
-
-**Props:**
-- `role: Role` - об'єкт ролі
-- `onEdit: (role: Role) => void` - callback редагування
-- `onSelect: (name: string) => void` - callback вибору
-- `onDelete?: (role: Role) => void` - callback видалення
-
-**Особливості:**
-- Квадратна форма (aspect-square)
-- Notification badge в лівому верхньому куті
-- Edit/Delete кнопки в правому верхньому куті (hover)
-- Glassmorphism overlay для назви
-- Велика центральна іконка
-- Колірна диференціація admin (зелений) vs user (фіолетовий)
-
-### RolesGrid
-Responsive сітка карток ролей.
-
-**Props:**
-- `roles: Role[]` - масив ролей для відображення
-- `onEdit: (role: Role) => void` - callback редагування
-- `onSelect: (name: string) => void` - callback вибору
-- `onDelete?: (role: Role) => void` - callback видалення
-
-**Grid breakpoints:**
-- Mobile (<768px): 5 columns
-- Tablet (768-1024px): 8 columns
-- Desktop (1024-1280px): 10 columns
-- Large (1280px+): 12 columns
-
-### CreateRoleModal
-Модальне вікно для створення нової ролі.
-
-**Props:**
-- `open: boolean` - стан відкриття модалки
-- `onOpenChange: (open: boolean) => void` - callback зміни стану
-- `roleType: 'admin' | 'user'` - тип ролі
-- `onRoleTypeChange: (type: 'admin' | 'user') => void` - callback зміни типу
-
-**Секції:**
-1. Вибір типу ролі (admin/user)
-2. Базова інформація (назва, опис)
-3. UI Visibility (тільки для admin) - 10 розділів інтерфейсу
-4. Row Level Security - 4 таблиці з RLS політиками
-
-## Типи
-
-### Role
-```tsx
-interface Role {
-  name: string;           // Назва ролі
-  users: number;          // Кількість користувачів
-  description: string;    // Опис ролі
-  color: string;          // Tailwind gradient класи
-  badge: string;          // Badge variant
-  type: 'admin' | 'user'; // Тип ролі
-}
-```
-
-## Колірна схема
-
-### Admin (зелена) 🌿
-- Border: `border-lime-200`
-- Background: `from-lime-50/50 to-green-50/50`
-- Icon: `from-lime-500 to-green-600`
-- Badge: `bg-lime-100 text-lime-700 border-lime-300`
-- Button: `from-lime-500 to-green-600`
-
-### User (фіолетова) 💜
-- Border: `border-violet-200`
-- Background: `from-violet-50/50 to-purple-50/50`
-- Icon: `from-violet-500 to-purple-600`
-- Badge: `bg-violet-100 text-violet-700 border-violet-300`
-- Button: `from-violet-500 to-purple-600`
-
-## Майбутні розробки
-
-### User UI Components
-В наступних версіях буде створено окрему директорію `/components/user/` для:
-- Dashboard для кінцевих користувачів
-- User profile
-- User settings
-- Feature access based on role
-- Usage quotas
-
-### Модульність
-Всі компоненти розроблені з прицілом на:
-- **Розширюваність**: легко додати нові типи ролей
-- **Повторне використання**: компоненти можна використовувати окремо
-- **Тестування**: кожен компонент має чіткі props і можна тестувати ізольовано
-- **Типізація**: всі типи експортовані для передільного використання
-
-## Приклади використання
-
-### Імпорт окремих компонентів
+### Import main pages:
 ```tsx
 import { 
-  RoleCard, 
-  RolesGrid, 
-  AdminRolesPanel 
-} from '@/components/admin/roles';
+  Dashboard, 
+  DatabaseManager, 
+  UsersManager, 
+  RolesManager 
+} from '@/components/admin';
 ```
 
-### Використання типів
+### Import from root (backward compatibility):
 ```tsx
-import type { Role } from '@/components/admin';
-
-const myRole: Role = {
-  name: 'Custom Admin',
-  users: 3,
-  description: 'Custom role',
-  color: 'from-blue-500 to-cyan-600',
-  badge: 'default',
-  type: 'admin'
-};
+import Dashboard from '@/components/Dashboard';
+import DatabaseManager from '@/components/DatabaseManager';
+import UsersManager from '@/components/UsersManager';
 ```
 
-### Створення custom панелі
+## 🎨 Component Patterns
+
+### 1. StatCard Component
 ```tsx
-import { RolesGrid } from '@/components/admin/roles';
-
-function CustomRolesView({ roles }: { roles: Role[] }) {
-  return (
-    <div className="p-4">
-      <h2>My Custom Roles</h2>
-      <RolesGrid 
-        roles={roles}
-        onEdit={handleEdit}
-        onSelect={handleSelect}
-      />
-    </div>
-  );
-}
+<StatCard 
+  id="databases"
+  label="Всього баз даних"
+  value="12"
+  icon={Database}
+  color="from-lime-500 to-green-600"
+  change="+2"
+  trend="up"
+  visible={true}
+/>
 ```
 
-## Backwards Compatibility
-
-Старий імпорт все ще працює:
+### 2. ActivityItem Component
 ```tsx
-// Legacy (працює, але deprecated)
-import RolesManager from '@/components/RolesManager';
-
-// New (рекомендовано)
-import { RolesManager } from '@/components/admin';
+<ActivityItem 
+  action="База даних створена"
+  details="production_db"
+  user="admin"
+  time="2 хвилини тому"
+  type="success"
+/>
 ```
 
-## Ліцензія
-Частина DBMS Admin Panel Project
+### 3. DatabaseRow Component
+```tsx
+<DatabaseRow
+  name="production_db"
+  owner="admin"
+  size="1.2 ГБ"
+  tables={45}
+  encoding="UTF8"
+  collation="uk_UA.UTF-8"
+  isSelected={true}
+  onSelect={() => handleSelect('production_db')}
+  onDelete={() => handleDelete('production_db')}
+/>
+```
+
+## 🔄 Custom Hooks
+
+### useDashboardCustomization
+Manages dashboard widget visibility and customization:
+
+```tsx
+const {
+  visibleCards,           // Array of dashboard cards with visibility state
+  customizeDialogOpen,    // Dialog open/closed state
+  setCustomizeDialogOpen, // Toggle customization dialog
+  toggleCardVisibility,   // Toggle card visibility by ID
+  isCardVisible,          // Check if card is visible
+  visibleCount,           // Count of visible cards
+} = useDashboardCustomization();
+```
+
+## 🎨 Color Theme
+
+Admin panel uses **olive/lime** color scheme:
+
+- Primary: `lime-600` to `green-700`
+- Accents: `lime-50`, `lime-100`, `lime-200`
+- Active states: `bg-lime-600 text-white`
+- Hover states: `hover:bg-lime-50`
+
+## 📊 Mock Data
+
+Located in `/admin/data/mockAdminData.ts`:
+
+- **statsData** - Dashboard statistics (databases, users, tables, storage)
+- **recentActivity** - Recent system activity log
+- **activeConnections** - Current database connections
+- **performanceMetrics** - System performance metrics
+
+## 🚀 Adding New Components
+
+When adding new admin components:
+
+1. Create component in appropriate subfolder
+2. Add to subfolder's `index.ts`
+3. Add to main `/admin/index.ts` if needed
+4. Update this README
+5. Follow naming convention: PascalCase for components
+6. Use TypeScript interfaces for props
+7. Keep components focused (SRP - Single Responsibility Principle)
+
+## ✅ Code Quality Standards
+
+- ✅ **DRY** - Don't Repeat Yourself
+- ✅ **SRP** - Single Responsibility Principle
+- ✅ **Modular** - Small, reusable components
+- ✅ **TypeScript** - Full type safety
+- ✅ **Documented** - Clear prop interfaces
+- ✅ **Tested** - Easy to test in isolation
+- ✅ **Accessible** - Proper ARIA labels
+- ✅ **Responsive** - Works on all screen sizes (desktop 1024px+)
+
+## 📝 Notes
+
+- All admin components use **olive/lime** color theme
+- Desktop-only (min-width: 1024px)
+- Ukrainian language interface
+- Uses shadcn/ui components
+- PostgreSQL-specific functionality

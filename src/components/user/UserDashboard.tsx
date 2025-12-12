@@ -2,6 +2,9 @@ import { Database, Table, Plus, Edit, Trash2, Activity, Shield, Clock, ChevronRi
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import DatabaseCard from './DatabaseCard';
+import ActivityRecordItem from './ActivityRecordItem';
+import AccessedTableItem from './AccessedTableItem';
 
 interface UserRole {
   id: number;
@@ -164,45 +167,16 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {myDatabases.map((db) => (
-            <Card 
-              key={db.id} 
-              className="border-violet-200 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+            <DatabaseCard 
+              key={db.id}
+              name={db.name}
+              tables={db.tables}
+              records={db.records}
+              lastAccess={db.lastAccess}
+              grantedByRoles={db.grantedByRoles}
+              color={db.color}
               onClick={() => onDatabaseSelect?.(db.name)}
-            >
-              <CardContent className="p-2.5">
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 bg-gradient-to-br ${db.color} rounded-md flex items-center justify-center shadow-sm`}>
-                      <Database className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="text-slate-900 font-medium text-sm leading-tight truncate">{db.name}</h4>
-                      <p className="text-xs text-slate-500 leading-tight truncate">{db.lastAccess}</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
-                </div>
-                
-                <div className="flex items-center gap-2 text-xs text-slate-600 mb-1.5">
-                  <div className="flex items-center gap-0.5">
-                    <Table className="w-2.5 h-2.5" />
-                    <span>{db.tables}</span>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <Database className="w-2.5 h-2.5" />
-                    <span>{db.records.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1">
-                  {db.grantedByRoles.map((role) => (
-                    <Badge key={role} variant="outline" className="text-xs h-5 px-2 py-0 bg-violet-50 text-violet-700 border-violet-300">
-                      {role}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            />
           ))}
         </div>
       </div>
@@ -221,9 +195,14 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
           <CardContent className="p-0">
             <div className="divide-y divide-slate-200">
               {lastModifiedRecords.map((record) => (
-                <div 
-                  key={record.id} 
-                  className="p-4 hover:bg-violet-50/50 transition-colors cursor-pointer"
+                <ActivityRecordItem 
+                  key={record.id}
+                  database={record.database}
+                  table={record.table}
+                  recordId={record.recordId}
+                  action={record.action as 'CREATE' | 'UPDATE' | 'DELETE'}
+                  field={record.field}
+                  timestamp={record.timestamp}
                   onClick={() => {
                     const tableData = lastAccessedTables.find(
                       t => t.database === record.database && t.table === record.table
@@ -235,36 +214,7 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
                       record.recordId
                     );
                   }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      record.action === 'CREATE' ? 'bg-green-100' :
-                      record.action === 'UPDATE' ? 'bg-blue-100' :
-                      'bg-red-100'
-                    }`}>
-                      {record.action === 'CREATE' && <Plus className="w-4 h-4 text-green-700" />}
-                      {record.action === 'UPDATE' && <Edit className="w-4 h-4 text-blue-700" />}
-                      {record.action === 'DELETE' && <Trash2 className="w-4 h-4 text-red-700" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm text-slate-900 font-medium">
-                          {record.table}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          #{record.recordId}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-600">
-                        <span>{record.database}</span>
-                        <span className="text-slate-400">•</span>
-                        <span>{record.field}</span>
-                        <span className="text-slate-400">•</span>
-                        <span>{record.timestamp}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           </CardContent>
@@ -282,32 +232,14 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
           <CardContent className="p-0">
             <div className="divide-y divide-slate-200">
               {lastAccessedTables.map((table) => (
-                <div 
-                  key={table.id} 
-                  className="p-4 hover:bg-violet-50/50 transition-colors cursor-pointer"
+                <AccessedTableItem 
+                  key={table.id}
+                  database={table.database}
+                  table={table.table}
+                  records={table.records}
+                  lastAccess={table.lastAccess}
                   onClick={() => onTableSelect?.(table.database, table.table, table.permissions)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
-                      <Table className="w-4 h-4 text-violet-700" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm text-slate-900 font-medium truncate">
-                          {table.table}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {table.records.toLocaleString()}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-600">
-                        <span>{table.database}</span>
-                        <span className="text-slate-400">•</span>
-                        <span>{table.lastAccess}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           </CardContent>

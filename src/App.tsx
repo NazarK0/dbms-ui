@@ -3,24 +3,26 @@ import { Database, Users, LayoutDashboard, Copy, Activity, TrendingUp, FileText,
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Badge } from './components/ui/badge';
-import Dashboard from './components/Dashboard';
-import DatabaseManager from './components/DatabaseManager';
-import UsersManager from './components/UsersManager';
-import RolesManager from './components/RolesManager';
-import UserUIPreview from './components/UserUIPreview';
-import AuditLog from './components/AuditLog';
-import PostgresConfig from './components/PostgresConfig';
-import CLI from './components/CLI';
-import SystemMonitor from './components/SystemMonitor';
-import ReplicaClusters from './components/ReplicaClusters';
-import PerformanceAnalyzer from './components/PerformanceAnalyzer';
-import Logs from './components/Logs';
-import HomePage from './components/HomePage';
+import Dashboard from './components/admin/pages/Dashboard';
+import DatabaseManager from './components/admin/pages/DatabaseManager';
+import UsersManager from './components/admin/pages/UsersManager';
+import RolesManager from './components/admin/pages/RolesManager';
+import UserUIPreview from './components/admin/pages/UserUIPreview';
+import AuditLog from './components/admin/pages/AuditLog';
+import PostgresConfig from './components/admin/pages/PostgresConfig';
+import CLI from './components/admin/pages/CLI';
+import SystemMonitor from './components/admin/pages/SystemMonitor';
+import ReplicaClusters from './components/admin/pages/ReplicaClusters';
+import PerformanceAnalyzer from './components/admin/pages/PerformanceAnalyzer';
+import Logs from './components/admin/Logs';
+import HomePage from './components/global/HomePage';
 import { UserApplication } from './components/user';
 import { Card, CardHeader, CardTitle, CardDescription } from './components/ui/card';
 import { Bell, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Monitor } from 'lucide-react';
+import AdminHeader from './components/admin/AdminHeader';
+import AdminTabsList from './components/admin/AdminTabsList';
 
 type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'userui' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
 type View = 'home' | 'admin' | 'user';
@@ -93,96 +95,12 @@ export default function App() {
       {/* Desktop UI */}
       <div className="hidden md:block">
         {/* Header */}
-        <header className="sticky top-0 z-50 border-b border-lime-200/50 bg-white/80 backdrop-blur-xl shadow-sm">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentView('home')}
-                  className="gap-2"
-                >
-                  <Home className="w-4 h-4" />
-                  Home
-                </Button>
-                <div className="w-10 h-10 bg-gradient-to-br from-lime-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
-                  <Database className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-slate-900">PostgreSQL DBMS</h1>
-                  <p className="text-slate-600 text-sm">Root Admin Panel</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="gap-2">
-                  <div className="w-2 h-2 bg-lime-500 rounded-full animate-pulse"></div>
-                  Connected
-                </Badge>
-                <Button variant="outline" size="icon">
-                  <Bell className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <SettingsIcon className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
+        <AdminHeader onHomeClick={() => setCurrentView('home')} />
 
         {/* Main Content */}
         <main className="p-6">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Tab)} className="space-y-6">
-            <TabsList className="bg-white shadow-sm border border-slate-200 p-1.5 h-auto inline-flex">
-              <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="xl:inline hidden">Панель</span>
-              </TabsTrigger>
-              <TabsTrigger value="databases" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Database className="w-4 h-4" />
-                <span className="xl:inline hidden">Бази даних</span>
-              </TabsTrigger>
-              <TabsTrigger value="users" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Users className="w-4 h-4" />
-                <span className="xl:inline hidden">Користувачі</span>
-              </TabsTrigger>
-              <TabsTrigger value="roles" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Shield className="w-4 h-4" />
-                <span className="xl:inline hidden">Ролі</span>
-              </TabsTrigger>
-              <TabsTrigger value="userui" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Eye className="w-4 h-4" />
-                <span className="xl:inline hidden">UI Користувача</span>
-              </TabsTrigger>
-              <TabsTrigger value="audit" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <History className="w-4 h-4" />
-                <span className="xl:inline hidden">Аудит</span>
-              </TabsTrigger>
-              <TabsTrigger value="config" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Settings className="w-4 h-4" />
-                <span className="xl:inline hidden">Конфігурація</span>
-              </TabsTrigger>
-              <TabsTrigger value="cli" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Terminal className="w-4 h-4" />
-                <span className="xl:inline hidden">CLI</span>
-              </TabsTrigger>
-              <TabsTrigger value="performance" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <TrendingUp className="w-4 h-4" />
-                <span className="xl:inline hidden">Продуктивність</span>
-              </TabsTrigger>
-              <TabsTrigger value="replicas" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Copy className="w-4 h-4" />
-                <span className="xl:inline hidden">Репліки</span>
-              </TabsTrigger>
-              <TabsTrigger value="monitor" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <Activity className="w-4 h-4" />
-                <span className="xl:inline hidden">Моніторинг</span>
-              </TabsTrigger>
-              <TabsTrigger value="logs" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
-                <FileText className="w-4 h-4" />
-                <span className="xl:inline hidden">Логи</span>
-              </TabsTrigger>
-            </TabsList>
+            <AdminTabsList />
 
             <TabsContent value="dashboard" className="mt-0">
               <Dashboard />
