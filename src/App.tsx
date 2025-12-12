@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Database, Users, LayoutDashboard, Copy, Activity, TrendingUp, FileText, Server, Shield, History, Settings, Terminal } from 'lucide-react';
+import { Database, Users, LayoutDashboard, Copy, Activity, TrendingUp, FileText, Server, Shield, History, Settings, Terminal, Eye } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Badge } from './components/ui/badge';
 import Dashboard from './components/Dashboard';
 import DatabaseManager from './components/DatabaseManager';
-import UserManager from './components/UserManager';
+import UsersManager from './components/UsersManager';
 import RolesManager from './components/RolesManager';
+import UserUIPreview from './components/UserUIPreview';
 import AuditLog from './components/AuditLog';
 import PostgresConfig from './components/PostgresConfig';
 import CLI from './components/CLI';
@@ -19,7 +20,7 @@ import { Bell, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Monitor } from 'lucide-react';
 
-type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
+type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'userui' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -125,6 +126,10 @@ export default function App() {
                 <Shield className="w-4 h-4" />
                 <span className="xl:inline hidden">Ролі</span>
               </TabsTrigger>
+              <TabsTrigger value="userui" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
+                <Eye className="w-4 h-4" />
+                <span className="xl:inline hidden">UI Користувача</span>
+              </TabsTrigger>
               <TabsTrigger value="audit" className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white">
                 <History className="w-4 h-4" />
                 <span className="xl:inline hidden">Аудит</span>
@@ -162,10 +167,13 @@ export default function App() {
               <DatabaseManager />
             </TabsContent>
             <TabsContent value="users" className="mt-0">
-              <UserManager />
+              <UsersManager />
             </TabsContent>
             <TabsContent value="roles" className="mt-0">
               <RolesManager />
+            </TabsContent>
+            <TabsContent value="userui" className="mt-0">
+              <UserUIPreview />
             </TabsContent>
             <TabsContent value="audit" className="mt-0">
               <AuditLog />

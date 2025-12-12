@@ -1,4 +1,4 @@
-import { Database, Users, Table2, HardDrive, Clock, TrendingUp, ArrowUp, ArrowDown, Activity, Plus, Eye, EyeOff, LayoutDashboard } from 'lucide-react';
+import { Database, Users, Table2, HardDrive, Clock, TrendingUp, ArrowUp, ArrowDown, Activity, Plus, Eye, EyeOff, LayoutDashboard, UserCog } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
@@ -20,7 +20,8 @@ export default function Dashboard() {
   const [customizeDialogOpen, setCustomizeDialogOpen] = useState(false);
   const [visibleCards, setVisibleCards] = useState<DashboardCard[]>([
     { id: 'databases', name: 'Всього баз даних', description: 'Кількість баз даних у системі', visible: true, category: 'stats' },
-    { id: 'users', name: 'Активних користувачів', description: 'Кількість активних користувачів', visible: true, category: 'stats' },
+    { id: 'admins', name: 'Адміністраторів', description: 'Кількість адміністраторів системи', visible: true, category: 'stats' },
+    { id: 'users', name: 'Користувачів', description: 'Кількість звичайних користувачів', visible: true, category: 'stats' },
     { id: 'tables', name: 'Всього таблиць', description: 'Загальна кількість таблиць', visible: true, category: 'stats' },
     { id: 'storage', name: 'Використано сховища', description: 'Використаний дисковий простір', visible: true, category: 'stats' },
     { id: 'performance', name: 'Огляд продуктивності', description: 'Ключові метрики продуктивності', visible: true, category: 'performance' },
@@ -41,10 +42,11 @@ export default function Dashboard() {
   const visibleCount = visibleCards.filter(card => card.visible).length;
 
   const stats = [
-    { label: 'Всього баз даних', value: '12', icon: Database, color: 'from-lime-500 to-green-600', change: '+2', trend: 'up' },
-    { label: 'Активних користувачів', value: '47', icon: Users, color: 'from-green-500 to-lime-600', change: '+5', trend: 'up' },
-    { label: 'Всього таблиць', value: '248', icon: Table2, color: 'from-yellow-500 to-lime-600', change: '+12', trend: 'up' },
-    { label: 'Використано сховища', value: '3.2 ГБ', icon: HardDrive, color: 'from-lime-600 to-yellow-600', change: '-0.4 ГБ', trend: 'down' },
+    { id: 'databases', label: 'Всього баз даних', value: '12', icon: Database, color: 'from-lime-500 to-green-600', change: '+2', trend: 'up' },
+    { id: 'admins', label: 'Адміністраторів', value: '8', icon: UserCog, color: 'from-lime-600 to-green-500', change: '+1', trend: 'up' },
+    { id: 'users', label: 'Користувачів', value: '39', icon: Users, color: 'from-violet-500 to-purple-600', change: '+4', trend: 'up' },
+    { id: 'tables', label: 'Всього таблиць', value: '248', icon: Table2, color: 'from-yellow-500 to-lime-600', change: '+12', trend: 'up' },
+    { id: 'storage', label: 'Використано сховища', value: '3.2 ГБ', icon: HardDrive, color: 'from-lime-600 to-yellow-600', change: '-0.4 ГБ', trend: 'down' },
   ];
 
   const recentActivity = [
@@ -205,10 +207,10 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      {isCardVisible('databases') || isCardVisible('users') || isCardVisible('tables') || isCardVisible('storage') ? (
+      {isCardVisible('databases') || isCardVisible('admins') || isCardVisible('users') || isCardVisible('tables') || isCardVisible('storage') ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
-            const cardIds = ['databases', 'users', 'tables', 'storage'];
+            const cardIds = ['databases', 'admins', 'users', 'tables', 'storage'];
             if (!isCardVisible(cardIds[index])) return null;
             
             const Icon = stat.icon;
