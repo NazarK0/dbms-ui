@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Save, RotateCcw, AlertTriangle, CheckCircle, Database, Cpu, HardDrive, Network, FileText, Zap, Upload, Download, Trash2, FolderOpen } from 'lucide-react';
+import { Settings, Save, RotateCcw, AlertTriangle, CheckCircle, Database, Cpu, HardDrive, Network, FileText, Zap, Upload, Download, Trash2, FolderOpen, Power } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -25,8 +25,19 @@ export default function PostgresConfig() {
   const [hasChanges, setHasChanges] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
+  const [restartDialogOpen, setRestartDialogOpen] = useState(false);
+  const [isRestarting, setIsRestarting] = useState(false);
   const [profileName, setProfileName] = useState('');
   const [currentConfig, setCurrentConfig] = useState<Record<string, string>>({});
+
+  const handleRestartServer = () => {
+    setIsRestarting(true);
+    // Simulate server restart
+    setTimeout(() => {
+      setIsRestarting(false);
+      setRestartDialogOpen(false);
+    }, 3000);
+  };
 
   const [savedProfiles, setSavedProfiles] = useState([
     {
@@ -292,6 +303,63 @@ export default function PostgresConfig() {
 
   return (
     <div className="space-y-6">
+      {/* Header with Restart Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-slate-900 text-2xl">Конфігурація PostgreSQL</h2>
+          <p className="text-slate-600 text-sm mt-1">
+            Управління параметрами сервера та налаштуваннями
+          </p>
+        </div>
+        <Dialog open={restartDialogOpen} onOpenChange={setRestartDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="destructive" size="lg" className="gap-2">
+              <Power className="w-4 h-4" />
+              Перезапустити сервер
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[450px]">
+            <DialogHeader>
+              <DialogTitle>Перезапуск сервера PostgreSQL</DialogTitle>
+              <DialogDescription>
+                Ви впевнені, що хочете перезапустити сервер PostgreSQL? Це призведе до переривання всіх активних підключень.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-6 flex flex-col items-center gap-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <Power className="w-8 h-8 text-red-600" />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-slate-900">Активні підключення будуть перервані</p>
+                <p className="text-sm text-slate-600">Сервер перезапуститься протягом кількох секунд</p>
+              </div>
+              {isRestarting && (
+                <div className="w-full">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                    <p className="text-sm text-slate-600">Перезапуск сервера...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRestartDialogOpen(false)} disabled={isRestarting}>
+                Скасувати
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleRestartServer}
+                disabled={isRestarting}
+                className="gap-2"
+              >
+                <Power className="w-4 h-4" />
+                {isRestarting ? 'Перезапуск...' : 'Перезапустити'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
       {/* Header Alert */}
       {statistics.requiresRestart > 0 && (
         <Alert className="bg-yellow-50 border-yellow-200">

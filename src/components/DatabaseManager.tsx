@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, Edit, Copy, Download, Upload, FileCode, Terminal, Table2, Network, Puzzle, Code, Zap, Archive, X, Database as DatabaseIcon } from 'lucide-react';
+import { Plus, Trash2, Edit, Copy, Download, Upload, FileCode, Terminal, Table2, Network, Puzzle, Code, Zap, Archive, X, Database as DatabaseIcon, Lock, Layers } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -18,12 +18,13 @@ import ExtensionManager from './ExtensionManager';
 import FunctionsManager from './FunctionsManager';
 import TriggersRules from './TriggersRules';
 import BackupRestore from './BackupRestore';
+import SchemasManager from './SchemasManager';
 
-type SubTab = 'query' | 'tables' | 'schema' | 'extensions' | 'functions' | 'triggers' | 'backup';
+type SubTab = 'query' | 'schemas' | 'schema' | 'extensions' | 'functions' | 'triggers' | 'backup';
 
 export default function DatabaseManager() {
   const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
-  const [activeSubTab, setActiveSubTab] = useState<SubTab>('tables');
+  const [activeSubTab, setActiveSubTab] = useState<SubTab>('schemas');
   const [databases, setDatabases] = useState([
     { name: 'production_db', owner: 'admin', size: '1.2 ГБ', tables: 45, encoding: 'UTF8', collation: 'uk_UA.UTF-8' },
     { name: 'staging_db', owner: 'admin', size: '850 МБ', tables: 42, encoding: 'UTF8', collation: 'uk_UA.UTF-8' },
@@ -70,7 +71,7 @@ export default function DatabaseManager() {
 
   const handleSelectDatabase = (dbName: string) => {
     setSelectedDatabase(dbName);
-    setActiveSubTab('tables');
+    setActiveSubTab('schemas');
   };
 
   return (
@@ -120,9 +121,9 @@ export default function DatabaseManager() {
               <Terminal className="w-4 h-4" />
               Запити
             </TabsTrigger>
-            <TabsTrigger value="tables" className="gap-2">
-              <Table2 className="w-4 h-4" />
-              Таблиці
+            <TabsTrigger value="schemas" className="gap-2">
+              <Layers className="w-4 h-4" />
+              Схеми
             </TabsTrigger>
             <TabsTrigger value="schema" className="gap-2">
               <Network className="w-4 h-4" />
@@ -149,8 +150,8 @@ export default function DatabaseManager() {
           <TabsContent value="query">
             <QueryExecutor selectedDatabase={selectedDatabase} />
           </TabsContent>
-          <TabsContent value="tables">
-            <TableBrowser selectedDatabase={selectedDatabase} />
+          <TabsContent value="schemas">
+            <SchemasManager selectedDatabase={selectedDatabase} />
           </TabsContent>
           <TabsContent value="schema">
             <SchemaVisualizer selectedDatabase={selectedDatabase} />
@@ -172,89 +173,230 @@ export default function DatabaseManager() {
 
       {/* Database List - показується тільки коли не вибрана БД */}
       {!selectedDatabase && (
-        <Card className="border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>Список баз даних</CardTitle>
-            <CardDescription>Клацніть на рядок для відкриття деталей бази даних</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Назва бази даних</TableHead>
-                  <TableHead>Власник</TableHead>
-                  <TableHead>Розмір</TableHead>
-                  <TableHead>Таблиці</TableHead>
-                  <TableHead>Кодування</TableHead>
-                  <TableHead>Сортування</TableHead>
-                  <TableHead className="text-right">Дії</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {databases.map((db) => (
-                  <TableRow 
-                    key={db.name} 
-                    onClick={() => handleSelectDatabase(db.name)}
-                    className="cursor-pointer hover:bg-blue-50/50 transition-colors"
-                  >
+        <>
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <CardTitle>Користувацькі бази даних</CardTitle>
+              <CardDescription>Клацніть на рядок для відкриття деталей бази даних</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Назва бази даних</TableHead>
+                    <TableHead>Власник</TableHead>
+                    <TableHead>Розмір</TableHead>
+                    <TableHead>Таблиці</TableHead>
+                    <TableHead>Кодування</TableHead>
+                    <TableHead>Сортування</TableHead>
+                    <TableHead className="text-right">Дії</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {databases.map((db) => (
+                    <TableRow 
+                      key={db.name} 
+                      onClick={() => handleSelectDatabase(db.name)}
+                      className="cursor-pointer hover:bg-blue-50/50 transition-colors"
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <DatabaseIcon className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-slate-900">{db.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{db.owner}</Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-600">{db.size}</TableCell>
+                      <TableCell className="text-slate-600">{db.tables}</TableCell>
+                      <TableCell className="text-slate-600">{db.encoding}</TableCell>
+                      <TableCell className="text-slate-600">{db.collation}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedDb(db.name);
+                              setShowExportModal(true);
+                            }}
+                            title="Експорт схеми"
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedDb(db.name);
+                              setShowCopyModal(true);
+                            }}
+                            title="Копіювати БД"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" title="Редагувати">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteDatabase(db.name)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Template Databases */}
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Шаблонні бази даних</CardTitle>
+                  <CardDescription>Системні шаблони для створення нових баз даних</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Назва</TableHead>
+                    <TableHead>Опис</TableHead>
+                    <TableHead>Розмір</TableHead>
+                    <TableHead>Кодування</TableHead>
+                    <TableHead>Сортування</TableHead>
+                    <TableHead>Дозволене клонування</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow className="bg-yellow-50/30">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
-                          <DatabaseIcon className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-white" />
                         </div>
-                        <span className="text-slate-900">{db.name}</span>
+                        <code className="text-slate-900">template0</code>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{db.owner}</Badge>
+                    <TableCell className="text-slate-600">
+                      Базовий незмінний шаблон PostgreSQL
                     </TableCell>
-                    <TableCell className="text-slate-600">{db.size}</TableCell>
-                    <TableCell className="text-slate-600">{db.tables}</TableCell>
-                    <TableCell className="text-slate-600">{db.encoding}</TableCell>
-                    <TableCell className="text-slate-600">{db.collation}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="text-slate-600">7.8 МБ</TableCell>
+                    <TableCell className="text-slate-600">UTF8</TableCell>
+                    <TableCell className="text-slate-600">uk_UA.UTF-8</TableCell>
+                    <TableCell>
+                      <Badge variant="destructive">Ні</Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className="bg-yellow-50/30">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-white" />
+                        </div>
+                        <code className="text-slate-900">template1</code>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      Шаблон за замовчуванням для нових БД
+                    </TableCell>
+                    <TableCell className="text-slate-600">7.9 МБ</TableCell>
+                    <TableCell className="text-slate-600">UTF8</TableCell>
+                    <TableCell className="text-slate-600">uk_UA.UTF-8</TableCell>
+                    <TableCell>
+                      <Badge variant="default">Так</Badge>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Administrative Databases */}
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
+                  <DatabaseIcon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Адміністративні бази даних</CardTitle>
+                  <CardDescription>Системні бази даних PostgreSQL</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Назва</TableHead>
+                    <TableHead>Опис</TableHead>
+                    <TableHead>Розмір</TableHead>
+                    <TableHead>Кодування</TableHead>
+                    <TableHead>Сортування</TableHead>
+                    <TableHead className="text-right">Дії</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow className="bg-red-50/30">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
+                          <DatabaseIcon className="w-4 h-4 text-white" />
+                        </div>
+                        <code className="text-slate-900">postgres</code>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      Системна БД для підключень та управління
+                    </TableCell>
+                    <TableCell className="text-slate-600">8.2 МБ</TableCell>
+                    <TableCell className="text-slate-600">UTF8</TableCell>
+                    <TableCell className="text-slate-600">uk_UA.UTF-8</TableCell>
+                    <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => handleSelectDatabase('postgres')}
+                          title="Переглянути"
+                        >
+                          <DatabaseIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => {
-                            setSelectedDb(db.name);
+                            setSelectedDb('postgres');
                             setShowExportModal(true);
                           }}
                           title="Експорт схеми"
                         >
                           <Download className="w-4 h-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setSelectedDb(db.name);
-                            setShowCopyModal(true);
-                          }}
-                          title="Копіювати БД"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" title="Редагувати">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteDatabase(db.name)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </>
       )}
 
       {/* Create Database Modal */}
