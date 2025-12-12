@@ -1,9 +1,9 @@
-import { Shield, Users, Edit, Trash2, UserCog } from 'lucide-react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Users, Edit, Trash2, UserCog } from 'lucide-react';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../ui/tooltip';
 
-interface Role {
+export interface Role {
   name: string;
   users: number;
   description: string;
@@ -16,9 +16,10 @@ interface RoleCardProps {
   role: Role;
   onEdit: (role: Role) => void;
   onSelect: (name: string) => void;
+  onDelete?: (role: Role) => void;
 }
 
-export default function RoleCard({ role, onEdit, onSelect }: RoleCardProps) {
+export default function RoleCard({ role, onEdit, onSelect, onDelete }: RoleCardProps) {
   const isAdmin = role.type === 'admin';
   const bgGradient = isAdmin 
     ? 'from-lime-50 to-green-50 hover:from-lime-100 hover:to-green-100' 
@@ -63,6 +64,9 @@ export default function RoleCard({ role, onEdit, onSelect }: RoleCardProps) {
                   className="h-5 w-5 p-0 bg-white/90 hover:bg-white shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (onDelete) {
+                      onDelete(role);
+                    }
                   }}
                 >
                   <Trash2 className="w-3 h-3 text-red-600" />

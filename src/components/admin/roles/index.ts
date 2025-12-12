@@ -1,0 +1,12 @@
+// Role management components
+export { default as RoleCard } from './RoleCard';
+export { default as RolesGrid } from './RolesGrid';
+export { default as AdminRolesPanel } from './AdminRolesPanel';
+export { default as UserRolesPanel } from './UserRolesPanel';
+export { default as StatsCards } from './StatsCards';
+export { default as CreateRoleModal } from './CreateRoleModal';
+export { default as RBACMatrix } from './RBACMatrix';
+export { default as RoleHistory } from './RoleHistory';
+
+// Types
+export type { Role } from './RoleCard';
