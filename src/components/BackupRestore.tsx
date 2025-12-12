@@ -1,429 +1,231 @@
 import { useState } from 'react';
-import { Download, Upload, Clock, Database, Play, Check, AlertCircle, Trash2, Calendar } from 'lucide-react';
+import { Archive, Download, Upload, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 export default function BackupRestore({ selectedDatabase }: { selectedDatabase?: string }) {
-  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [backupInProgress, setBackupInProgress] = useState(false);
+  const [isBackingUp, setIsBackingUp] = useState(false);
 
   const backups = [
     {
       id: 1,
-      database: 'production_db',
-      filename: 'production_db_2024_11_28_09_00.sql',
-      size: '1.2 GB',
-      type: 'Full',
-      status: 'completed',
-      created: '2024-11-28 09:00:00',
-      duration: '5m 32s',
+      filename: 'production_db_2024_01_20_full.sql',
+      type: 'Повна',
+      size: '1.2 ГБ',
+      created: '2024-01-20 02:00:00',
+      status: 'success',
+      duration: '12м 34с',
     },
     {
       id: 2,
-      database: 'production_db',
-      filename: 'production_db_2024_11_27_09_00.sql',
-      size: '1.1 GB',
-      type: 'Full',
-      status: 'completed',
-      created: '2024-11-27 09:00:00',
-      duration: '5m 18s',
+      filename: 'production_db_2024_01_19_full.sql',
+      type: 'Повна',
+      size: '1.18 ГБ',
+      created: '2024-01-19 02:00:00',
+      status: 'success',
+      duration: '11м 58с',
     },
     {
       id: 3,
-      database: 'analytics_db',
-      filename: 'analytics_db_2024_11_28_06_00.sql',
-      size: '720 MB',
-      type: 'Incremental',
-      status: 'completed',
-      created: '2024-11-28 06:00:00',
-      duration: '2m 45s',
-    },
-    {
-      id: 4,
-      database: 'staging_db',
-      filename: 'staging_db_2024_11_28_03_00.sql',
-      size: '850 MB',
-      type: 'Full',
-      status: 'completed',
-      created: '2024-11-28 03:00:00',
-      duration: '4m 12s',
-    },
-    {
-      id: 5,
-      database: 'production_db',
-      filename: 'production_db_2024_11_26_09_00.sql',
-      size: '1.0 GB',
-      type: 'Full',
-      status: 'completed',
-      created: '2024-11-26 09:00:00',
-      duration: '5m 05s',
+      filename: 'production_db_2024_01_18_incremental.sql',
+      type: 'Інкрементна',
+      size: '245 МБ',
+      created: '2024-01-18 02:00:00',
+      status: 'success',
+      duration: '3м 12с',
     },
   ];
 
   const schedules = [
-    {
-      id: 1,
-      database: 'production_db',
-      frequency: 'Daily',
-      time: '09:00 AM',
-      type: 'Full',
-      retention: '30 days',
-      enabled: true,
-      nextRun: '2024-11-29 09:00:00',
-    },
-    {
-      id: 2,
-      database: 'analytics_db',
-      frequency: 'Daily',
-      time: '06:00 AM',
-      type: 'Incremental',
-      retention: '14 days',
-      enabled: true,
-      nextRun: '2024-11-29 06:00:00',
-    },
-    {
-      id: 3,
-      database: 'staging_db',
-      frequency: 'Weekly',
-      time: '03:00 AM',
-      type: 'Full',
-      retention: '7 days',
-      enabled: true,
-      nextRun: '2024-12-02 03:00:00',
-    },
+    { id: 1, name: 'Щоденне повне резервування', frequency: 'Щодня о 02:00', type: 'Повна', retention: '7 днів', enabled: true },
+    { id: 2, name: 'Щотижневе архівування', frequency: 'Неділя о 03:00', type: 'Повна', retention: '30 днів', enabled: true },
+    { id: 3, name: 'Погодинне інкрементне', frequency: 'Щогодини', type: 'Інкрементна', retention: '24 години', enabled: false },
   ];
-
-  const handleCreateBackup = () => {
-    setBackupInProgress(true);
-    setTimeout(() => {
-      setBackupInProgress(false);
-    }, 3000);
-  };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-gray-900">Backup & Restore</h2>
-          <p className="text-gray-600">Manage database backups and restoration</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowScheduleModal(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Calendar className="w-4 h-4" />
-            Schedule Backup
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+      <Tabs defaultValue="backups" className="space-y-6">
+        <TabsList className="bg-white shadow-sm border border-slate-200">
+          <TabsTrigger value="backups" className="gap-2">
+            <Archive className="w-4 h-4" />
+            Резервні копії
+          </TabsTrigger>
+          <TabsTrigger value="restore" className="gap-2">
             <Upload className="w-4 h-4" />
-            Restore from File
-          </button>
-        </div>
-      </div>
+            Відновлення
+          </TabsTrigger>
+          <TabsTrigger value="schedule" className="gap-2">
+            <Clock className="w-4 h-4" />
+            Розклад
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Quick Backup */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-gray-900 mb-4">Create Manual Backup</h3>
-        <h3 className="text-gray-900 mb-4">Створити резервну копію вручну</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          {!selectedDatabase && (
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Database</label>
-              <label className="block text-sm text-gray-700 mb-2">База даних</label>
-              <select
-                value={currentDatabase}
-                onChange={(e) => setCurrentDatabase(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="production_db">production_db</option>
-                <option value="staging_db">staging_db</option>
-                <option value="analytics_db">analytics_db</option>
-                <option value="test_db">test_db</option>
-              </select>
-            </div>
-          )}
-          {selectedDatabase && (
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">База даних</label>
-              <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
-                {selectedDatabase}
+        <TabsContent value="backups">
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Резервні копії</CardTitle>
+                  <CardDescription>База даних: {selectedDatabase}</CardDescription>
+                </div>
+                <Button onClick={() => setIsBackingUp(true)}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Створити резервну копію
+                </Button>
               </div>
-            </div>
-          )}
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Backup Type</label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="full">Full Backup</option>
-              <option value="incremental">Incremental</option>
-              <option value="differential">Differential</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">Compression</label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="gzip">GZIP</option>
-              <option value="none">None</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-          <button
-            onClick={handleCreateBackup}
-            disabled={backupInProgress}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {backupInProgress ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Creating...
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4" />
-                Create Backup
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+            </CardHeader>
+            <CardContent>
+              {isBackingUp && (
+                <div className="mb-6 border border-blue-200 bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                    <span className="text-blue-900">Створення резервної копії...</span>
+                  </div>
+                  <Progress value={45} className="h-2" />
+                  <p className="text-xs text-blue-700 mt-2">45% завершено • Залишилось ~8 хвилин</p>
+                </div>
+              )}
 
-      {/* Backup Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Backups</p>
-              <p className="text-gray-900 mt-2">{backups.length}</p>
-            </div>
-            <div className="bg-blue-100 rounded-lg p-3">
-              <Database className="w-5 h-5 text-blue-600" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Storage Used</p>
-              <p className="text-gray-900 mt-2">5.8 GB</p>
-            </div>
-            <div className="bg-purple-100 rounded-lg p-3">
-              <Download className="w-5 h-5 text-purple-600" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Last Backup</p>
-              <p className="text-gray-900 mt-2">2 hours ago</p>
-            </div>
-            <div className="bg-green-100 rounded-lg p-3">
-              <Clock className="w-5 h-5 text-green-600" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Success Rate</p>
-              <p className="text-gray-900 mt-2">99.8%</p>
-            </div>
-            <div className="bg-green-100 rounded-lg p-3">
-              <Check className="w-5 h-5 text-green-600" />
-            </div>
-          </div>
-        </div>
-      </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Файл</TableHead>
+                    <TableHead>Тип</TableHead>
+                    <TableHead>Розмір</TableHead>
+                    <TableHead>Створено</TableHead>
+                    <TableHead>Тривалість</TableHead>
+                    <TableHead>Статус</TableHead>
+                    <TableHead className="text-right">Дії</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {backups.map((backup) => (
+                    <TableRow key={backup.id}>
+                      <TableCell className="font-mono text-sm text-slate-900">{backup.filename}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{backup.type}</Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-600">{backup.size}</TableCell>
+                      <TableCell className="text-slate-600 text-sm">{backup.created}</TableCell>
+                      <TableCell className="text-slate-600 text-sm">{backup.duration}</TableCell>
+                      <TableCell>
+                        <Badge variant="default" className="gap-1">
+                          <CheckCircle className="w-3 h-3" />
+                          Успішно
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button variant="ghost" size="sm">
+                            <Download className="w-4 h-4 mr-2" />
+                            Завантажити
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            Відновити
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Scheduled Backups */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-gray-900">Scheduled Backups</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Database</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Frequency</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Time</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Type</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Retention</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Next Run</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Status</th>
-                <th className="px-6 py-3 text-right text-gray-700 text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {schedules.map((schedule) => (
-                <tr key={schedule.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-gray-900">{schedule.database}</td>
-                  <td className="px-6 py-4 text-gray-600">{schedule.frequency}</td>
-                  <td className="px-6 py-4 text-gray-600">{schedule.time}</td>
-                  <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                      {schedule.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{schedule.retention}</td>
-                  <td className="px-6 py-4 text-gray-600">{schedule.nextRun}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${schedule.enabled ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      <span className="text-gray-600 text-sm">{schedule.enabled ? 'Active' : 'Disabled'}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors">
-                        Edit
-                      </button>
-                      <button className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors">
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <TabsContent value="restore">
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <CardTitle>Відновлення з резервної копії</CardTitle>
+              <CardDescription>Відновити базу даних з файлу резервної копії</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-12 text-center hover:border-blue-500 transition-colors cursor-pointer bg-slate-50">
+                <Upload className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-slate-900 mb-2">Завантажити файл резервної копії</h3>
+                <p className="text-slate-600 mb-4">Перетягніть файл сюди або клацніть для вибору</p>
+                <Badge variant="secondary">SQL, Custom, TAR, Directory формати</Badge>
+              </div>
 
-      {/* Backup History */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-gray-900">Backup History</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Database</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Filename</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Size</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Type</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Created</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Duration</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Status</th>
-                <th className="px-6 py-3 text-right text-gray-700 text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {backups.map((backup) => (
-                <tr key={backup.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-gray-900">{backup.database}</td>
-                  <td className="px-6 py-4">
-                    <code className="text-sm text-gray-600">{backup.filename}</code>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{backup.size}</td>
-                  <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                      {backup.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{backup.created}</td>
-                  <td className="px-6 py-4 text-gray-600">{backup.duration}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {backup.status === 'completed' ? (
-                        <>
-                          <Check className="w-4 h-4 text-green-600" />
-                          <span className="text-green-600 text-sm">Completed</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertCircle className="w-4 h-4 text-red-600" />
-                          <span className="text-red-600 text-sm">Failed</span>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors">
-                        <Download className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors">
-                        <Upload className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-yellow-900 mb-1">Увага</h4>
+                    <p className="text-yellow-700 text-sm">
+                      Відновлення замінить всі поточні дані в базі даних. Переконайтеся, що ви створили резервну копію перед відновленням.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Schedule Modal */}
-      {showScheduleModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Schedule Backup</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Database</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="production_db">production_db</option>
-                  <option value="staging_db">staging_db</option>
-                  <option value="analytics_db">analytics_db</option>
-                </select>
+        <TabsContent value="schedule">
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Розклад резервного копіювання</CardTitle>
+                  <CardDescription>Автоматичне створення резервних копій</CardDescription>
+                </div>
+                <Button>
+                  <Clock className="w-4 h-4 mr-2" />
+                  Додати розклад
+                </Button>
               </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Frequency</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Time</label>
-                <input
-                  type="time"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  defaultValue="09:00"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Backup Type</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="full">Full Backup</option>
-                  <option value="incremental">Incremental</option>
-                  <option value="differential">Differential</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Retention Period</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="7">7 days</option>
-                  <option value="14">14 days</option>
-                  <option value="30">30 days</option>
-                  <option value="90">90 days</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowScheduleModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowScheduleModal(false)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create Schedule
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Назва</TableHead>
+                    <TableHead>Частота</TableHead>
+                    <TableHead>Тип</TableHead>
+                    <TableHead>Зберігання</TableHead>
+                    <TableHead>Статус</TableHead>
+                    <TableHead className="text-right">Дії</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {schedules.map((schedule) => (
+                    <TableRow key={schedule.id}>
+                      <TableCell className="font-medium text-slate-900">{schedule.name}</TableCell>
+                      <TableCell className="text-slate-600">{schedule.frequency}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{schedule.type}</Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-600">{schedule.retention}</TableCell>
+                      <TableCell>
+                        {schedule.enabled ? (
+                          <Badge variant="default">Увімкнено</Badge>
+                        ) : (
+                          <Badge variant="secondary">Вимкнено</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button variant="ghost" size="sm">
+                            {schedule.enabled ? 'Вимкнути' : 'Увімкнути'}
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            Редагувати
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

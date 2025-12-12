@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Database, Table2, Search } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { ScrollArea } from './ui/scroll-area';
 
 export default function TableBrowser({ selectedDatabase }: { selectedDatabase?: string }) {
-  const [currentDatabase, setCurrentDatabase] = useState(selectedDatabase || 'production_db');
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const databases = {
-    production_db: ['users', 'orders', 'products', 'customers', 'payments', 'invoices', 'shipping'],
-    staging_db: ['users', 'orders', 'products', 'test_data'],
-    analytics_db: ['events', 'user_actions', 'metrics', 'reports'],
-  };
+  const tables = ['users', 'orders', 'products', 'customers', 'payments', 'invoices', 'shipping'];
 
   const tableSchema = {
     users: [
@@ -44,64 +44,61 @@ export default function TableBrowser({ selectedDatabase }: { selectedDatabase?: 
     ],
   };
 
-  const currentTables = databases[currentDatabase as keyof typeof databases] || [];
-  const filteredTables = currentTables.filter((table) =>
+  const filteredTables = tables.filter((table) =>
     table.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getKeyBadge = (key: string) => {
+    if (!key) return null;
+    const variants: Record<string, any> = {
+      'PRI': 'default',
+      'UNI': 'secondary',
+      'FOR': 'outline',
+    };
+    return <Badge variant={variants[key] || 'outline'}>{key}</Badge>;
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* Sidebar */}
       <div className="lg:col-span-1 space-y-4">
-        {/* Database Selector */}
-        {!selectedDatabase && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <label className="block text-sm text-gray-700 mb-2">Select Database</label>
-            <label className="block text-sm text-gray-700 mb-2">Оберіть базу даних</label>
-            <select
-              value={currentDatabase}
-              onChange={(e) => {
-                setCurrentDatabase(e.target.value);
-                setSelectedTable(null);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="production_db">production_db</option>
-              <option value="staging_db">staging_db</option>
-              <option value="analytics_db">analytics_db</option>
-            </select>
-          </div>
-        )}
-
         {/* Table List */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-200">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Таблиці</CardTitle>
+            <CardDescription>{selectedDatabase}</CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search tables..."
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Пошук таблиць..."
+                className="pl-9"
               />
             </div>
-          </div>
-          <div className="max-h-96 overflow-y-auto">
-            {filteredTables.map((table) => (
-              <button
-                key={table}
-                onClick={() => setSelectedTable(table)}
-                className={`w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 transition-colors ${
-                  selectedTable === table ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                }`}
-              >
-                <Table2 className="w-4 h-4" />
-                <span className="text-sm">{table}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+            <ScrollArea className="h-[400px]">
+              <div className="space-y-1">
+                {filteredTables.map((table) => (
+                  <button
+                    key={table}
+                    onClick={() => setSelectedTable(table)}
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 text-left rounded-lg transition-colors ${
+                      selectedTable === table 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Table2 className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm truncate">{table}</span>
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content */}
@@ -109,104 +106,115 @@ export default function TableBrowser({ selectedDatabase }: { selectedDatabase?: 
         {selectedTable ? (
           <>
             {/* Table Header */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-gray-900">{selectedTable}</h2>
-                  <p className="text-gray-600">
-                    {currentDatabase} • {(tableSchema[selectedTable as keyof typeof tableSchema] || []).length} columns
-                  </p>
+            <Card className="border-slate-200 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Table2 className="w-5 h-5 text-blue-600" />
+                      {selectedTable}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      {selectedDatabase} • {(tableSchema[selectedTable as keyof typeof tableSchema] || []).length} колонок
+                    </CardDescription>
+                  </div>
+                  <Database className="w-6 h-6 text-blue-400" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Database className="w-5 h-5 text-gray-400" />
-                </div>
-              </div>
-            </div>
+              </CardHeader>
+            </Card>
 
             {/* Schema */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-gray-900">Schema</h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-gray-700 text-sm">Column</th>
-                      <th className="px-6 py-3 text-left text-gray-700 text-sm">Type</th>
-                      <th className="px-6 py-3 text-left text-gray-700 text-sm">Nullable</th>
-                      <th className="px-6 py-3 text-left text-gray-700 text-sm">Default</th>
-                      <th className="px-6 py-3 text-left text-gray-700 text-sm">Key</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Схема таблиці</CardTitle>
+                <CardDescription>Структура та типи даних колонок</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Колонка</TableHead>
+                      <TableHead>Тип</TableHead>
+                      <TableHead>Nullable</TableHead>
+                      <TableHead>За замовчуванням</TableHead>
+                      <TableHead>Ключ</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {(tableSchema[selectedTable as keyof typeof tableSchema] || []).map((col, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-3 text-gray-900 text-sm">{col.column}</td>
-                        <td className="px-6 py-3 text-gray-600 text-sm">
-                          <code className="px-2 py-1 bg-gray-100 rounded text-xs">{col.type}</code>
-                        </td>
-                        <td className="px-6 py-3 text-gray-600 text-sm">
+                      <TableRow key={index}>
+                        <TableCell className="font-medium text-slate-900">{col.column}</TableCell>
+                        <TableCell>
+                          <code className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-700">
+                            {col.type}
+                          </code>
+                        </TableCell>
+                        <TableCell>
                           {col.nullable ? (
-                            <span className="text-yellow-600">Yes</span>
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                              Yes
+                            </Badge>
                           ) : (
-                            <span className="text-green-600">No</span>
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              No
+                            </Badge>
                           )}
-                        </td>
-                        <td className="px-6 py-3 text-gray-600 text-sm">
-                          {col.default ? <code className="text-xs">{col.default}</code> : '—'}
-                        </td>
-                        <td className="px-6 py-3 text-gray-600 text-sm">
-                          {col.key && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                              {col.key}
-                            </span>
+                        </TableCell>
+                        <TableCell>
+                          {col.default ? (
+                            <code className="text-xs text-slate-600">{col.default}</code>
+                          ) : (
+                            <span className="text-slate-400">—</span>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                        <TableCell>{getKeyBadge(col.key)}</TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
 
             {/* Data Preview */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-gray-900">Data Preview (First 100 rows)</h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Попередній перегляд даних</CardTitle>
+                <CardDescription>Перші 100 рядків таблиці</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
                       {Object.keys((tableData[selectedTable as keyof typeof tableData] || [])[0] || {}).map((key) => (
-                        <th key={key} className="px-6 py-3 text-left text-gray-700 text-sm">
-                          {key}
-                        </th>
+                        <TableHead key={key}>{key}</TableHead>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {(tableData[selectedTable as keyof typeof tableData] || []).map((row: any, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
+                      <TableRow key={index}>
                         {Object.values(row).map((value: any, cellIndex) => (
-                          <td key={cellIndex} className="px-6 py-3 text-gray-600 text-sm">
+                          <TableCell key={cellIndex} className="font-mono text-sm text-slate-600">
                             {value}
-                          </td>
+                          </TableCell>
                         ))}
-                      </tr>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <Table2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-gray-900 mb-2">No Table Selected</h3>
-            <p className="text-gray-600">Select a table from the sidebar to view its schema and data</p>
-          </div>
+          <Card className="border-slate-200 shadow-sm">
+            <CardContent className="p-12 text-center">
+              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Table2 className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-slate-900 mb-2">Таблицю не вибрано</h3>
+              <p className="text-slate-600">Оберіть таблицю зі списку, щоб переглянути її схему та дані</p>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

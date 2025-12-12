@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { Search, Download, RefreshCw, Filter, AlertCircle, Info, AlertTriangle, XCircle } from 'lucide-react';
+import { Search, Download, RefreshCw, Filter, AlertCircle, Info, AlertTriangle, XCircle, FileText } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { ScrollArea } from './ui/scroll-area';
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,20 +136,33 @@ export default function Logs() {
       case 'INFO':
         return <Info className="w-5 h-5 text-blue-600" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />;
+        return <AlertCircle className="w-5 h-5 text-slate-600" />;
     }
   };
 
   const getLogColor = (level: string) => {
     switch (level) {
       case 'ERROR':
-        return 'bg-red-50 border-red-200';
+        return 'bg-red-50/50 border-red-300';
       case 'WARNING':
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-yellow-50/50 border-yellow-300';
       case 'INFO':
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-blue-50/50 border-blue-300';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-slate-50/50 border-slate-300';
+    }
+  };
+
+  const getLevelBadge = (level: string) => {
+    switch (level) {
+      case 'ERROR':
+        return 'destructive';
+      case 'WARNING':
+        return 'default';
+      case 'INFO':
+        return 'secondary';
+      default:
+        return 'outline';
     }
   };
 
@@ -159,129 +178,143 @@ export default function Logs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-gray-900">Системні логи</h2>
-          <p className="text-gray-600">Журнал подій та помилок системи</p>
+          <h2 className="text-slate-900">Системні логи</h2>
+          <p className="text-slate-600">Журнал подій та помилок системи</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            <RefreshCw className="w-4 h-4" />
+          <Button variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
             Оновити
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <Download className="w-4 h-4" />
+          </Button>
+          <Button>
+            <Download className="w-4 h-4 mr-2" />
             Експорт логів
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <p className="text-gray-600 text-sm">Всього записів</p>
-          <p className="text-gray-900 mt-2">{logStats.total}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <p className="text-gray-600 text-sm">Помилки</p>
-          <p className="text-red-600 mt-2">{logStats.errors}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <p className="text-gray-600 text-sm">Попередження</p>
-          <p className="text-yellow-600 mt-2">{logStats.warnings}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <p className="text-gray-600 text-sm">Інформаційні</p>
-          <p className="text-blue-600 mt-2">{logStats.info}</p>
-        </div>
+        <Card className="border-slate-200 shadow-sm">
+          <CardContent className="p-6">
+            <p className="text-slate-600 text-sm mb-1">Всього записів</p>
+            <p className="text-slate-900 text-3xl">{logStats.total}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 shadow-sm border-l-4 border-l-red-500">
+          <CardContent className="p-6">
+            <p className="text-slate-600 text-sm mb-1">Помилки</p>
+            <p className="text-red-600 text-3xl">{logStats.errors}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 shadow-sm border-l-4 border-l-yellow-500">
+          <CardContent className="p-6">
+            <p className="text-slate-600 text-sm mb-1">Попередження</p>
+            <p className="text-yellow-600 text-3xl">{logStats.warnings}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 shadow-sm border-l-4 border-l-blue-500">
+          <CardContent className="p-6">
+            <p className="text-slate-600 text-sm mb-1">Інформаційні</p>
+            <p className="text-blue-600 text-3xl">{logStats.info}</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Пошук логів..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+      <Card className="border-slate-200 shadow-sm">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Пошук логів..."
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+              <SelectTrigger>
+                <SelectValue placeholder="Всі рівні" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Всі рівні</SelectItem>
+                <SelectItem value="ERROR">Помилки</SelectItem>
+                <SelectItem value="WARNING">Попередження</SelectItem>
+                <SelectItem value="INFO">Інформація</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={selectedSource} onValueChange={setSelectedSource}>
+              <SelectTrigger>
+                <SelectValue placeholder="Всі джерела" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Всі джерела</SelectItem>
+                <SelectItem value="PostgreSQL">PostgreSQL</SelectItem>
+                <SelectItem value="Backup">Резервне копіювання</SelectItem>
+                <SelectItem value="Replication">Реплікація</SelectItem>
+                <SelectItem value="Query">Запити</SelectItem>
+                <SelectItem value="Performance">Продуктивність</SelectItem>
+                <SelectItem value="Extension">Розширення</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div>
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Всі рівні</option>
-              <option value="ERROR">Помилки</option>
-              <option value="WARNING">Попередження</option>
-              <option value="INFO">Інформація</option>
-            </select>
-          </div>
-          <div>
-            <select
-              value={selectedSource}
-              onChange={(e) => setSelectedSource(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Всі джерела</option>
-              <option value="PostgreSQL">PostgreSQL</option>
-              <option value="Backup">Резервне копіювання</option>
-              <option value="Replication">Реплікація</option>
-              <option value="Query">Запити</option>
-              <option value="Performance">Продуктивність</option>
-              <option value="Extension">Розширення</option>
-            </select>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Logs List */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-gray-900">Записи логів ({filteredLogs.length})</h3>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Filter className="w-4 h-4" />
-            <span>Відфільтровано</span>
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-slate-700" />
+              <CardTitle>Записи логів ({filteredLogs.length})</CardTitle>
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-slate-600" />
+              <span className="text-sm text-slate-600">Відфільтровано</span>
+            </div>
           </div>
-        </div>
-        <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
-          {filteredLogs.map((log) => (
-            <div key={log.id} className={`p-4 border-l-4 ${getLogColor(log.level)}`}>
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5">{getLogIcon(log.level)}</div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-2 py-0.5 rounded text-xs ${
-                          log.level === 'ERROR' ? 'bg-red-100 text-red-700' :
-                          log.level === 'WARNING' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-blue-100 text-blue-700'
-                        }`}>
-                          {log.level}
+          <CardDescription>Хронологічний список подій системи</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[600px]">
+            <div className="divide-y divide-slate-200">
+              {filteredLogs.map((log) => (
+                <div key={log.id} className={`p-4 border-l-4 ${getLogColor(log.level)} hover:bg-slate-50/50 transition-colors`}>
+                  <div className="flex items-start gap-4">
+                    <div className="mt-0.5 flex-shrink-0">{getLogIcon(log.level)}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant={getLevelBadge(log.level) as any}>
+                            {log.level}
+                          </Badge>
+                          <Badge variant="outline">{log.source}</Badge>
+                        </div>
+                        <span className="text-xs text-slate-500 whitespace-nowrap font-mono">
+                          {log.timestamp}
                         </span>
-                        <span className="text-xs text-gray-500">{log.source}</span>
                       </div>
-                      <p className="text-gray-900">{log.message}</p>
+                      <p className="text-slate-900 mb-3">{log.message}</p>
+                      <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
+                        <span>БД: <span className="font-medium">{log.database}</span></span>
+                        <span className="text-slate-400">•</span>
+                        <span>Користувач: <span className="font-medium">{log.user}</span></span>
+                      </div>
+                      <div className="bg-slate-900 rounded-lg p-3">
+                        <code className="text-xs text-slate-100 font-mono">{log.details}</code>
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-500 whitespace-nowrap ml-4">{log.timestamp}</span>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-                    <span>БД: {log.database}</span>
-                    <span>•</span>
-                    <span>Користувач: {log.user}</span>
-                  </div>
-                  <div className="bg-gray-100 rounded p-2 mt-2">
-                    <code className="text-xs text-gray-800">{log.details}</code>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
     </div>
   );
 }

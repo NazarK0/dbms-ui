@@ -1,5 +1,13 @@
 import { useState } from 'react';
 import { Plus, Server, Activity, AlertCircle, CheckCircle, Clock, MapPin, Zap } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function ReplicaClusters() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -65,10 +73,10 @@ export default function ReplicaClusters() {
   ];
 
   const replicationStats = [
-    { metric: 'Replication Slots', value: '3', icon: Server, color: 'bg-blue-500' },
-    { metric: 'Average Lag', value: '97ms', icon: Clock, color: 'bg-green-500' },
-    { metric: 'Data Transferred', value: '2.4 TB', icon: Zap, color: 'bg-purple-500' },
-    { metric: 'Sync Status', value: 'Streaming', icon: Activity, color: 'bg-orange-500' },
+    { metric: 'Слоти реплікації', value: '3', icon: Server, color: 'from-lime-500 to-green-600' },
+    { metric: 'Середня затримка', value: '97мс', icon: Clock, color: 'from-green-500 to-lime-600' },
+    { metric: 'Передано даних', value: '2.4 ТБ', icon: Zap, color: 'from-yellow-500 to-lime-600' },
+    { metric: 'Статус синхр.', value: 'Streaming', icon: Activity, color: 'from-lime-600 to-yellow-600' },
   ];
 
   const replicationActivity = [
@@ -79,7 +87,7 @@ export default function ReplicaClusters() {
       sentLSN: '0/8A2F4D8',
       writeLSN: '0/8A2F4D8',
       flushLSN: '0/8A2F4D8',
-      lag: '12ms',
+      lag: '12мс',
     },
     {
       replica: 'Read Replica 2',
@@ -88,7 +96,7 @@ export default function ReplicaClusters() {
       sentLSN: '0/8A2F4C0',
       writeLSN: '0/8A2F4C0',
       flushLSN: '0/8A2F4C0',
-      lag: '45ms',
+      lag: '45мс',
     },
     {
       replica: 'Read Replica 3',
@@ -97,7 +105,7 @@ export default function ReplicaClusters() {
       sentLSN: '0/8A2F3A8',
       writeLSN: '0/8A2F3A8',
       flushLSN: '0/8A2F3A8',
-      lag: '234ms',
+      lag: '234мс',
     },
   ];
 
@@ -106,16 +114,13 @@ export default function ReplicaClusters() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-gray-900">Replica Clusters</h2>
-          <p className="text-gray-600">Manage PostgreSQL replication topology and monitoring</p>
+          <h2 className="text-slate-900">Кластери реплік</h2>
+          <p className="text-slate-600">Управління топологією та моніторинг реплікації PostgreSQL</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Replica
-        </button>
+        <Button onClick={() => setShowAddModal(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Додати репліку
+        </Button>
       </div>
 
       {/* Replication Stats */}
@@ -123,142 +128,145 @@ export default function ReplicaClusters() {
         {replicationStats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.metric} className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">{stat.metric}</p>
-                  <p className="text-gray-900 mt-2">{stat.value}</p>
+            <Card key={stat.metric} className="border-slate-200 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-slate-600 text-sm mb-1">{stat.metric}</p>
+                    <p className="text-slate-900 text-2xl">{stat.value}</p>
+                  </div>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-                <div className={`${stat.color} rounded-lg p-3`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
 
       {/* Topology Diagram */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-gray-900 mb-6">Replication Topology</h3>
-        <div className="flex flex-col items-center space-y-6">
-          {/* Primary */}
-          <div className="w-full max-w-md">
-            <div className="bg-blue-50 border-2 border-blue-500 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Server className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-900">Primary Cluster</span>
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
+          <CardTitle>Топологія реплікації</CardTitle>
+          <CardDescription>Схема підключень primary та replica серверів</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center space-y-8">
+            {/* Primary */}
+            <div className="w-full max-w-md">
+              <div className="bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-500 rounded-xl p-6 shadow-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                      <Server className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-slate-900">Primary Cluster</span>
+                  </div>
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 </div>
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <div className="text-sm text-slate-600">
+                  <p className="font-mono">primary-db.example.com:5432</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <MapPin className="w-3 h-3" />
+                    <p className="text-xs">US East (Virginia)</p>
+                  </div>
+                </div>
               </div>
-              <div className="text-sm text-gray-600">
-                <p>primary-db.example.com:5432</p>
-                <p className="text-xs mt-1">US East (Virginia)</p>
+            </div>
+
+            {/* Connection Lines */}
+            <div className="relative w-full max-w-4xl h-16">
+              <div className="absolute top-0 left-1/2 w-0.5 h-8 bg-slate-300"></div>
+              <div className="absolute top-8 left-0 right-0 h-0.5 bg-slate-300"></div>
+              <div className="absolute top-8 left-1/4 w-0.5 h-8 bg-slate-300"></div>
+              <div className="absolute top-8 left-1/2 w-0.5 h-8 bg-slate-300"></div>
+              <div className="absolute top-8 left-3/4 w-0.5 h-8 bg-slate-300"></div>
+            </div>
+
+            {/* Replicas */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-500 rounded-xl p-4 shadow-md">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-green-600" />
+                    <span className="text-slate-900 text-sm">Replica 1</span>
+                  </div>
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="text-xs text-slate-600">
+                  <p className="font-mono truncate">replica-1.example.com</p>
+                  <p className="mt-1">US West • Lag: 12ms</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-500 rounded-xl p-4 shadow-md">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-green-600" />
+                    <span className="text-slate-900 text-sm">Replica 2</span>
+                  </div>
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="text-xs text-slate-600">
+                  <p className="font-mono truncate">replica-2.example.com</p>
+                  <p className="mt-1">EU Ireland • Lag: 45ms</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-500 rounded-xl p-4 shadow-md">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-yellow-600" />
+                    <span className="text-slate-900 text-sm">Replica 3</span>
+                  </div>
+                  <AlertCircle className="w-4 h-4 text-yellow-600" />
+                </div>
+                <div className="text-xs text-slate-600">
+                  <p className="font-mono truncate">replica-3.example.com</p>
+                  <p className="mt-1">AP Singapore • Lag: 234ms</p>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Connection Lines */}
-          <div className="relative w-full max-w-2xl h-12">
-            <div className="absolute top-0 left-1/2 w-0.5 h-6 bg-gray-300"></div>
-            <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-300"></div>
-            <div className="absolute top-6 left-1/4 w-0.5 h-6 bg-gray-300"></div>
-            <div className="absolute top-6 left-1/2 w-0.5 h-6 bg-gray-300"></div>
-            <div className="absolute top-6 left-3/4 w-0.5 h-6 bg-gray-300"></div>
-          </div>
-
-          {/* Replicas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
-            <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-green-600" />
-                  <span className="text-gray-900 text-sm">Replica 1</span>
-                </div>
-                <CheckCircle className="w-4 h-4 text-green-600" />
-              </div>
-              <div className="text-xs text-gray-600">
-                <p>replica-1.example.com</p>
-                <p className="text-xs mt-1">US West • Lag: 12ms</p>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-green-600" />
-                  <span className="text-gray-900 text-sm">Replica 2</span>
-                </div>
-                <CheckCircle className="w-4 h-4 text-green-600" />
-              </div>
-              <div className="text-xs text-gray-600">
-                <p>replica-2.example.com</p>
-                <p className="text-xs mt-1">EU Ireland • Lag: 45ms</p>
-              </div>
-            </div>
-
-            <div className="bg-yellow-50 border-2 border-yellow-500 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-yellow-600" />
-                  <span className="text-gray-900 text-sm">Replica 3</span>
-                </div>
-                <AlertCircle className="w-4 h-4 text-yellow-600" />
-              </div>
-              <div className="text-xs text-gray-600">
-                <p>replica-3.example.com</p>
-                <p className="text-xs mt-1">AP Singapore • Lag: 234ms</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Cluster Details */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-gray-900">Cluster Details</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Name</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Role</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Status</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Location</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Host</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Connections</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Replication Lag</th>
-                <th className="px-6 py-3 text-right text-gray-700 text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
+          <CardTitle>Деталі кластерів</CardTitle>
+          <CardDescription>Інформація про всі сервери в топології</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Назва</TableHead>
+                <TableHead>Роль</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead>Локація</TableHead>
+                <TableHead>Host</TableHead>
+                <TableHead>З'єднання</TableHead>
+                <TableHead>Затримка репл.</TableHead>
+                <TableHead className="text-right">Дії</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {clusters.map((cluster) => (
-                <tr
-                  key={cluster.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => setSelectedCluster(cluster.id)}
-                >
-                  <td className="px-6 py-4">
+                <TableRow key={cluster.id} className="cursor-pointer" onClick={() => setSelectedCluster(cluster.id)}>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <Server className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-900">{cluster.name}</span>
+                      <Server className="w-4 h-4 text-slate-400" />
+                      <span className="text-slate-900">{cluster.name}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        cluster.role === 'Primary'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-green-100 text-green-700'
-                      }`}
-                    >
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={cluster.role === 'Primary' ? 'default' : 'secondary'}>
                       {cluster.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
                       {cluster.status === 'healthy' ? (
                         <>
@@ -272,162 +280,154 @@ export default function ReplicaClusters() {
                         </>
                       )}
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-600 text-sm">{cluster.location}</span>
+                      <MapPin className="w-3 h-3 text-slate-400" />
+                      <span className="text-slate-600 text-sm">{cluster.location}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <code className="text-xs text-gray-600">{cluster.host}:{cluster.port}</code>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{cluster.connections}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`text-sm ${
-                        parseInt(cluster.replicationLag) === 0
-                          ? 'text-green-600'
-                          : parseInt(cluster.replicationLag) > 100
-                          ? 'text-yellow-600'
-                          : 'text-blue-600'
-                      }`}
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">
+                      {cluster.host}:{cluster.port}
+                    </code>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{cluster.connections}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={
+                        parseInt(cluster.replicationLag) === 0 ? 'default' : 
+                        parseInt(cluster.replicationLag) > 100 ? 'destructive' : 
+                        'secondary'
+                      }
                     >
                       {cluster.replicationLag}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors">
-                        Configure
-                      </button>
+                      <Button variant="ghost" size="sm">Налаштувати</Button>
                       {cluster.role !== 'Primary' && (
-                        <button className="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition-colors">
-                          Promote
-                        </button>
+                        <Button variant="ghost" size="sm" className="text-green-600">Promote</Button>
                       )}
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Replication Activity */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-gray-700" />
-            <h3 className="text-gray-900">Replication Activity</h3>
+            <Activity className="w-5 h-5 text-slate-700" />
+            <CardTitle>Активність реплікації</CardTitle>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Replica</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">State</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Sync State</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Sent LSN</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Write LSN</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Flush LSN</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Lag</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+          <CardDescription>Поточний стан потокової реплікації</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Репліка</TableHead>
+                <TableHead>Стан</TableHead>
+                <TableHead>Режим синхр.</TableHead>
+                <TableHead>Sent LSN</TableHead>
+                <TableHead>Write LSN</TableHead>
+                <TableHead>Flush LSN</TableHead>
+                <TableHead>Затримка</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {replicationActivity.map((activity, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-gray-900">{activity.replica}</td>
-                  <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                <TableRow key={index}>
+                  <TableCell className="text-slate-900">{activity.replica}</TableCell>
+                  <TableCell>
+                    <Badge variant="default" className="bg-green-600">
                       {activity.state}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{activity.syncState}</td>
-                  <td className="px-6 py-4">
-                    <code className="text-xs text-gray-600">{activity.sentLSN}</code>
-                  </td>
-                  <td className="px-6 py-4">
-                    <code className="text-xs text-gray-600">{activity.writeLSN}</code>
-                  </td>
-                  <td className="px-6 py-4">
-                    <code className="text-xs text-gray-600">{activity.flushLSN}</code>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{activity.lag}</td>
-                </tr>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-slate-600">{activity.syncState}</TableCell>
+                  <TableCell>
+                    <code className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">{activity.sentLSN}</code>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">{activity.writeLSN}</code>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">{activity.flushLSN}</code>
+                  </TableCell>
+                  <TableCell className="text-slate-600 font-mono text-sm">{activity.lag}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Add Replica Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Add Replica Cluster</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Replica Name</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Read Replica 4"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Host</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="replica-4.example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Port</label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  defaultValue="5432"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Location</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="us-east">US East (Virginia)</option>
-                  <option value="us-west">US West (Oregon)</option>
-                  <option value="eu-west">EU (Ireland)</option>
-                  <option value="ap-southeast">Asia Pacific (Singapore)</option>
-                  <option value="ap-northeast">Asia Pacific (Tokyo)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Replication Mode</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="async">Asynchronous</option>
-                  <option value="sync">Synchronous</option>
-                </select>
-              </div>
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Додати кластер репліки</DialogTitle>
+            <DialogDescription>Налаштуйте новий сервер реплікації</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="replica-name">Назва репліки</Label>
+              <Input id="replica-name" placeholder="Read Replica 4" />
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Add Replica
-              </button>
+            <div className="space-y-2">
+              <Label htmlFor="host">Host</Label>
+              <Input id="host" placeholder="replica-4.example.com" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="port">Port</Label>
+              <Input id="port" type="number" defaultValue="5432" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Локація</Label>
+              <Select defaultValue="us-east">
+                <SelectTrigger id="location">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="us-east">US East (Virginia)</SelectItem>
+                  <SelectItem value="us-west">US West (Oregon)</SelectItem>
+                  <SelectItem value="eu-west">EU (Ireland)</SelectItem>
+                  <SelectItem value="ap-southeast">Asia Pacific (Singapore)</SelectItem>
+                  <SelectItem value="ap-northeast">Asia Pacific (Tokyo)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="replication-mode">Режим реплікації</Label>
+              <Select defaultValue="async">
+                <SelectTrigger id="replication-mode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="async">Асинхронний</SelectItem>
+                  <SelectItem value="sync">Синхронний</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Скасувати
+            </Button>
+            <Button onClick={() => setShowAddModal(false)}>
+              Додати репліку
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

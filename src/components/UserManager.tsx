@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { Plus, Trash2, Edit, Shield, Key, Lock, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Key, Lock, CheckCircle, Shield, Users as UsersIcon } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function UserManager() {
   const [users, setUsers] = useState([
-    { username: 'admin', role: 'Superuser', databases: 'All', lastLogin: '2024-11-28 09:15', status: 'active' },
-    { username: 'developer', role: 'Developer', databases: 'staging_db, test_db', lastLogin: '2024-11-28 08:30', status: 'active' },
-    { username: 'analyst', role: 'Read-only', databases: 'analytics_db', lastLogin: '2024-11-27 14:22', status: 'active' },
-    { username: 'app_user', role: 'Application', databases: 'production_db', lastLogin: '2024-11-28 09:45', status: 'active' },
-    { username: 'backup_service', role: 'Backup', databases: 'All', lastLogin: '2024-11-28 02:00', status: 'active' },
+    { username: 'admin', role: 'Superuser', databases: 'Всі', lastLogin: '2024-11-28 09:15', status: 'активний' },
+    { username: 'developer', role: 'Developer', databases: 'staging_db, test_db', lastLogin: '2024-11-28 08:30', status: 'активний' },
+    { username: 'analyst', role: 'Read-only', databases: 'analytics_db', lastLogin: '2024-11-27 14:22', status: 'активний' },
+    { username: 'app_user', role: 'Application', databases: 'production_db', lastLogin: '2024-11-28 09:45', status: 'активний' },
+    { username: 'backup_service', role: 'Backup', databases: 'Всі', lastLogin: '2024-11-28 02:00', status: 'активний' },
   ]);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -23,9 +31,9 @@ export default function UserManager() {
         {
           username: newUsername,
           role: newRole,
-          databases: 'None',
-          lastLogin: 'Never',
-          status: 'active',
+          databases: 'Немає',
+          lastLogin: 'Ніколи',
+          status: 'активний',
         },
       ]);
       setNewUsername('');
@@ -34,17 +42,17 @@ export default function UserManager() {
   };
 
   const handleDeleteUser = (username: string) => {
-    if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+    if (confirm(`Ви впевнені, що хочете видалити користувача "${username}"?`)) {
       setUsers(users.filter((user) => user.username !== username));
     }
   };
 
   const roles = [
-    { name: 'Superuser', permissions: ['All privileges', 'Create databases', 'Create roles', 'Bypass RLS'] },
-    { name: 'Developer', permissions: ['Create databases', 'Create tables', 'Insert/Update/Delete', 'Execute functions'] },
-    { name: 'Read-only', permissions: ['Select data', 'Execute read-only functions'] },
-    { name: 'Application', permissions: ['Select', 'Insert', 'Update', 'Delete on assigned databases'] },
-    { name: 'Backup', permissions: ['Read all databases', 'Execute backup commands'] },
+    { name: 'Superuser', permissions: ['Всі привілеї', 'Створення БД', 'Створення ролей', 'Обхід RLS'] },
+    { name: 'Developer', permissions: ['Створення БД', 'Створення таблиць', 'Insert/Update/Delete', 'Виконання функцій'] },
+    { name: 'Read-only', permissions: ['Вибірка даних', 'Виконання read-only функцій'] },
+    { name: 'Application', permissions: ['Select', 'Insert', 'Update', 'Delete на призначених БД'] },
+    { name: 'Backup', permissions: ['Читання всіх БД', 'Виконання команд резервного копіювання'] },
   ];
 
   const rbacMatrix = {
@@ -73,303 +81,290 @@ export default function UserManager() {
     },
   };
 
+  const getRoleBadgeVariant = (role: string) => {
+    switch(role) {
+      case 'Superuser': return 'destructive';
+      case 'Developer': return 'default';
+      case 'Read-only': return 'secondary';
+      default: return 'outline';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-gray-900">User & Role Management</h2>
-          <p className="text-gray-600">Manage PostgreSQL users and permissions</p>
+          <h2 className="text-slate-900">Управління користувачами</h2>
+          <p className="text-slate-600">Керування користувачами PostgreSQL</p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowRBACModal(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Lock className="w-4 h-4" />
-            RBAC Matrix
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Create User
-          </button>
-        </div>
+        <Button onClick={() => setShowCreateModal(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Створити користувача
+        </Button>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-gray-900">Users</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Username</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Role</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Database Access</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Last Login</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Status</th>
-                <th className="px-6 py-3 text-right text-gray-700 text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <UsersIcon className="w-5 h-5 text-slate-700" />
+            <CardTitle>Користувачі</CardTitle>
+          </div>
+          <CardDescription>Всі користувачі PostgreSQL сервера</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ім'я користувача</TableHead>
+                <TableHead>Роль</TableHead>
+                <TableHead>Доступ до БД</TableHead>
+                <TableHead>Останній вхід</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead className="text-right">Дії</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {users.map((user) => (
-                <tr key={user.username} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-900">{user.username}</span>
+                <TableRow key={user.username}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-slate-900">{user.username}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getRoleBadgeVariant(user.role)}>
                       {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-gray-600">{user.databases}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-gray-600">{user.lastLogin}</span>
-                  </td>
-                  <td className="px-6 py-4">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-slate-600">{user.databases}</TableCell>
+                  <TableCell className="text-slate-600">{user.lastLogin}</TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">{user.status}</span>
+                      <span className="text-slate-600">{user.status}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => {
                           setSelectedUser(user.username);
                           setShowRBACModal(true);
                         }}
-                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title="Права доступу"
                       >
                         <Lock className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors">
+                      </Button>
+                      <Button variant="ghost" size="icon" title="Змінити пароль">
                         <Key className="w-4 h-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleDeleteUser(user.username)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                         disabled={user.username === 'admin'}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 disabled:opacity-50"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Roles Reference */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-gray-900 mb-4">Role Permissions Reference</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {roles.map((role) => (
-            <div key={role.name} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-4 h-4 text-blue-600" />
-                <h4 className="text-gray-900">{role.name}</h4>
-              </div>
-              <ul className="space-y-2">
-                {role.permissions.map((permission, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-gray-600">
-                    <span className="text-green-600 mt-0.5">✓</span>
-                    <span>{permission}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Create User Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Create New User</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Username</label>
-                <input
-                  type="text"
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="new_user"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Password</label>
-                <input
-                  type="password"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Role</label>
-                <select
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Superuser">Superuser</option>
-                  <option value="Developer">Developer</option>
-                  <option value="Read-only">Read-only</option>
-                  <option value="Application">Application</option>
-                  <option value="Backup">Backup</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Database Access</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="database1, database2"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateUser}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create User
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* RBAC Matrix Modal */}
-      {showRBACModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-lg p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-gray-900">Role-Based Access Control Matrix</h3>
-                <p className="text-gray-600 text-sm">View and manage permissions across databases and tables</p>
-              </div>
-              <button
-                onClick={() => {
-                  setShowRBACModal(false);
-                  setSelectedUser(null);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-
-            {Object.entries(rbacMatrix).map(([dbName, dbData]) => (
-              <div key={dbName} className="mb-6 last:mb-0">
-                <div className="bg-gray-50 px-4 py-3 rounded-t-lg border border-gray-200">
-                  <h4 className="text-gray-900">{dbName}</h4>
-                </div>
-                <div className="border border-gray-200 border-t-0 rounded-b-lg overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-gray-700 text-sm">User/Role</th>
-                          <th className="px-4 py-3 text-center text-gray-700 text-sm">SELECT</th>
-                          <th className="px-4 py-3 text-center text-gray-700 text-sm">INSERT</th>
-                          <th className="px-4 py-3 text-center text-gray-700 text-sm">UPDATE</th>
-                          <th className="px-4 py-3 text-center text-gray-700 text-sm">DELETE</th>
-                          <th className="px-4 py-3 text-center text-gray-700 text-sm">GRANT</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {Object.entries(dbData.access).map(([user, permissions]) => (
-                          <tr
-                            key={user}
-                            className={`hover:bg-gray-50 ${
-                              selectedUser === user ? 'bg-blue-50' : ''
-                            }`}
-                          >
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <Shield className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-900">{user}</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {permissions.select ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full mx-auto"></div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {permissions.insert ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full mx-auto"></div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {permissions.update ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full mx-auto"></div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {permissions.delete ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full mx-auto"></div>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {permissions.grant ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full mx-auto"></div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
+          <CardTitle>Довідник ролей та прав доступу</CardTitle>
+          <CardDescription>Опис привілеїв для кожної ролі</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {roles.map((role) => (
+              <div key={role.name} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <Shield className="w-4 h-4 text-white" />
                   </div>
+                  <h4 className="text-slate-900">{role.name}</h4>
                 </div>
+                <ul className="space-y-2">
+                  {role.permissions.map((permission, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-slate-600">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span>{permission}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
 
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => {
-                  setShowRBACModal(false);
-                  setSelectedUser(null);
-                }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Close
-              </button>
+      {/* Create User Modal */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Створити нового користувача</DialogTitle>
+            <DialogDescription>
+              Введіть параметри для створення нового користувача PostgreSQL
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Ім'я користувача</Label>
+              <Input
+                id="username"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                placeholder="new_user"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Пароль</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Роль</Label>
+              <Select value={newRole} onValueChange={setNewRole}>
+                <SelectTrigger id="role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Superuser">Superuser</SelectItem>
+                  <SelectItem value="Developer">Developer</SelectItem>
+                  <SelectItem value="Read-only">Read-only</SelectItem>
+                  <SelectItem value="Application">Application</SelectItem>
+                  <SelectItem value="Backup">Backup</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="db-access">Доступ до баз даних</Label>
+              <Input
+                id="db-access"
+                placeholder="database1, database2"
+              />
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              Скасувати
+            </Button>
+            <Button onClick={handleCreateUser}>Створити користувача</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* RBAC Matrix Modal */}
+      <Dialog open={showRBACModal} onOpenChange={setShowRBACModal}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Матриця контролю доступу на основі ролей (RBAC)</DialogTitle>
+            <DialogDescription>
+              Перегляд та управління правами доступу до баз даних та таблиць
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {Object.entries(rbacMatrix).map(([dbName, dbData]) => (
+              <Card key={dbName} className="border-slate-200">
+                <CardHeader className="bg-slate-50">
+                  <CardTitle className="text-lg">{dbName}</CardTitle>
+                  <CardDescription>Таблиці: {dbData.tables.join(', ')}</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Користувач/Роль</TableHead>
+                        <TableHead className="text-center">SELECT</TableHead>
+                        <TableHead className="text-center">INSERT</TableHead>
+                        <TableHead className="text-center">UPDATE</TableHead>
+                        <TableHead className="text-center">DELETE</TableHead>
+                        <TableHead className="text-center">GRANT</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {Object.entries(dbData.access).map(([user, permissions]) => (
+                        <TableRow
+                          key={user}
+                          className={selectedUser === user ? 'bg-blue-50' : ''}
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Shield className="w-4 h-4 text-slate-400" />
+                              <span className="text-slate-900">{user}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {permissions.select ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                            ) : (
+                              <div className="w-5 h-5 border-2 border-slate-300 rounded-full mx-auto"></div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {permissions.insert ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                            ) : (
+                              <div className="w-5 h-5 border-2 border-slate-300 rounded-full mx-auto"></div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {permissions.update ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                            ) : (
+                              <div className="w-5 h-5 border-2 border-slate-300 rounded-full mx-auto"></div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {permissions.delete ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                            ) : (
+                              <div className="w-5 h-5 border-2 border-slate-300 rounded-full mx-auto"></div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {permissions.grant ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                            ) : (
+                              <div className="w-5 h-5 border-2 border-slate-300 rounded-full mx-auto"></div>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowRBACModal(false);
+              setSelectedUser(null);
+            }}>
+              Закрити
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

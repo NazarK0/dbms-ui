@@ -1,5 +1,16 @@
 import { useState } from 'react';
-import { Plus, Trash2, Edit, Copy, Download, Upload, FileCode, Terminal, Table2, Network, Puzzle, Code, Zap, Archive, X } from 'lucide-react';
+import { Plus, Trash2, Edit, Copy, Download, Upload, FileCode, Terminal, Table2, Network, Puzzle, Code, Zap, Archive, X, Database as DatabaseIcon } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Checkbox } from './ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Alert, AlertDescription } from './ui/alert';
 import QueryExecutor from './QueryExecutor';
 import TableBrowser from './TableBrowser';
 import SchemaVisualizer from './SchemaVisualizer';
@@ -62,425 +73,415 @@ export default function DatabaseManager() {
     setActiveSubTab('tables');
   };
 
-  const subTabs = [
-    { id: 'query' as SubTab, label: 'Запити', icon: Terminal },
-    { id: 'tables' as SubTab, label: 'Таблиці', icon: Table2 },
-    { id: 'schema' as SubTab, label: 'Схема БД', icon: Network },
-    { id: 'extensions' as SubTab, label: 'Розширення', icon: Puzzle },
-    { id: 'functions' as SubTab, label: 'Функції', icon: Code },
-    { id: 'triggers' as SubTab, label: 'Тригери', icon: Zap },
-    { id: 'backup' as SubTab, label: 'Резервні копії', icon: Archive },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-gray-900">Керування базами даних</h2>
-          <p className="text-gray-600">Управління базами даних PostgreSQL</p>
+          <h2 className="text-slate-900">Керування базами даних</h2>
+          <p className="text-slate-600">Управління базами даних PostgreSQL</p>
         </div>
         {!selectedDatabase && (
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowImportModal(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <Upload className="w-4 h-4" />
+            <Button variant="outline" onClick={() => setShowImportModal(true)}>
+              <Upload className="w-4 h-4 mr-2" />
               Імпорт схеми
-            </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
+            </Button>
+            <Button onClick={() => setShowCreateModal(true)}>
+              <Plus className="w-4 h-4 mr-2" />
               Створити базу даних
-            </button>
+            </Button>
           </div>
         )}
       </div>
 
       {/* Selected Database Info & Close */}
       {selectedDatabase && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Copy className="w-5 h-5 text-white" />
-            </div>
+        <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <DatabaseIcon className="h-5 w-5 text-blue-600" />
+          <AlertDescription className="flex items-center justify-between">
             <div>
               <p className="text-blue-900">Обрана база даних</p>
               <p className="text-blue-700 text-sm">{selectedDatabase}</p>
             </div>
-          </div>
-          <button
-            onClick={() => setSelectedDatabase(null)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-          >
-            <X className="w-4 h-4" />
-            Закрити
-          </button>
-        </div>
+            <Button variant="outline" size="sm" onClick={() => setSelectedDatabase(null)}>
+              <X className="w-4 h-4 mr-2" />
+              Закрити
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* Sub Navigation - показується тільки коли вибрана БД */}
       {selectedDatabase && (
-        <div className="bg-white rounded-lg border border-gray-200 p-1 inline-flex">
-          {subTabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveSubTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
-                  activeSubTab === tab.id
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <Tabs value={activeSubTab} onValueChange={(value) => setActiveSubTab(value as SubTab)}>
+          <TabsList className="bg-white shadow-sm border border-slate-200 h-auto">
+            <TabsTrigger value="query" className="gap-2">
+              <Terminal className="w-4 h-4" />
+              Запити
+            </TabsTrigger>
+            <TabsTrigger value="tables" className="gap-2">
+              <Table2 className="w-4 h-4" />
+              Таблиці
+            </TabsTrigger>
+            <TabsTrigger value="schema" className="gap-2">
+              <Network className="w-4 h-4" />
+              Схема БД
+            </TabsTrigger>
+            <TabsTrigger value="extensions" className="gap-2">
+              <Puzzle className="w-4 h-4" />
+              Розширення
+            </TabsTrigger>
+            <TabsTrigger value="functions" className="gap-2">
+              <Code className="w-4 h-4" />
+              Функції
+            </TabsTrigger>
+            <TabsTrigger value="triggers" className="gap-2">
+              <Zap className="w-4 h-4" />
+              Тригери
+            </TabsTrigger>
+            <TabsTrigger value="backup" className="gap-2">
+              <Archive className="w-4 h-4" />
+              Резервні копії
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="query">
+            <QueryExecutor selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="tables">
+            <TableBrowser selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="schema">
+            <SchemaVisualizer selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="extensions">
+            <ExtensionManager selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="functions">
+            <FunctionsManager selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="triggers">
+            <TriggersRules selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="backup">
+            <BackupRestore selectedDatabase={selectedDatabase} />
+          </TabsContent>
+        </Tabs>
       )}
 
-      {/* Content */}
-      {!selectedDatabase ? (
-        // Database List - показується тільки коли не вибрана БД
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-gray-900">Список баз даних</h3>
-            <p className="text-gray-600 text-sm mt-1">Клацніть на рядок для відкриття деталей бази даних</p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Назва бази даних</th>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Власник</th>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Розмір</th>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Таблиці</th>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Кодування</th>
-                  <th className="px-6 py-3 text-left text-gray-700 text-sm">Сортування</th>
-                  <th className="px-6 py-3 text-right text-gray-700 text-sm">Дії</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
+      {/* Database List - показується тільки коли не вибрана БД */}
+      {!selectedDatabase && (
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader>
+            <CardTitle>Список баз даних</CardTitle>
+            <CardDescription>Клацніть на рядок для відкриття деталей бази даних</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Назва бази даних</TableHead>
+                  <TableHead>Власник</TableHead>
+                  <TableHead>Розмір</TableHead>
+                  <TableHead>Таблиці</TableHead>
+                  <TableHead>Кодування</TableHead>
+                  <TableHead>Сортування</TableHead>
+                  <TableHead className="text-right">Дії</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {databases.map((db) => (
-                  <tr 
+                  <TableRow 
                     key={db.name} 
                     onClick={() => handleSelectDatabase(db.name)}
-                    className="hover:bg-blue-50 cursor-pointer transition-colors"
+                    className="cursor-pointer hover:bg-blue-50/50 transition-colors"
                   >
-                    <td className="px-6 py-4">
-                      <span className="text-gray-900">{db.name}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{db.owner}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{db.size}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{db.tables}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{db.encoding}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{db.collation}</span>
-                    </td>
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-2">
-                        <button
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                          <DatabaseIcon className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-slate-900">{db.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{db.owner}</Badge>
+                    </TableCell>
+                    <TableCell className="text-slate-600">{db.size}</TableCell>
+                    <TableCell className="text-slate-600">{db.tables}</TableCell>
+                    <TableCell className="text-slate-600">{db.encoding}</TableCell>
+                    <TableCell className="text-slate-600">{db.collation}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => {
                             setSelectedDb(db.name);
                             setShowExportModal(true);
                           }}
-                          className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
                           title="Експорт схеми"
                         >
                           <Download className="w-4 h-4" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => {
                             setSelectedDb(db.name);
                             setShowCopyModal(true);
                           }}
-                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                           title="Копіювати БД"
                         >
                           <Copy className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors">
+                        </Button>
+                        <Button variant="ghost" size="icon" title="Редагувати">
                           <Edit className="w-4 h-4" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleDeleteDatabase(db.name)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        // Sub-components - показується тільки коли вибрана БД
-        <>
-          {activeSubTab === 'query' && <QueryExecutor selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'tables' && <TableBrowser selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'schema' && <SchemaVisualizer selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'extensions' && <ExtensionManager selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'functions' && <FunctionsManager selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'triggers' && <TriggersRules selectedDatabase={selectedDatabase} />}
-          {activeSubTab === 'backup' && <BackupRestore selectedDatabase={selectedDatabase} />}
-        </>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
 
       {/* Create Database Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Створити нову базу даних</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Назва бази даних</label>
-                <input
-                  type="text"
-                  value={newDbName}
-                  onChange={(e) => setNewDbName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="my_database"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Власник</label>
-                <select
-                  value={newDbOwner}
-                  onChange={(e) => setNewDbOwner(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="admin">admin</option>
-                  <option value="developer">developer</option>
-                  <option value="analyst">analyst</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Кодування</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="UTF8">UTF8</option>
-                  <option value="LATIN1">LATIN1</option>
-                  <option value="SQL_ASCII">SQL_ASCII</option>
-                </select>
-              </div>
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Створити нову базу даних</DialogTitle>
+            <DialogDescription>
+              Введіть параметри для створення нової бази даних PostgreSQL
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="db-name">Назва бази даних</Label>
+              <Input
+                id="db-name"
+                value={newDbName}
+                onChange={(e) => setNewDbName(e.target.value)}
+                placeholder="my_database"
+              />
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Скасувати
-              </button>
-              <button
-                onClick={handleCreateDatabase}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Створити
-              </button>
+            <div className="space-y-2">
+              <Label htmlFor="db-owner">Власник</Label>
+              <Select value={newDbOwner} onValueChange={setNewDbOwner}>
+                <SelectTrigger id="db-owner">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">admin</SelectItem>
+                  <SelectItem value="developer">developer</SelectItem>
+                  <SelectItem value="analyst">analyst</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="db-encoding">Кодування</Label>
+              <Select defaultValue="UTF8">
+                <SelectTrigger id="db-encoding">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UTF8">UTF8</SelectItem>
+                  <SelectItem value="LATIN1">LATIN1</SelectItem>
+                  <SelectItem value="SQL_ASCII">SQL_ASCII</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              Скасувати
+            </Button>
+            <Button onClick={handleCreateDatabase}>Створити</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Copy Database Modal */}
-      {showCopyModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Копіювати базу даних</h3>
-            <p className="text-gray-600 text-sm mb-4">
+      <Dialog open={showCopyModal} onOpenChange={setShowCopyModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Копіювати базу даних</DialogTitle>
+            <DialogDescription>
               Створити копію бази даних "{selectedDb}" з усіма таблицями та даними
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Назва нової бази даних</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`${selectedDb}_copy`}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Тип копіювання</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="full">Повна копія (структура + дані)</option>
-                  <option value="schema">Тільки структура</option>
-                  <option value="data">Структура + дані (без індексів)</option>
-                </select>
-              </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-blue-900 text-sm">
-                  <strong>Примітка:</strong> Копіювання великих баз даних може зайняти деякий час.
-                </p>
-              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="copy-name">Назва нової бази даних</Label>
+              <Input
+                id="copy-name"
+                placeholder={`${selectedDb}_copy`}
+              />
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowCopyModal(false);
-                  setSelectedDb(null);
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Скасувати
-              </button>
-              <button
-                onClick={() => {
-                  setShowCopyModal(false);
-                  setSelectedDb(null);
-                }}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Копіювати
-              </button>
+            <div className="space-y-2">
+              <Label htmlFor="copy-type">Тип копіювання</Label>
+              <Select defaultValue="full">
+                <SelectTrigger id="copy-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full">Повна копія (структура + дані)</SelectItem>
+                  <SelectItem value="schema">Тільки структура</SelectItem>
+                  <SelectItem value="data">Структура + дані (без індексів)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            <Alert>
+              <AlertDescription>
+                <strong>Примітка:</strong> Копіювання великих баз даних може зайняти деякий час.
+              </AlertDescription>
+            </Alert>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowCopyModal(false);
+              setSelectedDb(null);
+            }}>
+              Скасувати
+            </Button>
+            <Button onClick={() => {
+              setShowCopyModal(false);
+              setSelectedDb(null);
+            }}>
+              Копіювати
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Export Schema Modal */}
-      {showExportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Експорт схеми бази даних</h3>
-            <p className="text-gray-600 text-sm mb-4">
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Експорт схеми бази даних</DialogTitle>
+            <DialogDescription>
               Експортувати схему бази даних "{selectedDb}"
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Формат експорту</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="sql">SQL (pg_dump)</option>
-                  <option value="custom">Custom (pg_dump -Fc)</option>
-                  <option value="tar">TAR архів</option>
-                  <option value="directory">Директорія</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Що експортувати</label>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Структура таблиць</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Дані</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Індекси</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Тригери та функції</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Права доступу</span>
-                  </label>
-                </div>
-              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="export-format">Формат експорту</Label>
+              <Select defaultValue="sql">
+                <SelectTrigger id="export-format">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sql">SQL (pg_dump)</SelectItem>
+                  <SelectItem value="custom">Custom (pg_dump -Fc)</SelectItem>
+                  <SelectItem value="tar">TAR архів</SelectItem>
+                  <SelectItem value="directory">Директорія</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowExportModal(false);
-                  setSelectedDb(null);
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Скасувати
-              </button>
-              <button
-                onClick={() => {
-                  setShowExportModal(false);
-                  setSelectedDb(null);
-                }}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Download className="w-4 h-4 inline mr-2" />
-                Експортувати
-              </button>
+            <div className="space-y-3">
+              <Label>Що експортувати</Label>
+              <div className="space-y-2">
+                {['Структура таблиць', 'Дані', 'Індекси', 'Тригери та функції', 'Права доступу'].map((item) => (
+                  <div key={item} className="flex items-center space-x-2">
+                    <Checkbox id={item} defaultChecked />
+                    <Label htmlFor={item} className="text-sm font-normal cursor-pointer">
+                      {item}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowExportModal(false);
+              setSelectedDb(null);
+            }}>
+              Скасувати
+            </Button>
+            <Button onClick={() => {
+              setShowExportModal(false);
+              setSelectedDb(null);
+            }}>
+              <Download className="w-4 h-4 mr-2" />
+              Експортувати
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Import Schema Modal */}
-      {showImportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-gray-900 mb-4">Імпорт схеми бази даних</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Цільова база даних</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Створити нову базу даних</option>
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Імпорт схеми бази даних</DialogTitle>
+            <DialogDescription>
+              Імпортувати схему з файлу резервної копії
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="target-db">Цільова база даних</Label>
+              <Select defaultValue="">
+                <SelectTrigger id="target-db">
+                  <SelectValue placeholder="Створити нову базу даних" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Створити нову базу даних</SelectItem>
                   {databases.map((db) => (
-                    <option key={db.name} value={db.name}>{db.name}</option>
+                    <SelectItem key={db.name} value={db.name}>{db.name}</SelectItem>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Файл схеми</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
-                  <FileCode className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Перетягніть файл сюди або клацніть для вибору</p>
-                  <p className="text-xs text-gray-500 mt-1">SQL, Custom, TAR файли</p>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Параметри імпорту</label>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" className="rounded" />
-                    <span className="text-sm text-gray-700">Очистити цільову БД перед імпортом</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" />
-                    <span className="text-sm text-gray-700">Ігнорувати помилки</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" className="rounded" />
-                    <span className="text-sm text-gray-700">Відключити тригери під час імпорту</span>
-                  </label>
-                </div>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Файл схеми</Label>
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer bg-slate-50 hover:bg-slate-100">
+                <FileCode className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                <p className="text-sm text-slate-600">Перетягніть файл сюди або клацніть для вибору</p>
+                <p className="text-xs text-slate-500 mt-2">SQL, Custom, TAR файли</p>
               </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowImportModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Скасувати
-              </button>
-              <button
-                onClick={() => setShowImportModal(false)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Upload className="w-4 h-4 inline mr-2" />
-                Імпортувати
-              </button>
+            <div className="space-y-3">
+              <Label>Параметри імпорту</Label>
+              <div className="space-y-2">
+                {[
+                  { label: 'Очистити цільову БД перед імпортом', checked: false },
+                  { label: 'Ігнорувати помилки', checked: true },
+                  { label: 'Відключити тригери під час імпорту', checked: false },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center space-x-2">
+                    <Checkbox id={item.label} defaultChecked={item.checked} />
+                    <Label htmlFor={item.label} className="text-sm font-normal cursor-pointer">
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImportModal(false)}>
+              Скасувати
+            </Button>
+            <Button onClick={() => setShowImportModal(false)}>
+              <Upload className="w-4 h-4 mr-2" />
+              Імпортувати
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

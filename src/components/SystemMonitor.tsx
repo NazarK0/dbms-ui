@@ -1,40 +1,53 @@
 import { Cpu, HardDrive, Activity, Zap, Users, Database } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function SystemMonitor() {
   const systemStats = [
-    { label: 'CPU Usage', value: '34%', icon: Cpu, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-    { label: 'Memory Usage', value: '2.1 GB / 8 GB', icon: HardDrive, color: 'text-green-600', bgColor: 'bg-green-50' },
-    { label: 'Active Connections', value: '47', icon: Users, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-    { label: 'Queries/sec', value: '1,243', icon: Zap, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+    { label: 'Використання CPU', value: '34%', percentage: 34, icon: Cpu, color: 'from-lime-500 to-green-600' },
+    { label: 'Використання пам\'яті', value: '2.1 ГБ / 8 ГБ', percentage: 26, icon: HardDrive, color: 'from-green-500 to-lime-600' },
+    { label: 'Активні з\'єднання', value: '47', percentage: 78, icon: Users, color: 'from-yellow-500 to-lime-600' },
+    { label: 'Запитів/сек', value: '1,243', percentage: 85, icon: Zap, color: 'from-lime-600 to-yellow-600' },
   ];
 
   const connections = [
-    { pid: 12345, database: 'production_db', user: 'app_user', state: 'active', query: 'SELECT * FROM orders WHERE...', duration: '00:00:12' },
-    { pid: 12346, database: 'analytics_db', user: 'analyst', state: 'idle', query: 'IDLE', duration: '00:15:34' },
-    { pid: 12347, database: 'production_db', user: 'api_service', state: 'active', query: 'UPDATE users SET last_login...', duration: '00:00:03' },
-    { pid: 12348, database: 'staging_db', user: 'developer', state: 'idle in transaction', query: 'BEGIN; INSERT INTO test...', duration: '00:02:45' },
-    { pid: 12349, database: 'production_db', user: 'app_user', state: 'active', query: 'SELECT COUNT(*) FROM products', duration: '00:00:01' },
+    { pid: 12345, database: 'production_db', user: 'app_user', state: 'активний', query: 'SELECT * FROM orders WHERE...', duration: '00:00:12' },
+    { pid: 12346, database: 'analytics_db', user: 'analyst', state: 'очікує', query: 'IDLE', duration: '00:15:34' },
+    { pid: 12347, database: 'production_db', user: 'api_service', state: 'активний', query: 'UPDATE users SET last_login...', duration: '00:00:03' },
+    { pid: 12348, database: 'staging_db', user: 'developer', state: 'в транзакції', query: 'BEGIN; INSERT INTO test...', duration: '00:02:45' },
+    { pid: 12349, database: 'production_db', user: 'app_user', state: 'активний', query: 'SELECT COUNT(*) FROM products', duration: '00:00:01' },
   ];
 
   const slowQueries = [
-    { query: 'SELECT * FROM large_table WHERE complex_condition...', duration: '2.4s', calls: 145, database: 'production_db' },
-    { query: 'UPDATE analytics SET processed = true WHERE...', duration: '1.8s', calls: 89, database: 'analytics_db' },
-    { query: 'SELECT j.* FROM joins j INNER JOIN...', duration: '1.2s', calls: 234, database: 'production_db' },
+    { query: 'SELECT * FROM large_table WHERE complex_condition...', duration: '2.4с', calls: 145, database: 'production_db' },
+    { query: 'UPDATE analytics SET processed = true WHERE...', duration: '1.8с', calls: 89, database: 'analytics_db' },
+    { query: 'SELECT j.* FROM joins j INNER JOIN...', duration: '1.2с', calls: 234, database: 'production_db' },
   ];
 
   const databaseStats = [
-    { name: 'production_db', size: '1.2 GB', connections: 18, tps: 450, cache_hit: '98.5%' },
-    { name: 'analytics_db', size: '720 MB', connections: 8, tps: 120, cache_hit: '95.2%' },
-    { name: 'staging_db', size: '850 MB', connections: 12, tps: 180, cache_hit: '97.1%' },
-    { name: 'test_db', size: '340 MB', connections: 4, tps: 45, cache_hit: '92.8%' },
+    { name: 'production_db', size: '1.2 ГБ', connections: 18, tps: 450, cache_hit: 98.5 },
+    { name: 'analytics_db', size: '720 МБ', connections: 8, tps: 120, cache_hit: 95.2 },
+    { name: 'staging_db', size: '850 МБ', connections: 12, tps: 180, cache_hit: 97.1 },
+    { name: 'test_db', size: '340 МБ', connections: 4, tps: 45, cache_hit: 92.8 },
   ];
+
+  const getStateBadge = (state: string) => {
+    switch(state) {
+      case 'активний': return 'default';
+      case 'очікує': return 'secondary';
+      case 'в транзакції': return 'outline';
+      default: return 'secondary';
+    }
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-gray-900">System Monitor</h2>
-        <p className="text-gray-600">Real-time PostgreSQL performance monitoring</p>
+        <h2 className="text-slate-900">Системний моніторинг</h2>
+        <p className="text-slate-600">Моніторинг продуктивності PostgreSQL в реальному часі</p>
       </div>
 
       {/* System Stats */}
@@ -42,139 +55,147 @@ export default function SystemMonitor() {
         {systemStats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">{stat.label}</p>
-                  <p className="text-gray-900 mt-2">{stat.value}</p>
+            <Card key={stat.label} className="border-slate-200 shadow-sm overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <p className="text-slate-600 text-sm mb-1">{stat.label}</p>
+                    <p className="text-slate-900 text-2xl">{stat.value}</p>
+                  </div>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-                <div className={`${stat.bgColor} rounded-lg p-3`}>
-                  <Icon className={`w-5 h-5 ${stat.color}`} />
-                </div>
-              </div>
-            </div>
+                <Progress value={stat.percentage} className="h-2" />
+              </CardContent>
+            </Card>
           );
         })}
       </div>
 
       {/* Database Statistics */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
           <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-gray-700" />
-            <h3 className="text-gray-900">Database Statistics</h3>
+            <Database className="w-5 h-5 text-slate-700" />
+            <CardTitle>Статистика баз даних</CardTitle>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Database</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Size</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Connections</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">TPS</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Cache Hit Ratio</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+          <CardDescription>Метрики продуктивності для кожної бази даних</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>База даних</TableHead>
+                <TableHead>Розмір</TableHead>
+                <TableHead>З'єднання</TableHead>
+                <TableHead>TPS</TableHead>
+                <TableHead>Коеф. попадань кешу</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {databaseStats.map((db) => (
-                <tr key={db.name} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-gray-900">{db.name}</td>
-                  <td className="px-6 py-4 text-gray-600">{db.size}</td>
-                  <td className="px-6 py-4 text-gray-600">{db.connections}</td>
-                  <td className="px-6 py-4 text-gray-600">{db.tps}</td>
-                  <td className="px-6 py-4">
+                <TableRow key={db.name}>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-100 rounded-full h-2 max-w-[100px]">
-                        <div
-                          className="bg-green-500 h-2 rounded-full"
-                          style={{ width: db.cache_hit }}
-                        ></div>
+                      <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                        <Database className="w-4 h-4 text-white" />
                       </div>
-                      <span className="text-gray-600 text-sm">{db.cache_hit}</span>
+                      <span className="text-slate-900">{db.name}</span>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="text-slate-600">{db.size}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{db.connections}</Badge>
+                  </TableCell>
+                  <TableCell className="text-slate-600">{db.tps}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Progress value={db.cache_hit} className="h-2 flex-1 max-w-[120px]" />
+                      <span className="text-slate-900 text-sm min-w-[50px]">{db.cache_hit}%</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Active Connections */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-gray-700" />
-            <h3 className="text-gray-900">Active Connections</h3>
+            <Activity className="w-5 h-5 text-slate-700" />
+            <CardTitle>Активні з'єднання</CardTitle>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">PID</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Database</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">User</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">State</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Query</th>
-                <th className="px-6 py-3 text-left text-gray-700 text-sm">Duration</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
+          <CardDescription>Поточні підключення до PostgreSQL серверу</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PID</TableHead>
+                <TableHead>База даних</TableHead>
+                <TableHead>Користувач</TableHead>
+                <TableHead>Стан</TableHead>
+                <TableHead>Запит</TableHead>
+                <TableHead>Тривалість</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {connections.map((conn) => (
-                <tr key={conn.pid} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-gray-900">{conn.pid}</td>
-                  <td className="px-6 py-4 text-gray-600">{conn.database}</td>
-                  <td className="px-6 py-4 text-gray-600">{conn.user}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        conn.state === 'active'
-                          ? 'bg-green-100 text-green-700'
-                          : conn.state === 'idle'
-                          ? 'bg-gray-100 text-gray-700'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}
-                    >
+                <TableRow key={conn.pid}>
+                  <TableCell className="text-slate-900 font-mono text-sm">{conn.pid}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{conn.database}</Badge>
+                  </TableCell>
+                  <TableCell className="text-slate-600">{conn.user}</TableCell>
+                  <TableCell>
+                    <Badge variant={getStateBadge(conn.state)}>
                       {conn.state}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 max-w-xs truncate">
-                    <code className="text-xs">{conn.query}</code>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{conn.duration}</td>
-                </tr>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    <code className="text-xs text-slate-600 truncate block bg-slate-50 px-2 py-1 rounded">
+                      {conn.query}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-slate-600 font-mono text-sm">{conn.duration}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Slow Queries */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader>
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-gray-700" />
-            <h3 className="text-gray-900">Slow Queries (Last 24 hours)</h3>
+            <Zap className="w-5 h-5 text-orange-600" />
+            <CardTitle>Повільні запити (за останні 24 години)</CardTitle>
           </div>
-        </div>
-        <div className="p-6 space-y-4">
-          {slowQueries.map((query, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-start justify-between mb-2">
-                <code className="text-sm text-gray-900 flex-1">{query.query}</code>
-                <span className="text-red-600 ml-4">{query.duration}</span>
+          <CardDescription>Запити з найдовшим часом виконання</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {slowQueries.map((query, index) => (
+              <div key={index} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <code className="text-sm text-slate-900 flex-1 font-mono">{query.query}</code>
+                  <Badge variant="destructive" className="shrink-0">{query.duration}</Badge>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                  <Badge variant="secondary">{query.calls} викликів</Badge>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-600">{query.database}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <span>{query.calls} calls</span>
-                <span>•</span>
-                <span>{query.database}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
