@@ -1,10 +1,18 @@
 import { useState } from 'react';
-import { ArrowLeft, Check, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { ArrowLeft, Check, X, Save, Upload, Database, Table as TableIcon, CalendarIcon, Code, Eye } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Badge } from '../ui/badge';
+import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Calendar } from '../ui/calendar';
+import { ScrollArea } from '../ui/scroll-area';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
+import ReactMarkdown from 'react-markdown';
 import { simpleTableSchema } from '../../mockData/user';
 
 interface CreateRecordProps {
@@ -21,6 +29,7 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [markdownPreview, setMarkdownPreview] = useState<Record<string, boolean>>({});
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -41,8 +50,12 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
     const newErrors: Record<string, string> = {};
     
     tableSchema.forEach(field => {
-      // Skip auto-increment and primary key fields
-      if (field.autoIncrement || field.primaryKey) return;
+      // Skip auto-increment, primary key, and system-generated fields
+      if (field.autoIncrement || field.primaryKey || field.systemGenerated) return;
+      
+      // Also skip common system field names as fallback
+      const systemFieldNames = ['created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
+      if (systemFieldNames.includes(field.name.toLowerCase())) return;
       
       // Check required fields
       if (!field.nullable && !formData[field.name]) {
@@ -100,23 +113,132 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
   };
 
   const getFieldInput = (field: typeof tableSchema[0]) => {
-    // Skip auto-increment fields
-    if (field.autoIncrement) return null;
+    // Skip auto-increment, primary key, and system-generated fields
+    if (field.autoIncrement || field.primaryKey || field.systemGenerated) return null;
+
+    // Also skip common system field names as fallback
+    const systemFieldNames = ['created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
+    if (systemFieldNames.includes(field.name.toLowerCase())) return null;
 
     const isRequired = !field.nullable;
     const value = formData[field.name] || '';
 
-    // Text area for text type
-    if (field.type === 'text') {
+    // Enum - dropdown select
+    if (field.type === 'enum' && field.enumValues) {
       return (
-        <Input
-          type="text"
-          id={field.name}
-          value={value}
-          onChange={(e) => handleChange(field.name, e.target.value)}
-          placeholder={`Введіть ${field.name}...`}
-          className={errors[field.name] ? 'border-red-500' : ''}
-        />
+        <Select value={value} onValueChange={(val) => handleChange(field.name, val)}>
+          <SelectTrigger className={errors[field.name] ? 'border-red-500' : ''}>
+            <SelectValue placeholder={`Оберіть ${field.name}...`} />
+          </SelectTrigger>
+          <SelectContent>
+            {field.enumValues.map((enumValue) => (
+              <SelectItem key={enumValue} value={enumValue}>
+                {enumValue}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+
+    // Date - calendar picker
+    if (field.type === 'date') {
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={`w-full justify-start text-left ${errors[field.name] ? 'border-red-500' : ''}`}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {value ? format(new Date(value), 'PPP', { locale: uk }) : <span>Оберіть дату</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={value ? new Date(value) : undefined}
+              onSelect={(date) => handleChange(field.name, date ? format(date, 'yyyy-MM-dd') : '')}
+              locale={uk}
+            />
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
+    // Timestamp - datetime picker
+    if (field.type === 'timestamp') {
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={`w-full justify-start text-left ${errors[field.name] ? 'border-red-500' : ''}`}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {value ? format(new Date(value), 'PPP HH:mm', { locale: uk }) : <span>Оберіть дату та час</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={value ? new Date(value) : undefined}
+              onSelect={(date) => handleChange(field.name, date ? date.toISOString() : '')}
+              locale={uk}
+            />
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
+    // Text area for text type with markdown support
+    if (field.type === 'text') {
+      const isPreview = markdownPreview[field.name];
+      
+      return (
+        <div className="space-y-2">
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setMarkdownPreview(prev => ({ ...prev, [field.name]: false }))}
+              className={`gap-2 ${!isPreview ? 'bg-violet-100 text-violet-700' : ''}`}
+            >
+              <Code className="w-4 h-4" />
+              Код
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setMarkdownPreview(prev => ({ ...prev, [field.name]: true }))}
+              className={`gap-2 ${isPreview ? 'bg-violet-100 text-violet-700' : ''}`}
+            >
+              <Eye className="w-4 h-4" />
+              Перегляд
+            </Button>
+          </div>
+          
+          {isPreview ? (
+            <div className="px-4 py-3 bg-slate-50 rounded-md border border-slate-200 min-h-[100px] prose prose-sm max-w-none">
+              {value ? (
+                <ReactMarkdown>{value}</ReactMarkdown>
+              ) : (
+                <p className="text-slate-400 italic">Немає вмісту для відображення</p>
+              )}
+            </div>
+          ) : (
+            <Textarea
+              id={field.name}
+              value={value}
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              placeholder={`Введіть ${field.name}... (підтримується Markdown)`}
+              className={errors[field.name] ? 'border-red-500' : ''}
+              rows={6}
+            />
+          )}
+        </div>
       );
     }
 
@@ -138,6 +260,23 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
       );
     }
 
+    // Decimal input
+    if (field.type === 'decimal') {
+      return (
+        <Input
+          type="number"
+          step="0.01"
+          id={field.name}
+          value={value}
+          onChange={(e) => handleChange(field.name, parseFloat(e.target.value) || '')}
+          placeholder={`Введіть ${field.name}...`}
+          className={errors[field.name] ? 'border-red-500' : ''}
+          min={field.min}
+          max={field.max}
+        />
+      );
+    }
+
     // Number input for integer
     if (field.type === 'integer') {
       return (
@@ -148,24 +287,13 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
           onChange={(e) => handleChange(field.name, parseInt(e.target.value) || '')}
           placeholder={`Введіть ${field.name}...`}
           className={errors[field.name] ? 'border-red-500' : ''}
+          min={field.min}
+          max={field.max}
         />
       );
     }
 
-    // Date input for timestamp
-    if (field.type === 'timestamp') {
-      return (
-        <Input
-          type="datetime-local"
-          id={field.name}
-          value={value}
-          onChange={(e) => handleChange(field.name, e.target.value)}
-          className={errors[field.name] ? 'border-red-500' : ''}
-        />
-      );
-    }
-
-    // Default text input
+    // Default text input for varchar and others
     return (
       <Input
         type="text"

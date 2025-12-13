@@ -7,6 +7,10 @@ export interface TableColumn {
   required?: boolean;
   autoIncrement?: boolean;
   primaryKey?: boolean;
+  enumValues?: string[]; // For enum types
+  min?: number; // For numeric types
+  max?: number; // For numeric types
+  systemGenerated?: boolean; // For system-generated fields like created_at, updated_at
 }
 
 export interface TableRecord {
@@ -26,7 +30,7 @@ export const tableSchemas: Record<string, TableSchema> = {
       { name: 'email', type: 'varchar', required: true },
       { name: 'name', type: 'varchar', required: true },
       { name: 'role', type: 'varchar', required: false },
-      { name: 'created_at', type: 'timestamp', required: false },
+      { name: 'created_at', type: 'timestamp', required: false, systemGenerated: true },
       { name: 'attachments', type: 'array', required: false },
     ],
     data: [
@@ -47,7 +51,7 @@ export const tableSchemas: Record<string, TableSchema> = {
       { name: 'quantity', type: 'integer', required: true },
       { name: 'total_price', type: 'decimal', required: true },
       { name: 'status', type: 'varchar', required: true },
-      { name: 'created_at', type: 'timestamp', required: false },
+      { name: 'created_at', type: 'timestamp', required: false, systemGenerated: true },
     ],
     data: [
       { id: 1, user_id: 1, product_name: 'Laptop', quantity: 1, total_price: '1299.99', status: 'completed', created_at: '2024-02-01 10:00:00' },
@@ -93,10 +97,16 @@ export const tableSchemas: Record<string, TableSchema> = {
 // Simple table schema for CreateRecord and EditRecord components
 export const simpleTableSchema: TableColumn[] = [
   { name: 'id', type: 'integer', nullable: false, autoIncrement: true, primaryKey: true },
-  { name: 'name', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-  { name: 'email', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-  { name: 'status', type: 'varchar(50)', nullable: true, autoIncrement: false, primaryKey: false },
-  { name: 'created_at', type: 'timestamp', nullable: true, autoIncrement: false, primaryKey: false },
+  { name: 'title', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
+  { name: 'description', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
+  { name: 'status', type: 'enum', nullable: false, autoIncrement: false, primaryKey: false, enumValues: ['draft', 'active', 'pending', 'completed', 'archived'] },
+  { name: 'priority', type: 'enum', nullable: true, autoIncrement: false, primaryKey: false, enumValues: ['low', 'medium', 'high', 'urgent'] },
+  { name: 'price', type: 'decimal', nullable: true, autoIncrement: false, primaryKey: false, min: 0 },
+  { name: 'quantity', type: 'integer', nullable: true, autoIncrement: false, primaryKey: false, min: 0, max: 1000 },
+  { name: 'is_active', type: 'boolean', nullable: false, autoIncrement: false, primaryKey: false },
+  { name: 'start_date', type: 'date', nullable: true, autoIncrement: false, primaryKey: false },
+  { name: 'end_date', type: 'date', nullable: true, autoIncrement: false, primaryKey: false },
+  { name: 'created_at', type: 'timestamp', nullable: true, autoIncrement: false, primaryKey: false, systemGenerated: true },
 ];
 
 // Default schema for unknown tables

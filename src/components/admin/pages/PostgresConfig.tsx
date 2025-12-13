@@ -7,7 +7,7 @@ import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Alert, AlertDescription } from '../../ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
 
@@ -418,7 +418,7 @@ export default function PostgresConfig() {
         </Card>
       </div>
 
-      {/* Configuration Tabs */}
+      {/* Configuration Accordion */}
       <Card className="border-slate-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -439,44 +439,27 @@ export default function PostgresConfig() {
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="memory" className="space-y-6">
-            <TabsList className="bg-white shadow-sm border border-slate-200 p-1.5 h-auto inline-flex flex-wrap">
-              {categories.map((category) => {
-                const Icon = getCategoryIcon(category);
-                const count = configParams.filter(p => p.category === category).length;
-                return (
-                  <TabsTrigger 
-                    key={category} 
-                    value={category}
-                    className="gap-2 data-[state=active]:bg-lime-600 data-[state=active]:text-white"
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{getCategoryName(category)}</span>
-                    <Badge variant="secondary" className="ml-1">{count}</Badge>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-
+          <Accordion type="multiple" defaultValue={[]} className="space-y-3">
             {categories.map((category) => {
               const categoryParams = configParams.filter(p => p.category === category);
               const Icon = getCategoryIcon(category);
               const color = getCategoryColor(category);
+              const count = configParams.filter(p => p.category === category).length;
 
               return (
-                <TabsContent key={category} value={category} className="mt-0">
-                  <div className="space-y-4">
-                    {/* Category Header */}
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
+                <AccordionItem key={category} value={category} className="border border-slate-200 rounded-lg px-6 bg-white shadow-sm">
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 bg-gradient-to-br ${color} rounded-lg flex items-center justify-center`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <div>
+                      <div className="flex items-center gap-3">
                         <h3 className="text-slate-900">{getCategoryName(category)}</h3>
-                        <p className="text-slate-600 text-sm">{categoryParams.length} параметрів</p>
+                        <Badge variant="secondary">{count}</Badge>
                       </div>
                     </div>
-
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4">
                     {/* Parameters Table */}
                     <div className="border border-slate-200 rounded-lg overflow-hidden">
                       <Table>
@@ -528,11 +511,11 @@ export default function PostgresConfig() {
                         </TableBody>
                       </Table>
                     </div>
-                  </div>
-                </TabsContent>
+                  </AccordionContent>
+                </AccordionItem>
               );
             })}
-          </Tabs>
+          </Accordion>
         </CardContent>
       </Card>
 
