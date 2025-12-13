@@ -5,6 +5,8 @@ export { default as AdminRolesPanel } from './AdminRolesPanel';
 export { default as UserRolesPanel } from './UserRolesPanel';
 export { default as StatsCards } from './StatsCards';
 export { default as CreateRoleModal } from './CreateRoleModal';
+export { default as EditAdminRoleModal } from './EditAdminRoleModal';
+export { default as EditUserRoleModal } from './EditUserRoleModal';
 export { default as RBACMatrix } from './RBACMatrix';
 export { default as RoleHistory } from './RoleHistory';
 
