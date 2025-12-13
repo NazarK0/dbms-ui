@@ -2,3 +2,5 @@
 
 export * from './userRoles';
 export * from './tableschemas';
+export * from './dashboard';
+export * from './profile';

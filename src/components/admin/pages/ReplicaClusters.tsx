@@ -1,113 +1,20 @@
 import { useState } from 'react';
-import { Plus, Server, Activity, AlertCircle, CheckCircle, Clock, MapPin, Zap } from 'lucide-react';
+import { Server, Plus, Settings, AlertCircle, CheckCircle, Clock, Activity, Zap, RefreshCw, MapPin } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { Alert, AlertDescription } from '../../ui/alert';
+import { Progress } from '../../ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Label } from '../../ui/label';
+import { Input } from '../../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { clusters, replicationStats, replicationActivity } from '../../../mockData/admin';
 
 export default function ReplicaClusters() {
-  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedCluster, setSelectedCluster] = useState<number | null>(null);
-
-  const clusters = [
-    {
-      id: 1,
-      name: 'Primary Cluster',
-      role: 'Primary',
-      status: 'healthy',
-      host: 'primary-db.example.com',
-      port: 5432,
-      location: 'US East (Virginia)',
-      version: 'PostgreSQL 15.4',
-      uptime: '45 days 12:34:56',
-      connections: 47,
-      replicationLag: '0ms',
-      databases: 12,
-    },
-    {
-      id: 2,
-      name: 'Read Replica 1',
-      role: 'Replica',
-      status: 'healthy',
-      host: 'replica-1.example.com',
-      port: 5432,
-      location: 'US West (Oregon)',
-      version: 'PostgreSQL 15.4',
-      uptime: '42 days 08:15:22',
-      connections: 23,
-      replicationLag: '12ms',
-      databases: 12,
-    },
-    {
-      id: 3,
-      name: 'Read Replica 2',
-      role: 'Replica',
-      status: 'healthy',
-      host: 'replica-2.example.com',
-      port: 5432,
-      location: 'EU (Ireland)',
-      version: 'PostgreSQL 15.4',
-      uptime: '38 days 16:42:10',
-      connections: 18,
-      replicationLag: '45ms',
-      databases: 12,
-    },
-    {
-      id: 4,
-      name: 'Read Replica 3',
-      role: 'Replica',
-      status: 'warning',
-      host: 'replica-3.example.com',
-      port: 5432,
-      location: 'Asia Pacific (Singapore)',
-      version: 'PostgreSQL 15.4',
-      uptime: '15 days 04:18:33',
-      connections: 31,
-      replicationLag: '234ms',
-      databases: 12,
-    },
-  ];
-
-  const replicationStats = [
-    { metric: 'Слоти реплікації', value: '3', icon: Server, color: 'from-lime-500 to-green-600' },
-    { metric: 'Середня затримка', value: '97мс', icon: Clock, color: 'from-green-500 to-lime-600' },
-    { metric: 'Передано даних', value: '2.4 ТБ', icon: Zap, color: 'from-yellow-500 to-lime-600' },
-    { metric: 'Статус синхр.', value: 'Streaming', icon: Activity, color: 'from-lime-600 to-yellow-600' },
-  ];
-
-  const replicationActivity = [
-    {
-      replica: 'Read Replica 1',
-      state: 'streaming',
-      syncState: 'async',
-      sentLSN: '0/8A2F4D8',
-      writeLSN: '0/8A2F4D8',
-      flushLSN: '0/8A2F4D8',
-      lag: '12мс',
-    },
-    {
-      replica: 'Read Replica 2',
-      state: 'streaming',
-      syncState: 'async',
-      sentLSN: '0/8A2F4C0',
-      writeLSN: '0/8A2F4C0',
-      flushLSN: '0/8A2F4C0',
-      lag: '45мс',
-    },
-    {
-      replica: 'Read Replica 3',
-      state: 'streaming',
-      syncState: 'async',
-      sentLSN: '0/8A2F3A8',
-      writeLSN: '0/8A2F3A8',
-      flushLSN: '0/8A2F3A8',
-      lag: '234мс',
-    },
-  ];
+  const [showAddModal, setShowAddModal] = useState(false);
 
   return (
     <div className="space-y-6">

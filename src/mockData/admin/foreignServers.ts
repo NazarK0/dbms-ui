@@ -4,11 +4,11 @@ export interface ForeignServer {
   name: string;
   wrapper: string;
   host: string;
-  port?: number;
-  dbname?: string;
-  status?: 'connected' | 'disconnected' | 'error';
-  foreignTables?: number;
-  lastChecked?: string;
+  port: number;
+  dbname: string;
+  status: 'connected' | 'disconnected' | 'error';
+  foreignTables: number;
+  lastChecked: string;
 }
 
 export interface ForeignTable {

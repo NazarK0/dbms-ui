@@ -1,38 +1,11 @@
-import { Cpu, HardDrive, Activity, Zap, Users, Database } from 'lucide-react';
+import { Database, Activity, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
+import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
+import { systemStats, connections, slowQueries, databaseStats } from '../../../mockData/admin';
 
 export default function SystemMonitor() {
-  const systemStats = [
-    { label: 'Використання CPU', value: '34%', percentage: 34, icon: Cpu, color: 'from-lime-500 to-green-600' },
-    { label: 'Використання пам\'яті', value: '2.1 ГБ / 8 ГБ', percentage: 26, icon: HardDrive, color: 'from-green-500 to-lime-600' },
-    { label: 'Активні з\'єднання', value: '47', percentage: 78, icon: Users, color: 'from-yellow-500 to-lime-600' },
-    { label: 'Запитів/сек', value: '1,243', percentage: 85, icon: Zap, color: 'from-lime-600 to-yellow-600' },
-  ];
-
-  const connections = [
-    { pid: 12345, database: 'production_db', user: 'app_user', state: 'активний', query: 'SELECT * FROM orders WHERE...', duration: '00:00:12' },
-    { pid: 12346, database: 'analytics_db', user: 'analyst', state: 'очікує', query: 'IDLE', duration: '00:15:34' },
-    { pid: 12347, database: 'production_db', user: 'api_service', state: 'активний', query: 'UPDATE users SET last_login...', duration: '00:00:03' },
-    { pid: 12348, database: 'staging_db', user: 'developer', state: 'в транзакції', query: 'BEGIN; INSERT INTO test...', duration: '00:02:45' },
-    { pid: 12349, database: 'production_db', user: 'app_user', state: 'активний', query: 'SELECT COUNT(*) FROM products', duration: '00:00:01' },
-  ];
-
-  const slowQueries = [
-    { query: 'SELECT * FROM large_table WHERE complex_condition...', duration: '2.4с', calls: 145, database: 'production_db' },
-    { query: 'UPDATE analytics SET processed = true WHERE...', duration: '1.8с', calls: 89, database: 'analytics_db' },
-    { query: 'SELECT j.* FROM joins j INNER JOIN...', duration: '1.2с', calls: 234, database: 'production_db' },
-  ];
-
-  const databaseStats = [
-    { name: 'production_db', size: '1.2 ГБ', connections: 18, tps: 450, cache_hit: 98.5 },
-    { name: 'analytics_db', size: '720 МБ', connections: 8, tps: 120, cache_hit: 95.2 },
-    { name: 'staging_db', size: '850 МБ', connections: 12, tps: 180, cache_hit: 97.1 },
-    { name: 'test_db', size: '340 МБ', connections: 4, tps: 45, cache_hit: 92.8 },
-  ];
-
   const getStateBadge = (state: string) => {
     switch(state) {
       case 'активний': return 'default';

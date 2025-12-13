@@ -7,129 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Alert, AlertDescription, AlertTitle } from '../../ui/alert';
 import { Progress } from '../../ui/progress';
+import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../../mockData/admin';
 
 export default function PerformanceAnalyzer() {
   const [timeRange, setTimeRange] = useState('1h');
   const [sortBy, setSortBy] = useState('total_time');
-
-  const queryStats = [
-    {
-      query: 'SELECT * FROM orders WHERE user_id = $1 AND status = $2',
-      calls: 15234,
-      totalTime: '45.2с',
-      avgTime: '2.97мс',
-      minTime: '0.8мс',
-      maxTime: '125мс',
-      rows: 152340,
-      hitRatio: 98.5,
-    },
-    {
-      query: 'UPDATE users SET last_login = NOW() WHERE id = $1',
-      calls: 8521,
-      totalTime: '12.4с',
-      avgTime: '1.45мс',
-      minTime: '0.5мс',
-      maxTime: '45мс',
-      rows: 8521,
-      hitRatio: 99.2,
-    },
-    {
-      query: 'SELECT p.*, c.name as category FROM products p JOIN categories c ON...',
-      calls: 3421,
-      totalTime: '28.7с',
-      avgTime: '8.39мс',
-      minTime: '2.1мс',
-      maxTime: '234мс',
-      rows: 68420,
-      hitRatio: 85.3,
-    },
-    {
-      query: 'INSERT INTO logs (level, message, created_at) VALUES ($1, $2, $3)',
-      calls: 42134,
-      totalTime: '18.9с',
-      avgTime: '0.45мс',
-      minTime: '0.2мс',
-      maxTime: '12мс',
-      rows: 42134,
-      hitRatio: 100,
-    },
-    {
-      query: 'SELECT COUNT(*) FROM order_items WHERE order_id IN (SELECT...)',
-      calls: 1234,
-      totalTime: '156.8с',
-      avgTime: '127.1мс',
-      minTime: '45мс',
-      maxTime: '1.2с',
-      rows: 1234,
-      hitRatio: 45.2,
-    },
-  ];
-
-  const slowQueries = [
-    {
-      query: 'SELECT * FROM large_table WHERE unindexed_column = $1',
-      avgTime: '2.4с',
-      calls: 145,
-      recommendation: 'Створіть індекс для unindexed_column',
-      impact: 'Висока',
-    },
-    {
-      query: 'SELECT * FROM orders o JOIN users u ON o.user_id = u.id WHERE...',
-      avgTime: '1.8с',
-      calls: 89,
-      recommendation: 'Оптимізуйте JOIN, використовуйте індекси',
-      impact: 'Середня',
-    },
-    {
-      query: 'UPDATE inventory SET quantity = quantity - $1 WHERE product_id...',
-      avgTime: '950мс',
-      calls: 234,
-      recommendation: 'Розгляньте використання партіонування',
-      impact: 'Середня',
-    },
-  ];
-
-  const cacheStats = [
-    { metric: 'Коефіцієнт попадань', value: '98.2%', trend: 'up', percentage: 98.2 },
-    { metric: 'Блоки з диску', value: '1.2M', trend: 'down', percentage: 45 },
-    { metric: 'Блоки з кешу', value: '58.4M', trend: 'up', percentage: 92 },
-    { metric: 'Блоки записані', value: '850K', trend: 'neutral', percentage: 68 },
-  ];
-
-  const indexUsage = [
-    {
-      table: 'orders',
-      index: 'idx_orders_user_id',
-      scans: 15234,
-      rowsRead: 152340,
-      usage: 95,
-      size: '2.4 МБ',
-    },
-    {
-      table: 'users',
-      index: 'idx_users_email',
-      scans: 8521,
-      rowsRead: 8521,
-      usage: 89,
-      size: '1.2 МБ',
-    },
-    {
-      table: 'products',
-      index: 'idx_products_category',
-      scans: 234,
-      rowsRead: 4680,
-      usage: 12,
-      size: '512 КБ',
-    },
-    {
-      table: 'logs',
-      index: 'idx_logs_created_at',
-      scans: 42,
-      rowsRead: 840,
-      usage: 3,
-      size: '3.8 МБ',
-    },
-  ];
 
   const getImpactVariant = (impact: string) => {
     switch(impact) {
@@ -195,7 +77,7 @@ export default function PerformanceAnalyzer() {
         <AlertCircle className="h-4 w-4 text-yellow-600" />
         <AlertTitle className="text-yellow-900">Виявлено повільні запити</AlertTitle>
         <AlertDescription className="text-yellow-700">
-          Знайдено {slowQueries.length} запитів, які потребують оптимізації. Перегляньте рекомендації нижче.
+          Знайдено {slowQueryDetails.length} запитів, які потребують оптимізації. Перегляньте рекомендації нижче.
         </AlertDescription>
       </Alert>
 
@@ -279,7 +161,7 @@ export default function PerformanceAnalyzer() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {slowQueries.map((query, index) => (
+            {slowQueryDetails.map((query, index) => (
               <div key={index} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex-1">

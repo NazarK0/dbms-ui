@@ -1,7 +1,7 @@
 // Mock data for database backups (Admin)
 
 export interface Backup {
-  id: number;
+  id: string;
   filename: string;
   type: 'Повна' | 'Інкрементна';
   size: string;
@@ -11,7 +11,7 @@ export interface Backup {
 }
 
 export interface BackupSchedule {
-  id: number;
+  id: string;
   name: string;
   frequency: string;
   type: 'Повна' | 'Інкрементна';
@@ -21,7 +21,7 @@ export interface BackupSchedule {
 
 export const backups: Backup[] = [
   {
-    id: 1,
+    id: '1',
     filename: 'production_db_2024_01_20_full.sql',
     type: 'Повна',
     size: '1.2 ГБ',
@@ -30,7 +30,7 @@ export const backups: Backup[] = [
     duration: '12м 34с',
   },
   {
-    id: 2,
+    id: '2',
     filename: 'production_db_2024_01_19_full.sql',
     type: 'Повна',
     size: '1.18 ГБ',
@@ -39,7 +39,7 @@ export const backups: Backup[] = [
     duration: '11м 58с',
   },
   {
-    id: 3,
+    id: '3',
     filename: 'production_db_2024_01_18_incremental.sql',
     type: 'Інкрементна',
     size: '245 МБ',
@@ -50,7 +50,7 @@ export const backups: Backup[] = [
 ];
 
 export const backupSchedules: BackupSchedule[] = [
-  { id: 1, name: 'Щоденне повне резервування', frequency: 'Щодня о 02:00', type: 'Повна', retention: '7 днів', enabled: true },
-  { id: 2, name: 'Щотижневе архівування', frequency: 'Неділя о 03:00', type: 'Повна', retention: '30 днів', enabled: true },
-  { id: 3, name: 'Погодинне інкрементне', frequency: 'Щогодини', type: 'Інкрементна', retention: '24 години', enabled: false },
+  { id: '1', name: 'Щоденне повне резервування', frequency: 'Щодня о 02:00', type: 'Повна', retention: '7 днів', enabled: true },
+  { id: '2', name: 'Щотижневе архівування', frequency: 'Неділя о 03:00', type: 'Повна', retention: '30 днів', enabled: true },
+  { id: '3', name: 'Погодинне інкрементне', frequency: 'Щогодини', type: 'Інкрементна', retention: '24 години', enabled: false },
 ];

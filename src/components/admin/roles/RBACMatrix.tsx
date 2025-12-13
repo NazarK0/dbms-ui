@@ -1,269 +1,15 @@
 import { useState } from 'react';
-import { Shield, UserCog, Users, ChevronDown, ChevronRight, Database, Table2, Code, UserX, Plug, HardDrive, Activity } from 'lucide-react';
+import { Shield, UserCog, Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Checkbox } from '../../ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Badge } from '../../ui/badge';
-
-const adminPermissions = [
-  {
-    category: 'Управління БД',
-    icon: Database,
-    permissions: [
-      { id: 'db_create', name: 'Створення БД' },
-      { id: 'db_delete', name: 'Видалення БД' },
-      { id: 'db_modify', name: 'Модифікація БД' },
-      { id: 'db_view', name: 'Перегляд БД' },
-    ]
-  },
-  {
-    category: 'Таблиці',
-    icon: Table2,
-    permissions: [
-      { id: 'table_create', name: 'Створення' },
-      { id: 'table_delete', name: 'Видалення' },
-      { id: 'table_alter', name: 'Зміна структури' },
-      { id: 'table_view', name: 'Перегляд схеми' },
-    ]
-  },
-  {
-    category: 'SQL',
-    icon: Code,
-    permissions: [
-      { id: 'sql_select', name: 'SELECT' },
-      { id: 'sql_insert', name: 'INSERT' },
-      { id: 'sql_update', name: 'UPDATE' },
-      { id: 'sql_delete', name: 'DELETE' },
-    ]
-  },
-  {
-    category: 'Користувачі',
-    icon: UserX,
-    permissions: [
-      { id: 'user_create', name: 'Створення' },
-      { id: 'user_delete', name: 'Видалення' },
-      { id: 'user_modify', name: 'Зміна' },
-      { id: 'user_view', name: 'Перегляд' },
-    ]
-  },
-  {
-    category: 'Розширення',
-    icon: Plug,
-    permissions: [
-      { id: 'ext_install', name: 'Встановлення' },
-      { id: 'func_create', name: 'Функції' },
-      { id: 'trigger_create', name: 'Тригери' },
-    ]
-  },
-  {
-    category: 'Резервні копії',
-    icon: HardDrive,
-    permissions: [
-      { id: 'backup_create', name: 'Створення' },
-      { id: 'backup_restore', name: 'Відновлення' },
-      { id: 'backup_view', name: 'Перегляд' },
-    ]
-  },
-  {
-    category: 'Моніторинг',
-    icon: Activity,
-    permissions: [
-      { id: 'monitor_view', name: 'Метрики' },
-      { id: 'logs_view', name: 'Логи' },
-      { id: 'performance_view', name: 'Продуктивність' },
-    ]
-  },
-];
-
-const adminRoles = [
-  { 
-    id: 'superadmin', 
-    name: 'Superadmin', 
-    color: 'from-red-500 to-red-600',
-    permissions: {
-      db_create: true, db_delete: true, db_modify: true, db_view: true,
-      table_create: true, table_delete: true, table_alter: true, table_view: true,
-      sql_select: true, sql_insert: true, sql_update: true, sql_delete: true,
-      user_create: true, user_delete: true, user_modify: true, user_view: true,
-      ext_install: true, func_create: true, trigger_create: true,
-      backup_create: true, backup_restore: true, backup_view: true,
-      monitor_view: true, logs_view: true, performance_view: true,
-    }
-  },
-  { 
-    id: 'dbadmin', 
-    name: 'Database Admin', 
-    color: 'from-lime-500 to-green-600',
-    permissions: {
-      db_create: true, db_delete: true, db_modify: true, db_view: true,
-      table_create: true, table_delete: true, table_alter: true, table_view: true,
-      sql_select: true, sql_insert: true, sql_update: true, sql_delete: true,
-      user_create: false, user_delete: false, user_modify: false, user_view: true,
-      ext_install: true, func_create: true, trigger_create: true,
-      backup_create: true, backup_restore: true, backup_view: true,
-      monitor_view: true, logs_view: true, performance_view: true,
-    }
-  },
-  { 
-    id: 'developer', 
-    name: 'Developer', 
-    color: 'from-yellow-500 to-lime-600',
-    permissions: {
-      db_create: false, db_delete: false, db_modify: false, db_view: true,
-      table_create: true, table_delete: false, table_alter: true, table_view: true,
-      sql_select: true, sql_insert: true, sql_update: true, sql_delete: false,
-      user_create: false, user_delete: false, user_modify: false, user_view: false,
-      ext_install: false, func_create: true, trigger_create: true,
-      backup_create: false, backup_restore: false, backup_view: true,
-      monitor_view: true, logs_view: true, performance_view: true,
-    }
-  },
-  { 
-    id: 'analyst', 
-    name: 'Analyst', 
-    color: 'from-green-500 to-lime-600',
-    permissions: {
-      db_create: false, db_delete: false, db_modify: false, db_view: true,
-      table_create: false, table_delete: false, table_alter: false, table_view: true,
-      sql_select: true, sql_insert: false, sql_update: false, sql_delete: false,
-      user_create: false, user_delete: false, user_modify: false, user_view: false,
-      ext_install: false, func_create: false, trigger_create: false,
-      backup_create: false, backup_restore: false, backup_view: false,
-      monitor_view: true, logs_view: false, performance_view: true,
-    }
-  },
-  { 
-    id: 'viewer', 
-    name: 'Viewer', 
-    color: 'from-lime-600 to-yellow-600',
-    permissions: {
-      db_create: false, db_delete: false, db_modify: false, db_view: true,
-      table_create: false, table_delete: false, table_alter: false, table_view: true,
-      sql_select: false, sql_insert: false, sql_update: false, sql_delete: false,
-      user_create: false, user_delete: false, user_modify: false, user_view: false,
-      ext_install: false, func_create: false, trigger_create: false,
-      backup_create: false, backup_restore: false, backup_view: false,
-      monitor_view: true, logs_view: false, performance_view: true,
-    }
-  },
-];
-
-const userPermissions = [
-  {
-    category: 'Проєкти',
-    icon: Database,
-    permissions: [
-      { id: 'project_create', name: 'Створити' },
-      { id: 'project_delete', name: 'Видалити' },
-      { id: 'project_share', name: 'Поділитись' },
-      { id: 'project_export', name: 'Експорт' },
-    ]
-  },
-  {
-    category: 'Дані',
-    icon: HardDrive,
-    permissions: [
-      { id: 'data_import', name: 'Імпорт' },
-      { id: 'data_export', name: 'Експорт' },
-      { id: 'data_backup', name: 'Бекапи' },
-    ]
-  },
-  {
-    category: 'API',
-    icon: Code,
-    permissions: [
-      { id: 'api_access', name: 'Доступ' },
-      { id: 'api_keys', name: 'Ключі' },
-      { id: 'webhooks', name: 'Webhooks' },
-    ]
-  },
-  {
-    category: 'Налаштування',
-    icon: Shield,
-    permissions: [
-      { id: 'custom_branding', name: 'Брендинг' },
-      { id: 'custom_domain', name: 'Домен' },
-      { id: 'sso', name: 'SSO' },
-    ]
-  },
-  {
-    category: 'Підтримка',
-    icon: Users,
-    permissions: [
-      { id: 'support_email', name: 'Email' },
-      { id: 'support_priority', name: 'Пріоритет' },
-      { id: 'support_phone', name: 'Телефон' },
-    ]
-  },
-  {
-    category: 'Обмеження',
-    icon: Activity,
-    permissions: [
-      { id: 'storage_limit', name: 'Сховище' },
-      { id: 'users_limit', name: 'Користувачі' },
-      { id: 'requests_limit', name: 'Запити' },
-    ]
-  },
-];
-
-const userRoles = [
-  { 
-    id: 'data-analyst', 
-    name: 'Data Analyst', 
-    color: 'from-violet-500 to-purple-600',
-    permissions: {
-      project_create: true, project_delete: true, project_share: true, project_export: true,
-      data_import: true, data_export: true, data_backup: true,
-      api_access: true, api_keys: true, webhooks: true,
-      custom_branding: true, custom_domain: true, sso: true,
-      support_email: true, support_priority: true, support_phone: true,
-      storage_limit: true, users_limit: true, requests_limit: true,
-    },
-    limits: { storage: 'Безліміт', users: 'Безліміт', requests: 'Безліміт' }
-  },
-  { 
-    id: 'content-manager', 
-    name: 'Content Manager', 
-    color: 'from-blue-500 to-cyan-600',
-    permissions: {
-      project_create: true, project_delete: true, project_share: true, project_export: true,
-      data_import: false, data_export: true, data_backup: false,
-      api_access: false, api_keys: false, webhooks: false,
-      custom_branding: false, custom_domain: false, sso: false,
-      support_email: true, support_priority: false, support_phone: false,
-      storage_limit: true, users_limit: true, requests_limit: true,
-    },
-    limits: { storage: '100 GB', users: '10', requests: '10,000/день' }
-  },
-  { 
-    id: 'report-viewer', 
-    name: 'Report Viewer', 
-    color: 'from-indigo-500 to-violet-600',
-    permissions: {
-      project_create: false, project_delete: false, project_share: false, project_export: true,
-      data_import: false, data_export: true, data_backup: false,
-      api_access: false, api_keys: false, webhooks: false,
-      custom_branding: false, custom_domain: false, sso: false,
-      support_email: true, support_priority: false, support_phone: false,
-      storage_limit: true, users_limit: true, requests_limit: true,
-    },
-    limits: { storage: '10 GB', users: '3', requests: '1,000/день' }
-  },
-  { 
-    id: 'guest-user', 
-    name: 'Guest User', 
-    color: 'from-slate-400 to-slate-500',
-    permissions: {
-      project_create: false, project_delete: false, project_share: false, project_export: false,
-      data_import: false, data_export: false, data_backup: false,
-      api_access: false, api_keys: false, webhooks: false,
-      custom_branding: false, custom_domain: false, sso: false,
-      support_email: true, support_priority: false, support_phone: false,
-      storage_limit: true, users_limit: true, requests_limit: true,
-    },
-    limits: { storage: '1 GB', users: '1', requests: '100/день' }
-  },
-];
+import { 
+  adminPermissions, 
+  adminRolesWithPermissions, 
+  userPermissions, 
+  userRolesWithPermissions 
+} from '../../../mockData/admin';
 
 export default function RBACMatrix() {
   const [expandedAdminCategories, setExpandedAdminCategories] = useState<Set<string>>(new Set());
@@ -307,11 +53,11 @@ export default function RBACMatrix() {
           <TabsList className="w-full justify-start mb-6">
             <TabsTrigger value="admin" className="gap-2">
               <UserCog className="w-4 h-4" />
-              Адмін ролі ({adminRoles.length})
+              Адмін ролі ({adminRolesWithPermissions.length})
             </TabsTrigger>
             <TabsTrigger value="user" className="gap-2">
               <Users className="w-4 h-4" />
-              Користувацькі ролі ({userRoles.length})
+              Користувацькі ролі ({userRolesWithPermissions.length})
             </TabsTrigger>
           </TabsList>
 
@@ -358,7 +104,7 @@ export default function RBACMatrix() {
                           </tr>
                         </thead>
                         <tbody>
-                          {adminRoles.map((role) => (
+                          {adminRolesWithPermissions.map((role) => (
                             <tr key={role.id} className="border-b border-slate-100 hover:bg-lime-50/30">
                               <td className="px-4 py-3 sticky left-0 bg-white hover:bg-lime-50/30">
                                 <div className="flex items-center gap-2">
@@ -434,7 +180,7 @@ export default function RBACMatrix() {
                           </tr>
                         </thead>
                         <tbody>
-                          {userRoles.map((role) => (
+                          {userRolesWithPermissions.map((role) => (
                             <tr key={role.id} className="border-b border-slate-100 hover:bg-violet-50/30">
                               <td className="px-4 py-3 sticky left-0 bg-white hover:bg-violet-50/30">
                                 <div className="flex items-center gap-2">
