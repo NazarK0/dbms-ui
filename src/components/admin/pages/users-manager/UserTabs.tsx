@@ -1,6 +1,6 @@
 import { Users, UserCog } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../ui/tabs';
-import UserTable from '../../../users/UserTable';
+import UserTable from '../../users/UserTable';
 import type { UserTabsProps } from './types';
 
 export default function UserTabs({

@@ -1,4 +1,4 @@
-import EditUserPermissionsModal from '../../../users/EditUserPermissionsModal';
+import EditUserPermissionsModal from '../../users/EditUserPermissionsModal';
 import type { EditUserModalWrapperProps } from './types';
 
 export default function EditUserModalWrapper({
