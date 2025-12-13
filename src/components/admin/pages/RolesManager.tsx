@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserCog, Plus, Edit, Trash2, Shield, Users, ChevronDown, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -14,6 +14,8 @@ import AdminRolesPanel from '../roles/AdminRolesPanel';
 import UserRolesPanel from '../roles/UserRolesPanel';
 import StatsCards from '../roles/StatsCards';
 import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type Role, type RoleType } from '../../../mockData/admin';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonCardGrid } from '../../ui/skeletons';
 
 export default function RolesManager() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -21,6 +23,34 @@ export default function RolesManager() {
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [roleType, setRoleType] = useState<RoleType>('admin');
+
+  // Loading states
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+
+  // Data states
+  const [rolesData, setRolesData] = useState(roles);
+  const [adminRolesData, setAdminRolesData] = useState(adminRoles);
+  const [userRolesData, setUserRolesData] = useState(userRoles);
+  const [statsData, setStatsData] = useState({ totalRoles: roles.length, totalAdmins, totalUsers });
+
+  useEffect(() => {
+    // Імітація завантаження статистики
+    mockApiCall({ totalRoles: roles.length, totalAdmins, totalUsers }, 'fast').then((data) => {
+      setStatsData(data);
+      setIsLoadingStats(false);
+    });
+
+    // Імітація завантаження ролей
+    Promise.all([
+      mockApiCall(adminRoles, 'normal'),
+      mockApiCall(userRoles, 'normal'),
+    ]).then(([admin, user]) => {
+      setAdminRolesData(admin);
+      setUserRolesData(user);
+      setIsLoadingRoles(false);
+    });
+  }, []);
 
   // Event handlers
   const handleEditRole = (role: Role) => {
@@ -76,25 +106,37 @@ export default function RolesManager() {
       </div>
 
       {/* Statistics Cards */}
-      <StatsCards
-        totalRoles={roles.length}
-        totalAdmins={totalAdmins}
-        totalUsers={totalUsers}
-      />
+      {isLoadingStats ? (
+        <SkeletonCardGrid count={3} columns={3} cardType="stat" />
+      ) : (
+        <StatsCards
+          totalRoles={statsData.totalRoles}
+          totalAdmins={statsData.totalAdmins}
+          totalUsers={statsData.totalUsers}
+        />
+      )}
 
       {/* Admin Roles Section */}
-      <AdminRolesPanel
-        roles={adminRoles}
-        onEdit={handleEditRole}
-        onDelete={handleDeleteRole}
-      />
+      {isLoadingRoles ? (
+        <SkeletonCardGrid count={4} columns={2} />
+      ) : (
+        <AdminRolesPanel
+          roles={adminRolesData}
+          onEdit={handleEditRole}
+          onDelete={handleDeleteRole}
+        />
+      )}
 
       {/* User Roles Section */}
-      <UserRolesPanel
-        roles={userRoles}
-        onEdit={handleEditRole}
-        onDelete={handleDeleteRole}
-      />
+      {isLoadingRoles ? (
+        <SkeletonCardGrid count={4} columns={2} />
+      ) : (
+        <UserRolesPanel
+          roles={userRolesData}
+          onEdit={handleEditRole}
+          onDelete={handleDeleteRole}
+        />
+      )}
 
       {/* RBAC Matrix */}
       <RBACMatrix />

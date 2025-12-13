@@ -4,7 +4,7 @@ import { Button } from '../../../ui/button';
 import { Input } from '../../../ui/input';
 import { ScrollArea } from '../../../ui/scroll-area';
 import CommandHistoryItem from './CommandHistoryItem';
-import { welcomeMessage, terminalPrompt } from './data';
+import { welcomeMessage, terminalPrompt } from '../../../../mockData/admin/cli';
 import type { TerminalWindowProps } from './types';
 
 export default function TerminalWindow({

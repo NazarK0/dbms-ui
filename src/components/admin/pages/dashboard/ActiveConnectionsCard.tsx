@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../ui/card';
-import ConnectionItem from '../../../dashboard/ConnectionItem';
+import { ConnectionItem } from '../../../admin/dashboard/ConnectionItem';
 import type { ActiveConnectionsCardProps } from './types';
 
 export default function ActiveConnectionsCard({

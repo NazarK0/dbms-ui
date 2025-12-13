@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { DatabaseGrid, ActivitySection } from './dashboard';
+import { mockApiCall } from '../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonListCard } from '../ui/skeletons';
 
 interface UserRole {
   id: number;
@@ -13,6 +16,10 @@ interface UserDashboardProps {
 }
 
 export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSelect }: UserDashboardProps) {
+  // Loading states
+  const [isLoadingDatabases, setIsLoadingDatabases] = useState(true);
+  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
+
   // Last modified records
   const lastModifiedRecords = [
     {
@@ -122,21 +129,55 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
     },
   ];
 
+  // Data states
+  const [databases, setDatabases] = useState(myDatabases);
+  const [modifiedRecords, setModifiedRecords] = useState(lastModifiedRecords);
+  const [accessedTables, setAccessedTables] = useState(lastAccessedTables);
+
+  useEffect(() => {
+    // Імітація завантаження баз даних
+    mockApiCall(myDatabases, 'fast').then((data) => {
+      setDatabases(data);
+      setIsLoadingDatabases(false);
+    });
+
+    // Імітація завантаження активності
+    Promise.all([
+      mockApiCall(lastModifiedRecords, 'normal'),
+      mockApiCall(lastAccessedTables, 'normal'),
+    ]).then(([records, tables]) => {
+      setModifiedRecords(records);
+      setAccessedTables(tables);
+      setIsLoadingActivity(false);
+    });
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Databases Grid */}
-      <DatabaseGrid 
-        databases={myDatabases}
-        onDatabaseSelect={onDatabaseSelect}
-      />
+      {isLoadingDatabases ? (
+        <SkeletonCardGrid count={3} columns={3} cardType="icon" />
+      ) : (
+        <DatabaseGrid 
+          databases={databases}
+          onDatabaseSelect={onDatabaseSelect}
+        />
+      )}
 
       {/* Last Activity Grid */}
-      <ActivitySection
-        lastModifiedRecords={lastModifiedRecords}
-        lastAccessedTables={lastAccessedTables}
-        onRecordClick={onTableSelect}
-        onTableClick={onTableSelect}
-      />
+      {isLoadingActivity ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SkeletonListCard items={4} />
+          <SkeletonListCard items={4} />
+        </div>
+      ) : (
+        <ActivitySection
+          lastModifiedRecords={modifiedRecords}
+          lastAccessedTables={accessedTables}
+          onRecordClick={onTableSelect}
+          onTableClick={onTableSelect}
+        />
+      )}
     </div>
   );
 }

@@ -9,7 +9,7 @@ interface ConnectionItemProps {
   queries: number;
 }
 
-export default function ConnectionItem({ database, user, state, duration, queries }: ConnectionItemProps) {
+export function ConnectionItem({ database, user, state, duration, queries }: ConnectionItemProps) {
   return (
     <div className="flex items-center justify-between p-3 hover:bg-lime-50 rounded-lg transition-colors">
       <div className="flex items-center gap-3">

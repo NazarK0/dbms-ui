@@ -11,4 +11,3 @@ export { default as ImportDialog } from './ImportDialog';
 export { default as QuickPresets } from './QuickPresets';
 export * from './types';
 export * from './utils';
-export * from './data';

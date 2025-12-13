@@ -23,6 +23,14 @@ export interface SavedExample {
   isCustom: boolean;
 }
 
+export const welcomeMessage = {
+  version: 'psql (PostgreSQL) 16.1',
+  helpText: 'Введіть "help" для довідки.',
+  navigationText: 'Введіть "\\?" для переліку всіх команд psql.'
+};
+
+export const terminalPrompt = 'postgres=#';
+
 export const initialCommandHistory: CommandHistory[] = [
   {
     id: '1',
@@ -67,53 +75,53 @@ export const defaultCommonCommands: SavedCommand[] = [
   { id: '10', cmd: 'SELECT current_database();', desc: 'Поточна БД', isCustom: false },
 ];
 
-export const defaultSqlExamples: SavedExample[] = [
+export const defaultSQLExamples: SavedExample[] = [
   {
     id: '1',
     title: 'Базова вибірка',
-    query: 'SELECT * FROM users WHERE status = \'active\' LIMIT 10;',
+    query: "SELECT * FROM users WHERE status = 'active' LIMIT 10;",
     isCustom: false
   },
   {
     id: '2',
-    title: 'З\'єднання таблиць',
-    query: 'SELECT u.name, o.total FROM users u\nJOIN orders o ON u.id = o.user_id\nWHERE o.created_at > NOW() - INTERVAL \'7 days\';',
+    title: "З'єднання таблиць",
+    query: "SELECT u.name, o.total FROM users u\nJOIN orders o ON u.id = o.user_id\nWHERE o.created_at > NOW() - INTERVAL '7 days';",
     isCustom: false
   },
   {
     id: '3',
     title: 'Агрегація даних',
-    query: 'SELECT \n  DATE(created_at) as date,\n  COUNT(*) as order_count,\n  SUM(total) as daily_total\nFROM orders\nGROUP BY DATE(created_at)\nORDER BY date DESC;',
+    query: "SELECT \n  DATE(created_at) as date,\n  COUNT(*) as order_count,\n  SUM(total) as daily_total\nFROM orders\nGROUP BY DATE(created_at)\nORDER BY date DESC;",
     isCustom: false
   },
   {
     id: '4',
     title: 'Оновлення записів',
-    query: 'UPDATE products\nSET price = price * 1.1\nWHERE category = \'electronics\'\nRETURNING id, name, price;',
+    query: "UPDATE products\nSET price = price * 1.1\nWHERE category = 'electronics'\nRETURNING id, name, price;",
     isCustom: false
   },
   {
     id: '5',
     title: 'Складний підзапит',
-    query: 'SELECT \n  u.name,\n  u.email,\n  (SELECT COUNT(*) FROM orders WHERE user_id = u.id) as order_count\nFROM users u\nWHERE u.id IN (\n  SELECT DISTINCT user_id FROM orders\n  WHERE created_at > NOW() - INTERVAL \'30 days\'\n);',
+    query: "SELECT \n  u.name,\n  u.email,\n  (SELECT COUNT(*) FROM orders WHERE user_id = u.id) as order_count\nFROM users u\nWHERE u.id IN (\n  SELECT DISTINCT user_id FROM orders\n  WHERE created_at > NOW() - INTERVAL '30 days'\n);",
     isCustom: false
   },
   {
     id: '6',
     title: 'Створення індексу',
-    query: 'CREATE INDEX idx_users_email ON users(email);\nCREATE INDEX idx_orders_user_created ON orders(user_id, created_at);',
+    query: "CREATE INDEX idx_users_email ON users(email);\nCREATE INDEX idx_orders_user_created ON orders(user_id, created_at);",
     isCustom: false
   },
   {
     id: '7',
     title: 'Window функції',
-    query: 'SELECT \n  name,\n  department,\n  salary,\n  AVG(salary) OVER (PARTITION BY department) as dept_avg,\n  RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank\nFROM employees;',
+    query: "SELECT \n  name,\n  department,\n  salary,\n  AVG(salary) OVER (PARTITION BY department) as dept_avg,\n  RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank\nFROM employees;",
     isCustom: false
   },
   {
     id: '8',
     title: 'CTE (Common Table Expression)',
-    query: 'WITH monthly_sales AS (\n  SELECT \n    DATE_TRUNC(\'month\', created_at) as month,\n    SUM(total) as total_sales\n  FROM orders\n  GROUP BY month\n)\nSELECT \n  month,\n  total_sales,\n  LAG(total_sales) OVER (ORDER BY month) as prev_month,\n  total_sales - LAG(total_sales) OVER (ORDER BY month) as growth\nFROM monthly_sales;',
+    query: "WITH monthly_sales AS (\n  SELECT \n    DATE_TRUNC('month', created_at) as month,\n    SUM(total) as total_sales\n  FROM orders\n  GROUP BY month\n)\nSELECT \n  month,\n  total_sales,\n  LAG(total_sales) OVER (ORDER BY month) as prev_month,\n  total_sales - LAG(total_sales) OVER (ORDER BY month) as growth\nFROM monthly_sales;",
     isCustom: false
   },
 ];

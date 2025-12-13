@@ -8,7 +8,7 @@ import {
   AuditFilters,
   AuditLogTable,
 } from './audit-log';
-import { auditEntries } from './audit-log/data';
+import { auditEntries } from '@/mockData/admin/auditLog';
 import {
   calculateStatistics,
   calculateActionTypeStats,

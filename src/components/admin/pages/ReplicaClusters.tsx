@@ -7,11 +7,11 @@ import {
   ReplicationActivityTable,
   AddReplicaDialog,
 } from './replicas';
+import { replicationStats } from './replicas/data';
 import { 
-  replicationStats, 
   clusters as initialClusters, 
   replicationActivity 
-} from './replicas/data';
+} from '@/mockData/admin/replicas';
 import type { AddReplicaFormData } from './replicas/types';
 
 export default function ReplicaClusters() {

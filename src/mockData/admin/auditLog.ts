@@ -148,3 +148,28 @@ export const auditEntries: AuditEntry[] = [
     status: 'success',
   },
 ];
+
+export const users = ['admin', 'developer', 'analyst', 'app_user', 'backup_service'];
+
+export const categories: string[] = [
+  'База даних',
+  'Таблиця',
+  'Запит',
+  'Права доступу',
+  'Резервна копія',
+  'Функція',
+  'Тригер',
+  'Користувач',
+  'Автентифікація',
+];
+
+export const actions: string[] = [
+  'create',
+  'update',
+  'delete',
+  'select',
+  'grant',
+  'revoke',
+  'login',
+  'backup',
+];

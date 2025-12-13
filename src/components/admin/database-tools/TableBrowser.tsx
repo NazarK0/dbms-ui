@@ -6,7 +6,7 @@ import {
   TableDataPreview,
   EmptyTableState,
 } from './table-browser';
-import { tables as allTables, tableSchema, tableData } from './table-browser/data';
+import { tables as allTables, tableSchema, tableData } from '@/mockData/admin/tableBrowser';
 import type { TableBrowserProps } from './table-browser/types';
 
 export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {

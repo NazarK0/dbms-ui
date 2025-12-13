@@ -7,4 +7,3 @@ export { default as AddCommandDialog } from './AddCommandDialog';
 export { default as AddExampleDialog } from './AddExampleDialog';
 export * from './types';
 export * from './utils';
-export * from './data';

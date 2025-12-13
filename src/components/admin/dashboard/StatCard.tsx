@@ -13,7 +13,7 @@ interface StatCardProps {
   visible?: boolean;
 }
 
-export default function StatCard({ 
+export function StatCard({ 
   label, 
   value, 
   icon: Icon, 

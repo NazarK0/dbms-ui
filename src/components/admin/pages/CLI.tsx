@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { TerminalWindow, CommonCommands, SQLExamples } from './cli';
 import {
-  initialHistory,
+  initialCommandHistory,
   defaultCommonCommands,
   defaultSQLExamples,
-} from './cli/data';
+} from '@/mockData/admin/cli';
 import {
   generateMockOutput,
   exportHistory,
@@ -15,7 +15,7 @@ import type { CommandHistory, SavedCommand, SavedExample } from './cli/types';
 
 export default function CLI() {
   const [command, setCommand] = useState('');
-  const [history, setHistory] = useState<CommandHistory[]>(initialHistory);
+  const [history, setHistory] = useState<CommandHistory[]>(initialCommandHistory);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
   const [commonCommands, setCommonCommands] = useState<SavedCommand[]>(defaultCommonCommands);
   const [sqlExamples, setSqlExamples] = useState<SavedExample[]>(defaultSQLExamples);

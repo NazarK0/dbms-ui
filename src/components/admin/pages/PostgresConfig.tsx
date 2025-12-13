@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Card, CardContent } from '../../ui/card';
 import {
   ConfigHeader,
+  RestartDialog,
   RestartAlert,
   ConfigStatistics,
   ConfigAccordion,
@@ -9,7 +11,7 @@ import {
   QuickPresets,
   calculateStatistics,
 } from './config';
-import { configParams, savedProfiles as initialProfiles } from './config/data';
+import { configParams, savedProfiles as initialProfiles } from '@/mockData/admin/postgresConfig';
 
 export default function PostgresConfig() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -80,6 +82,8 @@ export default function PostgresConfig() {
         onRestartDialogChange={setRestartDialogOpen}
         onRestart={handleRestart}
       />
+
+      <RestartDialog open={restartDialogOpen} onClose={setRestartDialogOpen} />
 
       <RestartAlert count={statistics.requiresRestart} />
 

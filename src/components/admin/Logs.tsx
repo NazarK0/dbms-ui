@@ -5,12 +5,12 @@ import {
   LogFilters,
   LogsTable,
   LogDetailsModal,
-  mockLogs,
   filterLogs,
   calculateLogStats,
   calculatePagination,
 } from './logs';
 import type { LogEntry } from './logs';
+import { mockLogs } from '@/mockData/admin/logs';
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,15 +59,15 @@ export default function Logs() {
         currentPage={currentPage}
         totalPages={totalPages}
         itemsPerPage={itemsPerPage}
-        startIndex={startIndex}
-        endIndex={endIndex}
-        totalFilteredLogs={filteredLogs.length}
-        onViewDetails={setSelectedLog}
+        totalLogs={filteredLogs.length}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
+        onLogClick={setSelectedLog}
       />
 
-      <LogDetailsModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+      {selectedLog && (
+        <LogDetailsModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+      )}
     </div>
   );
 }

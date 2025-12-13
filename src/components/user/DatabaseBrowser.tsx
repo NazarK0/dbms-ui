@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { TableSearchBar } from './table';
 import {
   DatabaseBrowserHeader,
@@ -5,6 +6,8 @@ import {
   DatabaseBrowserGridView,
   useDatabaseBrowser,
 } from './database-browser';
+import { mockApiCall } from '../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonList } from '../ui/skeletons';
 
 export interface DatabaseBrowserProps {
   onTableSelect: (database: string, table: string, permissions: string[]) => void;
@@ -28,6 +31,16 @@ export default function DatabaseBrowser({
     handleCopy,
   } = useDatabaseBrowser(propSelectedDatabase);
 
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Імітація завантаження баз даних
+    mockApiCall(filteredDatabases, 'normal').then(() => {
+      setIsLoading(false);
+    });
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,7 +58,13 @@ export default function DatabaseBrowser({
       />
 
       {/* Content based on whether a database is pre-selected */}
-      {propSelectedDatabase ? (
+      {isLoading ? (
+        propSelectedDatabase ? (
+          <SkeletonList items={8} showAvatar={false} />
+        ) : (
+          <SkeletonCardGrid count={6} columns={3} />
+        )
+      ) : propSelectedDatabase ? (
         // Show only tables for the selected database
         <DatabaseBrowserTablesView
           database={propSelectedDatabase}

@@ -2,21 +2,8 @@
  * TypeScript types for DatabaseBrowser component
  */
 
-export interface Table {
-  name: string;
-  records: number;
-  size: string;
-  permissions: string[];
-  rlsEnabled: boolean;
-  description: string;
-}
-
-export interface Database {
-  id: number;
-  name: string;
-  description: string;
-  tables: Table[];
-}
+// Re-export types from centralized mock data
+export type { TableInfo as Table, Database } from '../../../mockData/user/databases';
 
 export interface DatabaseBrowserHeaderProps {
   propSelectedDatabase?: string | null;
@@ -25,7 +12,7 @@ export interface DatabaseBrowserHeaderProps {
 
 export interface DatabaseBrowserTablesViewProps {
   database: string;
-  tables: Table[];
+  tables: import('../../../mockData/user/databases').TableInfo[];
   searchTerm: string;
   copied: boolean;
   onTableSelect: (database: string, table: string, permissions: string[]) => void;

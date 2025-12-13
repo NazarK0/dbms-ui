@@ -6,4 +6,3 @@ export { default as TableDataPreview } from './TableDataPreview';
 export { default as EmptyTableState } from './EmptyTableState';
 export * from './types';
 export * from './utils';
-export * from './data';

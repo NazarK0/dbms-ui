@@ -1,5 +1,3 @@
-import { Badge } from '../../ui/badge';
-
 interface ActivityItemProps {
   action: string;
   details: string;
@@ -8,7 +6,7 @@ interface ActivityItemProps {
   type: 'success' | 'info' | 'warning';
 }
 
-export default function ActivityItem({ action, details, user, time, type }: ActivityItemProps) {
+export function ActivityItem({ action, details, user, time, type }: ActivityItemProps) {
   const getActivityColor = () => {
     switch(type) {
       case 'success': return 'bg-green-500';

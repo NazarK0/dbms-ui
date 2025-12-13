@@ -1,5 +1,5 @@
 import { TriggersTable, RulesTable } from './triggers-rules';
-import { triggers as allTriggers, rules as allRules } from './triggers-rules/data';
+import { triggers as allTriggers, rules as allRules } from '@/mockData/admin/triggers';
 import type { TriggersRulesProps, Trigger, Rule } from './triggers-rules/types';
 
 export default function TriggersRules({ selectedDatabase }: TriggersRulesProps) {

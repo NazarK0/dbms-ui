@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../ui/card';
-import ActivityItem from '../../../dashboard/ActivityItem';
+import { ActivityItem } from '../../../admin/dashboard/ActivityItem';
 import type { RecentActivityCardProps } from './types';
 
 export default function RecentActivityCard({

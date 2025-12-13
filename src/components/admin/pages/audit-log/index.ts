@@ -5,4 +5,3 @@ export { default as AuditFilters } from './AuditFilters';
 export { default as AuditLogTable } from './AuditLogTable';
 export * from './types';
 export * from './utils';
-export * from './data';

@@ -22,3 +22,5 @@ export * from './cli';
 export * from './tableBrowser';
 export * from './schemaVisualizer';
 export * from './postgresConfig';
+export * from './logs';
+export * from './replicas';
