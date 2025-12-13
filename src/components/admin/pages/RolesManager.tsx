@@ -1,108 +1,26 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import StatsCards from '../roles/StatsCards';
-import AdminRolesPanel from '../roles/AdminRolesPanel';
-import UserRolesPanel from '../roles/UserRolesPanel';
-import RBACMatrix from '../roles/RBACMatrix';
+import { UserCog, Plus, Edit, Trash2, Shield, Users, ChevronDown, Eye } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../ui/collapsible';
+import { Alert, AlertDescription } from '../../ui/alert';
 import CreateRoleModal from '../roles/CreateRoleModal';
 import EditAdminRoleModal from '../roles/EditAdminRoleModal';
 import EditUserRoleModal from '../roles/EditUserRoleModal';
-import { Role } from '../roles/RoleCard';
-import { Button } from '../../ui/button';
-
-type RoleType = 'admin' | 'user';
+import RBACMatrix from '../roles/RBACMatrix';
+import AdminRolesPanel from '../roles/AdminRolesPanel';
+import UserRolesPanel from '../roles/UserRolesPanel';
+import StatsCards from '../roles/StatsCards';
+import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type Role, type RoleType } from '../../../mockData/admin';
 
 export default function RolesManager() {
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditAdminModal, setShowEditAdminModal] = useState(false);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [roleType, setRoleType] = useState<RoleType>('admin');
-
-  // Mock data - in real app this would come from API/database
-  const roles: Role[] = [
-    { 
-      name: 'Superadmin', 
-      users: 2, 
-      description: 'Повний доступ до всіх функцій системи',
-      color: 'from-red-500 to-red-600',
-      badge: 'destructive',
-      type: 'admin'
-    },
-    { 
-      name: 'Database Admin', 
-      users: 5, 
-      description: 'Управління базами даних, таблицями, схемами',
-      color: 'from-lime-500 to-green-600',
-      badge: 'default',
-      type: 'admin'
-    },
-    { 
-      name: 'Developer', 
-      users: 12, 
-      description: 'Доступ до query editor, перегляд схем',
-      color: 'from-yellow-500 to-lime-600',
-      badge: 'secondary',
-      type: 'admin'
-    },
-    { 
-      name: 'Analyst', 
-      users: 8, 
-      description: 'Тільки читання даних, виконання SELECT запитів',
-      color: 'from-green-500 to-lime-600',
-      badge: 'outline',
-      type: 'admin'
-    },
-    { 
-      name: 'Viewer', 
-      users: 15, 
-      description: 'Перегляд метрик та моніторингу без можливості змін',
-      color: 'from-lime-600 to-yellow-600',
-      badge: 'secondary',
-      type: 'admin'
-    },
-    {
-      name: 'Data Analyst',
-      users: 245,
-      description: 'Аналіз даних та створення звітів',
-      color: 'from-violet-500 to-purple-600',
-      badge: 'default',
-      type: 'user'
-    },
-    {
-      name: 'Content Manager',
-      users: 1823,
-      description: 'Управління контентом системи',
-      color: 'from-blue-500 to-cyan-600',
-      badge: 'secondary',
-      type: 'user'
-    },
-    {
-      name: 'Report Viewer',
-      users: 4521,
-      description: 'Перегляд звітів та даних',
-      color: 'from-indigo-500 to-violet-600',
-      badge: 'outline',
-      type: 'user'
-    },
-    {
-      name: 'Guest User',
-      users: 156,
-      description: 'Обмежений доступ для гостей',
-      color: 'from-slate-400 to-slate-500',
-      badge: 'secondary',
-      type: 'user'
-    },
-  ];
-
-  // Separate roles by type
-  const adminRoles = roles.filter(role => role.type === 'admin');
-  const userRoles = roles.filter(role => role.type === 'user');
-  
-  // Calculate totals
-  const totalAdmins = adminRoles.reduce((sum, role) => sum + role.users, 0);
-  const totalUsers = userRoles.reduce((sum, role) => sum + role.users, 0);
 
   // Event handlers
   const handleEditRole = (role: Role) => {
@@ -122,11 +40,11 @@ export default function RolesManager() {
   const handleCreateRole = () => {
     setEditingRole(null);
     setRoleType('admin');
-    setShowRoleModal(true);
+    setShowCreateModal(true);
   };
 
   const handleCloseModal = () => {
-    setShowRoleModal(false);
+    setShowCreateModal(false);
     setEditingRole(null);
   };
 
@@ -158,18 +76,16 @@ export default function RolesManager() {
       </div>
 
       {/* Statistics Cards */}
-      <StatsCards 
+      <StatsCards
         totalRoles={roles.length}
         totalAdmins={totalAdmins}
         totalUsers={totalUsers}
-        totalPermissions={47}
       />
 
       {/* Admin Roles Section */}
       <AdminRolesPanel
         roles={adminRoles}
         onEdit={handleEditRole}
-        onSelect={setSelectedRole}
         onDelete={handleDeleteRole}
       />
 
@@ -177,7 +93,6 @@ export default function RolesManager() {
       <UserRolesPanel
         roles={userRoles}
         onEdit={handleEditRole}
-        onSelect={setSelectedRole}
         onDelete={handleDeleteRole}
       />
 
@@ -186,7 +101,7 @@ export default function RolesManager() {
 
       {/* Role Modal (Create/Edit) */}
       <CreateRoleModal
-        open={showRoleModal}
+        open={showCreateModal}
         onOpenChange={handleCloseModal}
         roleType={roleType}
         onRoleTypeChange={setRoleType}

@@ -16,6 +16,7 @@ import FunctionsManager from './FunctionsManager';
 import TriggersRules from './TriggersRules';
 import ForeignTablesManager from './ForeignTablesManager';
 import DataTypesManager from './DataTypesManager';
+import { getSchemasByDatabase } from '../../../mockData';
 
 interface SchemasManagerProps {
   selectedDatabase: string;
@@ -32,27 +33,7 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
   const [schemaDescription, setSchemaDescription] = useState('');
 
   // Mock data - schemas for the selected database
-  const getSchemas = () => {
-    const allSchemas = [
-      { name: 'public', owner: 'postgres', tables: 45, functions: 12, description: 'Схема за замовчуванням' },
-      { name: 'auth', owner: 'admin', tables: 8, functions: 3, description: 'Схема аутентифікації' },
-      { name: 'analytics', owner: 'analyst', tables: 15, functions: 7, description: 'Схема для аналітики' },
-      { name: 'reporting', owner: 'analyst', tables: 13, functions: 5, description: 'Схема звітності' },
-      { name: 'logs', owner: 'system', tables: 5, functions: 2, description: 'Схема логування' },
-    ];
-
-    // Filter schemas based on database (mock logic)
-    if (selectedDatabase === 'production_db') {
-      return allSchemas.filter(s => ['public', 'auth'].includes(s.name));
-    } else if (selectedDatabase === 'analytics_db') {
-      return allSchemas.filter(s => ['public', 'analytics', 'reporting'].includes(s.name));
-    } else if (selectedDatabase === 'logs_db') {
-      return allSchemas.filter(s => ['public', 'logs'].includes(s.name));
-    }
-    return [allSchemas[0]]; // default to public schema
-  };
-
-  const schemas = getSchemas();
+  const schemas = getSchemasByDatabase(selectedDatabase);
 
   const handleCreateSchema = () => {
     if (schemaName.trim()) {

@@ -6,23 +6,12 @@ import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { installedExtensionsDetailed, availableExtensions } from '../../../mockData/admin';
 
 export default function ExtensionManager({ selectedDatabase }: { selectedDatabase?: string }) {
   const [showInstallModal, setShowInstallModal] = useState(false);
 
-  const installedExtensions = [
-    { name: 'pg_stat_statements', version: '1.10', description: 'Відстеження статистики виконання SQL запитів', status: 'enabled' },
-    { name: 'uuid-ossp', version: '1.1', description: 'Генерація UUID за різними алгоритмами', status: 'enabled' },
-    { name: 'hstore', version: '1.8', description: 'Зберігання пар ключ-значення в одному полі', status: 'enabled' },
-    { name: 'pg_trgm', version: '1.6', description: 'Підтримка тригра мів для пошуку подібних рядків', status: 'disabled' },
-  ];
-
-  const availableExtensions = [
-    { name: 'postgis', version: '3.3.2', description: 'Географічні об\'єкти для PostgreSQL' },
-    { name: 'pgcrypto', version: '1.3', description: 'Криптографічні функції' },
-    { name: 'pg_repack', version: '1.4.8', description: 'Реорганізація таблиць без блокування' },
-    { name: 'timescaledb', version: '2.11.0', description: 'Розширення для часових рядів' },
-  ];
+  const installedExtensions = installedExtensionsDetailed;
 
   return (
     <div className="space-y-6">

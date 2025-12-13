@@ -10,6 +10,7 @@ import { Label } from '../../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Alert, AlertDescription } from '../../ui/alert';
 import { Textarea } from '../../ui/textarea';
+import { foreignTables, foreignServersSimple } from '../../../mockData';
 
 interface ForeignTablesManagerProps {
   selectedDatabase: string;
@@ -22,42 +23,6 @@ export default function ForeignTablesManager({ selectedDatabase }: ForeignTables
   const [serverName, setServerName] = useState('');
   const [remoteSchema, setRemoteSchema] = useState('');
   const [remoteTable, setRemoteTable] = useState('');
-
-  // Mock data - foreign tables
-  const foreignTables = [
-    {
-      name: 'remote_users',
-      server: 'external_db',
-      remoteSchema: 'public',
-      remoteTable: 'users',
-      status: 'active',
-      lastSync: '2025-12-13 10:30:00',
-    },
-    {
-      name: 'external_orders',
-      server: 'warehouse_db',
-      remoteSchema: 'sales',
-      remoteTable: 'orders',
-      status: 'active',
-      lastSync: '2025-12-13 09:15:00',
-    },
-    {
-      name: 'legacy_products',
-      server: 'old_system',
-      remoteSchema: 'inventory',
-      remoteTable: 'products',
-      status: 'error',
-      lastSync: '2025-12-12 18:45:00',
-    },
-  ];
-
-  // Mock data - foreign servers
-  const foreignServers = [
-    { name: 'external_db', wrapper: 'postgres_fdw', host: 'external.example.com' },
-    { name: 'warehouse_db', wrapper: 'postgres_fdw', host: 'warehouse.example.com' },
-    { name: 'old_system', wrapper: 'postgres_fdw', host: 'legacy.example.com' },
-    { name: 'api_server', wrapper: 'multicorn', host: 'api.example.com' },
-  ];
 
   const filteredTables = foreignTables.filter(table =>
     table.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -230,7 +195,7 @@ export default function ForeignTablesManager({ selectedDatabase }: ForeignTables
                     <SelectValue placeholder="Виберіть сервер" />
                   </SelectTrigger>
                   <SelectContent>
-                    {foreignServers.map((server) => (
+                    {foreignServersSimple.map((server) => (
                       <SelectItem key={server.name} value={server.name}>
                         {server.name} ({server.wrapper})
                       </SelectItem>

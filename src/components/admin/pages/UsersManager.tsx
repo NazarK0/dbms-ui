@@ -5,121 +5,14 @@ import { Badge } from '../../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import UserTable from '../../users/UserTable';
 import EditUserPermissionsModal from '../../users/EditUserPermissionsModal';
+import { administrators, endUsers, type User } from '../../../mockData/admin';
 
 type UserType = 'admin' | 'user';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  roleColor: string;
-  status: string;
-  avatar: string;
-  lastActive?: string;
-  registered?: string;
-}
 
 export default function UsersManager() {
   const [activeTab, setActiveTab] = useState<UserType>('admin');
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
-  const administrators: User[] = [
-    {
-      id: 1,
-      name: 'Іван Петренко',
-      email: 'ivan@company.com',
-      role: 'Superadmin',
-      roleColor: 'from-red-500 to-red-600',
-      lastActive: '2024-12-12 14:30',
-      status: 'active',
-      avatar: 'IP'
-    },
-    {
-      id: 2,
-      name: 'Марія Коваленко',
-      email: 'maria@company.com',
-      role: 'Database Admin',
-      roleColor: 'from-lime-500 to-green-600',
-      lastActive: '2024-12-12 12:15',
-      status: 'active',
-      avatar: 'МК'
-    },
-    {
-      id: 3,
-      name: 'Олександр Шевченко',
-      email: 'alex@company.com',
-      role: 'Developer',
-      roleColor: 'from-yellow-500 to-lime-600',
-      lastActive: '2024-12-11 18:45',
-      status: 'inactive',
-      avatar: 'ОШ'
-    },
-    {
-      id: 4,
-      name: 'Катерина Мельник',
-      email: 'kateryna@company.com',
-      role: 'Analyst',
-      roleColor: 'from-green-500 to-lime-600',
-      lastActive: '2024-12-12 09:20',
-      status: 'active',
-      avatar: 'КМ'
-    },
-    {
-      id: 5,
-      name: 'Андрій Ткач',
-      email: 'andriy@company.com',
-      role: 'Viewer',
-      roleColor: 'from-lime-600 to-yellow-600',
-      lastActive: '2024-12-10 16:45',
-      status: 'active',
-      avatar: 'АТ'
-    },
-  ];
-
-  const endUsers: User[] = [
-    {
-      id: 101,
-      name: 'Анна Сидоренко',
-      email: 'anna.s@example.com',
-      role: 'Data Analyst',
-      roleColor: 'from-violet-500 to-purple-600',
-      registered: '2024-10-15',
-      status: 'active',
-      avatar: 'АС'
-    },
-    {
-      id: 102,
-      name: 'Дмитро Мельник',
-      email: 'dmytro.m@example.com',
-      role: 'Content Manager',
-      roleColor: 'from-blue-500 to-cyan-600',
-      registered: '2024-11-20',
-      status: 'active',
-      avatar: 'ДМ'
-    },
-    {
-      id: 103,
-      name: 'Олена Бондаренко',
-      email: 'olena.b@example.com',
-      role: 'Report Viewer',
-      roleColor: 'from-indigo-500 to-violet-600',
-      registered: '2024-12-01',
-      status: 'active',
-      avatar: 'ОБ'
-    },
-    {
-      id: 104,
-      name: 'Сергій Ткаченко',
-      email: 'sergiy.t@example.com',
-      role: 'Guest User',
-      roleColor: 'from-slate-400 to-slate-500',
-      registered: '2024-12-10',
-      status: 'active',
-      avatar: 'СТ'
-    },
-  ];
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);

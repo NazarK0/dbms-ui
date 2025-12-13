@@ -1029,6 +1029,10 @@
     max-height: 90vh;
   }
 
+  .max-h-\[300px\] {
+    max-height: 300px;
+  }
+
   .max-h-\[calc\(90vh-200px\)\] {
     max-height: calc(90vh - 200px);
   }

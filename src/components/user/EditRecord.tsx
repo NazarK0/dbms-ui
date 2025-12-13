@@ -1,60 +1,41 @@
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Save, Database, Table as TableIcon, Trash2, Upload, X, Download } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Save, Trash2, X, Upload, Download, Eye, Database as DatabaseIcon, Table as TableIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { ScrollArea } from '../ui/scroll-area';
+import { Alert, AlertDescription } from '../ui/alert';
+import { simpleTableSchema } from '../../mockData/user';
 
 interface EditRecordProps {
   database: string;
   table: string;
-  recordId: string | number;
-  initialData: Record<string, any>;
+  recordId: string;
   onBack: () => void;
-  onSave: (data: Record<string, any>) => void;
-  onDelete: (id: string | number) => void;
+  onSave: () => void;
+  onDelete?: () => void;
   canDelete?: boolean;
 }
 
 export default function EditRecord({ 
   database, 
   table, 
-  recordId,
-  initialData,
+  recordId, 
   onBack, 
-  onSave,
+  onSave, 
   onDelete,
   canDelete = true
 }: EditRecordProps) {
   // Mock table schema - в реальності це буде з API
-  const tableSchema = [
-    { name: 'id', type: 'integer', nullable: false, autoIncrement: true, primaryKey: true },
-    { name: 'name', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'email', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'bio', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'age', type: 'integer', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'is_active', type: 'boolean', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'role', type: 'varchar(50)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'department', type: 'varchar(100)', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'phone', type: 'varchar(20)', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'address', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'notes', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'created_at', type: 'timestamp', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'updated_at', type: 'timestamp', nullable: true, autoIncrement: false, primaryKey: false },
-  ];
+  const tableSchema = simpleTableSchema;
 
-  const [formData, setFormData] = useState<Record<string, any>>(initialData);
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [existingFiles, setExistingFiles] = useState<string[]>(initialData.attachments || []);
-
-  useEffect(() => {
-    setFormData(initialData);
-  }, [initialData]);
+  const [existingFiles, setExistingFiles] = useState<string[]>([]);
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -92,12 +73,14 @@ export default function EditRecord({
     e.preventDefault();
     
     if (validateForm()) {
-      onSave({ ...formData, attachments: attachedFiles, existingAttachments: existingFiles });
+      onSave();
     }
   };
 
   const handleDelete = () => {
-    onDelete(recordId);
+    if (onDelete) {
+      onDelete();
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,12 +148,12 @@ export default function EditRecord({
     // Text area for text type
     if (field.type === 'text') {
       return (
-        <Textarea
+        <Input
+          type="text"
           id={field.name}
           value={value}
           onChange={(e) => handleChange(field.name, e.target.value)}
           placeholder={`Введіть ${field.name}...`}
-          rows={5}
           disabled={isReadOnly}
           className={`${errors[field.name] ? 'border-red-500' : ''} ${isReadOnly ? 'bg-slate-100' : ''}`}
         />
@@ -271,7 +254,7 @@ export default function EditRecord({
       <Card className="border-violet-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Database className="w-4 h-4" />
+            <DatabaseIcon className="w-4 h-4" />
             <span className="font-medium text-slate-900">{database}</span>
             <span>/</span>
             <TableIcon className="w-4 h-4" />

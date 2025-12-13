@@ -5,49 +5,10 @@ import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
+import { functions, functionCode } from '../../../mockData/admin';
 
 export default function FunctionsManager({ selectedDatabase }: { selectedDatabase?: string }) {
   const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
-
-  const functions = [
-    {
-      name: 'calculate_total',
-      schema: 'public',
-      returns: 'decimal',
-      language: 'plpgsql',
-      arguments: 'order_id integer',
-      description: 'Обчислює загальну суму замовлення',
-    },
-    {
-      name: 'update_timestamp',
-      schema: 'public',
-      returns: 'trigger',
-      language: 'plpgsql',
-      arguments: '',
-      description: 'Оновлює timestamp при зміні запису',
-    },
-    {
-      name: 'get_user_stats',
-      schema: 'public',
-      returns: 'TABLE',
-      language: 'sql',
-      arguments: 'user_id integer',
-      description: 'Повертає статистику користувача',
-    },
-  ];
-
-  const functionCode = `CREATE OR REPLACE FUNCTION calculate_total(order_id integer)
-RETURNS decimal AS $$
-DECLARE
-  total decimal;
-BEGIN
-  SELECT SUM(quantity * price) INTO total
-  FROM order_items
-  WHERE order_id = $1;
-  
-  RETURN COALESCE(total, 0);
-END;
-$$ LANGUAGE plpgsql;`;
 
   return (
     <div className="space-y-6">

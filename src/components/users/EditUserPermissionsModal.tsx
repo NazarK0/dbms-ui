@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, UserCog, Users, Shield, Eye, Database, Activity, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Save, UserCog, Users, Shield, Eye, Database, Activity, ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
@@ -8,16 +8,8 @@ import { Checkbox } from '../ui/checkbox';
 import { Separator } from '../ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  roleColor: string;
-  status: string;
-  avatar: string;
-}
+import { Input } from '../ui/input';
+import { type User, commonTimezones, allTimezones } from '../../mockData/admin';
 
 interface EditUserPermissionsModalProps {
   open: boolean;
@@ -147,6 +139,8 @@ const userPermissionCategories = [
 
 export default function EditUserPermissionsModal({ open, onOpenChange, user, userType }: EditUserPermissionsModalProps) {
   const [selectedRole, setSelectedRole] = useState('');
+  const [selectedTimezone, setSelectedTimezone] = useState('');
+  const [timezoneSearchMode, setTimezoneSearchMode] = useState<'common' | 'all'>('common');
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<{[key: string]: boolean}>({});
 
@@ -156,8 +150,10 @@ export default function EditUserPermissionsModal({ open, onOpenChange, user, use
 
   useEffect(() => {
     if (open) {
-      // Initialize with current role
+      // Initialize with current values
       setSelectedRole('');
+      setSelectedTimezone(user.timezone || '');
+      setTimezoneSearchMode('common');
       setExpandedCategories([]);
       // Initialize permissions based on role
       const initialPermissions: {[key: string]: boolean} = {};
@@ -284,6 +280,79 @@ export default function EditUserPermissionsModal({ open, onOpenChange, user, use
                   </p>
                 </div>
               )}
+            </div>
+
+            <Separator />
+
+            {/* Timezone Selection */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Clock className={`w-5 h-5 ${userType === 'admin' ? 'text-lime-600' : 'text-violet-600'}`} />
+                <div>
+                  <h4 className="text-slate-900">Часовий пояс</h4>
+                  <p className="text-sm text-slate-600">
+                    Налаштування часового поясу для відображення дати та часу
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    type="button"
+                    variant={timezoneSearchMode === 'common' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimezoneSearchMode('common')}
+                    className={timezoneSearchMode === 'common' ? `bg-gradient-to-r ${
+                      userType === 'admin'
+                        ? 'from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700'
+                        : 'from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
+                    }` : ''}
+                  >
+                    Поширені
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={timezoneSearchMode === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimezoneSearchMode('all')}
+                    className={timezoneSearchMode === 'all' ? `bg-gradient-to-r ${
+                      userType === 'admin'
+                        ? 'from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700'
+                        : 'from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
+                    }` : ''}
+                  >
+                    Всі часові пояси
+                  </Button>
+                </div>
+
+                <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+                  <SelectTrigger className={`w-full ${selectedTimezone ? 'border-' + themeColor + '-300' : ''}`}>
+                    <SelectValue placeholder="Оберіть часовий пояс..." />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {(timezoneSearchMode === 'common' ? commonTimezones : allTimezones).map((tz) => (
+                      <SelectItem key={tz.value} value={tz.value}>
+                        {tz.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {selectedTimezone && (
+                  <div className={`rounded-lg p-3 border ${
+                    userType === 'admin' 
+                      ? 'bg-lime-50 border-lime-200' 
+                      : 'bg-violet-50 border-violet-200'
+                  }`}>
+                    <p className={`text-sm ${
+                      userType === 'admin' ? 'text-lime-900' : 'text-violet-900'
+                    }`}>
+                      <strong>Поточний час:</strong> {new Date().toLocaleString('uk-UA', { timeZone: selectedTimezone })}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <Separator />

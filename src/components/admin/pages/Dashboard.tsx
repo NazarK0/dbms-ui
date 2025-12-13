@@ -1,16 +1,20 @@
 import { Database, Users, Table2, HardDrive, Clock, TrendingUp, ArrowUp, ArrowDown, Activity, Plus, Eye, EyeOff, LayoutDashboard, UserCog } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Badge } from '../../ui/badge';
-import { Progress } from '../../ui/progress';
 import { Button } from '../../ui/button';
+import { Progress } from '../../ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
 import { Checkbox } from '../../ui/checkbox';
 import { Label } from '../../ui/label';
+import { useUser } from '../hooks/useUser';
 import StatCard from '../dashboard/StatCard';
 import ActivityItem from '../dashboard/ActivityItem';
 import ConnectionItem from '../dashboard/ConnectionItem';
 import { useDashboardCustomization } from '../hooks/useDashboardCustomization';
-import { statsData, recentActivity, activeConnections, performanceMetrics } from '../data/mockAdminData';
+import { statsData, recentActivity, activeConnections, performanceMetrics } from '../../../mockData/admin';
 
 export default function Dashboard() {
   const {

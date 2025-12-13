@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Alert, AlertDescription } from '../../ui/alert';
 import { Textarea } from '../../ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { domainTypes, compositeTypes, enumTypes } from '../../../mockData';
 
 interface DataTypesManagerProps {
   selectedDatabase: string;
@@ -24,76 +25,7 @@ export default function DataTypesManager({ selectedDatabase }: DataTypesManagerP
   const [baseType, setBaseType] = useState('');
   const [typeCategory, setTypeCategory] = useState('composite');
 
-  // Mock data - custom data types
-  const customTypes = [
-    {
-      name: 'email',
-      category: 'domain',
-      baseType: 'varchar(255)',
-      constraint: 'CHECK (VALUE ~ \'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$\')',
-      description: 'Валідний email адрес',
-    },
-    {
-      name: 'phone_number',
-      category: 'domain',
-      baseType: 'varchar(20)',
-      constraint: 'CHECK (VALUE ~ \'^\\+?[0-9]{10,15}$\')',
-      description: 'Міжнародний телефонний номер',
-    },
-    {
-      name: 'currency_code',
-      category: 'domain',
-      baseType: 'char(3)',
-      constraint: 'CHECK (LENGTH(VALUE) = 3)',
-      description: 'ISO 4217 код валюти',
-    },
-  ];
-
-  const compositeTypes = [
-    {
-      name: 'address',
-      category: 'composite',
-      attributes: [
-        { name: 'street', type: 'text' },
-        { name: 'city', type: 'varchar(100)' },
-        { name: 'postal_code', type: 'varchar(20)' },
-        { name: 'country', type: 'varchar(100)' },
-      ],
-      description: 'Поштова адреса',
-    },
-    {
-      name: 'geo_point',
-      category: 'composite',
-      attributes: [
-        { name: 'latitude', type: 'decimal(10,8)' },
-        { name: 'longitude', type: 'decimal(11,8)' },
-      ],
-      description: 'Географічні координати',
-    },
-  ];
-
-  const enumTypes = [
-    {
-      name: 'user_status',
-      category: 'enum',
-      values: ['active', 'inactive', 'suspended', 'banned'],
-      description: 'Статус користувача',
-    },
-    {
-      name: 'order_status',
-      category: 'enum',
-      values: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-      description: 'Статус замовлення',
-    },
-    {
-      name: 'priority_level',
-      category: 'enum',
-      values: ['low', 'medium', 'high', 'critical'],
-      description: 'Рівень пріоритету',
-    },
-  ];
-
-  const filteredCustomTypes = customTypes.filter(type =>
+  const filteredCustomTypes = domainTypes.filter(type =>
     type.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     type.description.toLowerCase().includes(searchQuery.toLowerCase())
   );

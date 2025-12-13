@@ -1,37 +1,22 @@
 import { useState } from 'react';
-import { ArrowLeft, Save, Database, Table as TableIcon, Upload, X, File } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { ArrowLeft, Check, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-import { Badge } from '../ui/badge';
-import { ScrollArea } from '../ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { simpleTableSchema } from '../../mockData/user';
 
 interface CreateRecordProps {
   database: string;
   table: string;
   onBack: () => void;
-  onSave: (data: Record<string, any>) => void;
+  onSave: (recordId: number) => void;
 }
 
 export default function CreateRecord({ database, table, onBack, onSave }: CreateRecordProps) {
   // Mock table schema - в реальності це буде з API
-  const tableSchema = [
-    { name: 'id', type: 'integer', nullable: false, autoIncrement: true, primaryKey: true },
-    { name: 'name', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'email', type: 'varchar(255)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'bio', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'age', type: 'integer', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'is_active', type: 'boolean', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'role', type: 'varchar(50)', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'department', type: 'varchar(100)', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'phone', type: 'varchar(20)', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'address', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'notes', type: 'text', nullable: true, autoIncrement: false, primaryKey: false },
-    { name: 'created_at', type: 'timestamp', nullable: false, autoIncrement: false, primaryKey: false },
-    { name: 'updated_at', type: 'timestamp', nullable: true, autoIncrement: false, primaryKey: false },
-  ];
+  const tableSchema = simpleTableSchema;
 
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -124,12 +109,12 @@ export default function CreateRecord({ database, table, onBack, onSave }: Create
     // Text area for text type
     if (field.type === 'text') {
       return (
-        <Textarea
+        <Input
+          type="text"
           id={field.name}
           value={value}
           onChange={(e) => handleChange(field.name, e.target.value)}
           placeholder={`Введіть ${field.name}...`}
-          rows={5}
           className={errors[field.name] ? 'border-red-500' : ''}
         />
       );

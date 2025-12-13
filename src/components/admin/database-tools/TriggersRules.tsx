@@ -5,40 +5,9 @@ import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
+import { triggers, rules } from '../../../mockData/admin';
 
 export default function TriggersRules({ selectedDatabase }: { selectedDatabase?: string }) {
-  const triggers = [
-    {
-      name: 'update_modified_timestamp',
-      table: 'users',
-      event: 'BEFORE UPDATE',
-      timing: 'BEFORE',
-      function: 'update_timestamp()',
-      enabled: true,
-    },
-    {
-      name: 'log_order_changes',
-      table: 'orders',
-      event: 'AFTER INSERT OR UPDATE',
-      timing: 'AFTER',
-      function: 'log_changes()',
-      enabled: true,
-    },
-    {
-      name: 'validate_email',
-      table: 'users',
-      event: 'BEFORE INSERT',
-      timing: 'BEFORE',
-      function: 'validate_email_format()',
-      enabled: false,
-    },
-  ];
-
-  const rules = [
-    { name: '_RETURN', table: 'user_view', event: 'INSERT', type: 'INSTEAD', command: 'DO INSTEAD' },
-    { name: 'audit_log', table: 'sensitive_data', event: 'DELETE', type: 'ALSO', command: 'DO ALSO' },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Triggers */}

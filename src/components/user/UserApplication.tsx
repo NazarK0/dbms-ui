@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { LayoutDashboard, ArrowLeft, Bell, Settings, Users } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { ChevronLeft } from 'lucide-react';
 import { Button } from '../ui/button';
-import BrowserTabs, { Tab } from './BrowserTabs';
 import UserDashboard from './UserDashboard';
 import DatabaseBrowser from './DatabaseBrowser';
 import TableDataEditor from './TableDataEditor';
-import UserProfile from './UserProfile';
 import CreateRecord from './CreateRecord';
 import EditRecord from './EditRecord';
+import UserProfile from './UserProfile';
+import BrowserTabs from './BrowserTabs';
 import UserApplicationHeader from './UserApplicationHeader';
 import { useTabNavigation } from './hooks/useTabNavigation';
 import { useNavigationHandlers } from './hooks/useNavigationHandlers';
-import { mockUserRoles } from './data/mockUserRoles';
+import { mockUserRoles } from '../../mockData/user';
 
 type View = 'dashboard' | 'database-tables' | 'table' | 'create-record' | 'edit-record' | 'profile';
 

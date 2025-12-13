@@ -11,6 +11,7 @@ import FunctionsManager from '../database-tools/FunctionsManager';
 import TriggersRules from '../database-tools/TriggersRules';
 import BackupRestore from '../database-tools/BackupRestore';
 import ForeignServersManager from '../database-tools/ForeignServersManager';
+import { installedExtensions, hasFDWExtension } from '../../../mockData';
 
 interface DatabaseToolsViewProps {
   selectedDatabase: string;
@@ -48,22 +49,6 @@ export default function DatabaseToolsView({
       [sectionId]: !prev[sectionId],
     }));
   };
-
-  // Mock check for installed extensions
-  const getInstalledExtensions = () => {
-    // Mock data - in real app this would query the database
-    const extensions = [
-      { name: 'postgres_fdw', version: '1.1', description: 'Foreign-data wrapper for remote PostgreSQL servers' },
-      { name: 'pg_stat_statements', version: '1.10', description: 'Track planning and execution statistics' },
-      { name: 'pgcrypto', version: '1.3', description: 'Cryptographic functions' },
-    ];
-    return extensions;
-  };
-
-  const installedExtensions = getInstalledExtensions();
-  const hasFDWExtension = installedExtensions.some(ext => 
-    ext.name === 'postgres_fdw' || ext.name === 'mysql_fdw' || ext.name === 'oracle_fdw' || ext.name === 'multicorn'
-  );
 
   const sections: Section[] = [
     {

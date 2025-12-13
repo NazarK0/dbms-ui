@@ -1,19 +1,8 @@
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Clock } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  roleColor: string;
-  status: string;
-  avatar: string;
-  lastActive?: string;
-  registered?: string;
-}
+import { type User } from '../../mockData/admin';
 
 interface UserTableProps {
   users: User[];
@@ -30,6 +19,7 @@ export default function UserTable({ users, type, onEdit, onDelete }: UserTablePr
           <TableHead>Користувач</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Роль</TableHead>
+          <TableHead>Часовий пояс</TableHead>
           <TableHead>{type === 'admin' ? 'Остання активність' : 'Дата реєстрації'}</TableHead>
           <TableHead>Статус</TableHead>
           <TableHead className="text-right">Дії</TableHead>
@@ -51,6 +41,12 @@ export default function UserTable({ users, type, onEdit, onDelete }: UserTablePr
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 bg-gradient-to-br ${user.roleColor} rounded-full`} />
                 <span className="text-slate-900">{user.role}</span>
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-1.5 text-slate-600 text-sm">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{user.timezone}</span>
               </div>
             </TableCell>
             <TableCell className="text-slate-600 text-sm">

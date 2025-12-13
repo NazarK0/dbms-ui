@@ -10,6 +10,7 @@ import { Label } from '../../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Alert, AlertDescription } from '../../ui/alert';
 import { Textarea } from '../../ui/textarea';
+import { installedExtensions, hasFDWExtension, foreignServers } from '../../../mockData';
 
 interface ForeignServersManagerProps {
   selectedDatabase: string;
@@ -24,66 +25,6 @@ export default function ForeignServersManager({ selectedDatabase }: ForeignServe
   const [port, setPort] = useState('5432');
   const [dbname, setDbname] = useState('');
   const [username, setUsername] = useState('');
-
-  // Mock check for postgres_fdw extension
-  const getInstalledExtensions = () => {
-    // Mock data - in real app this would query the database
-    const extensions = [
-      { name: 'postgres_fdw', version: '1.1', description: 'Foreign-data wrapper for remote PostgreSQL servers' },
-      { name: 'pg_stat_statements', version: '1.10', description: 'Track planning and execution statistics' },
-      { name: 'pgcrypto', version: '1.3', description: 'Cryptographic functions' },
-    ];
-    return extensions;
-  };
-
-  const installedExtensions = getInstalledExtensions();
-  const hasFDWExtension = installedExtensions.some(ext => 
-    ext.name === 'postgres_fdw' || ext.name === 'mysql_fdw' || ext.name === 'oracle_fdw' || ext.name === 'multicorn'
-  );
-
-  // Mock data - foreign servers
-  const foreignServers = [
-    {
-      name: 'external_db',
-      wrapper: 'postgres_fdw',
-      host: 'external.example.com',
-      port: 5432,
-      dbname: 'external_database',
-      status: 'connected',
-      foreignTables: 3,
-      lastChecked: '2025-12-13 10:30:00',
-    },
-    {
-      name: 'warehouse_db',
-      wrapper: 'postgres_fdw',
-      host: 'warehouse.example.com',
-      port: 5432,
-      dbname: 'warehouse',
-      status: 'connected',
-      foreignTables: 5,
-      lastChecked: '2025-12-13 09:15:00',
-    },
-    {
-      name: 'old_system',
-      wrapper: 'postgres_fdw',
-      host: 'legacy.example.com',
-      port: 5432,
-      dbname: 'legacy_db',
-      status: 'error',
-      foreignTables: 1,
-      lastChecked: '2025-12-12 18:45:00',
-    },
-    {
-      name: 'api_server',
-      wrapper: 'multicorn',
-      host: 'api.example.com',
-      port: 443,
-      dbname: 'N/A',
-      status: 'disconnected',
-      foreignTables: 0,
-      lastChecked: '2025-12-10 14:20:00',
-    },
-  ];
 
   const filteredServers = foreignServers.filter(server =>
     server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
