@@ -1,10 +1,4 @@
-import { Database, Table, Plus, Edit, Trash2, Activity, Shield, Clock, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import DatabaseCard from './DatabaseCard';
-import ActivityRecordItem from './ActivityRecordItem';
-import AccessedTableItem from './AccessedTableItem';
+import { DatabaseGrid, ActivitySection } from './dashboard';
 
 interface UserRole {
   id: number;
@@ -26,7 +20,7 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
       database: 'app_production',
       table: 'users',
       recordId: '42',
-      action: 'UPDATE',
+      action: 'UPDATE' as const,
       field: 'email',
       timestamp: '2 хвилини тому',
     },
@@ -35,7 +29,7 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
       database: 'app_production',
       table: 'orders',
       recordId: '158',
-      action: 'CREATE',
+      action: 'CREATE' as const,
       field: 'new record',
       timestamp: '15 хвилин тому',
     },
@@ -44,7 +38,7 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
       database: 'app_staging',
       table: 'products',
       recordId: '89',
-      action: 'UPDATE',
+      action: 'UPDATE' as const,
       field: 'price',
       timestamp: '1 година тому',
     },
@@ -53,7 +47,7 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
       database: 'app_production',
       table: 'users',
       recordId: '43',
-      action: 'CREATE',
+      action: 'CREATE' as const,
       field: 'new record',
       timestamp: '2 години тому',
     },
@@ -128,123 +122,21 @@ export default function UserDashboard({ userRoles, onDatabaseSelect, onTableSele
     },
   ];
 
-  const statistics = [
-    {
-      label: 'Доступні бази даних',
-      value: myDatabases.length,
-      icon: Database,
-      color: 'bg-violet-100 text-violet-700',
-    },
-    {
-      label: 'Таблиці з доступом',
-      value: myDatabases.reduce((sum, db) => sum + db.tables, 0),
-      icon: Table,
-      color: 'bg-blue-100 text-blue-700',
-    },
-    {
-      label: 'Активних ролей',
-      value: userRoles.length,
-      icon: Shield,
-      color: 'bg-purple-100 text-purple-700',
-    },
-    {
-      label: 'Операцій сьогодні',
-      value: lastModifiedRecords.length,
-      icon: Activity,
-      color: 'bg-green-100 text-green-700',
-    },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Databases Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg text-slate-900 font-medium">Мої бази даних</h3>
-          <Badge variant="outline" className="text-xs">
-            {myDatabases.length} доступних
-          </Badge>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {myDatabases.map((db) => (
-            <DatabaseCard 
-              key={db.id}
-              name={db.name}
-              tables={db.tables}
-              records={db.records}
-              lastAccess={db.lastAccess}
-              grantedByRoles={db.grantedByRoles}
-              color={db.color}
-              onClick={() => onDatabaseSelect?.(db.name)}
-            />
-          ))}
-        </div>
-      </div>
+      <DatabaseGrid 
+        databases={myDatabases}
+        onDatabaseSelect={onDatabaseSelect}
+      />
 
       {/* Last Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Last Modified Records */}
-        <Card className="border-violet-200 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-violet-600" />
-              Останні зміни записів
-            </CardTitle>
-            <CardDescription>Нещодавно змінені дані</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y divide-slate-200">
-              {lastModifiedRecords.map((record) => (
-                <ActivityRecordItem 
-                  key={record.id}
-                  database={record.database}
-                  table={record.table}
-                  recordId={record.recordId}
-                  action={record.action as 'CREATE' | 'UPDATE' | 'DELETE'}
-                  field={record.field}
-                  timestamp={record.timestamp}
-                  onClick={() => {
-                    const tableData = lastAccessedTables.find(
-                      t => t.database === record.database && t.table === record.table
-                    );
-                    onTableSelect?.(
-                      record.database, 
-                      record.table, 
-                      tableData?.permissions || ['SELECT'], 
-                      record.recordId
-                    );
-                  }}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Last Accessed Tables */}
-        <Card className="border-violet-200 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-violet-600" />
-              Останні таблиці
-            </CardTitle>
-            <CardDescription>Нещодавно використані таблиці</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y divide-slate-200">
-              {lastAccessedTables.map((table) => (
-                <AccessedTableItem 
-                  key={table.id}
-                  database={table.database}
-                  table={table.table}
-                  records={table.records}
-                  lastAccess={table.lastAccess}
-                  onClick={() => onTableSelect?.(table.database, table.table, table.permissions)}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <ActivitySection
+        lastModifiedRecords={lastModifiedRecords}
+        lastAccessedTables={lastAccessedTables}
+        onRecordClick={onTableSelect}
+        onTableClick={onTableSelect}
+      />
     </div>
   );
 }

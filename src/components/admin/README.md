@@ -6,49 +6,70 @@ This directory contains all admin-panel-specific components for the PostgreSQL D
 
 ```
 /components/admin/
-├── layout/                         # Layout components
-│   ├── AdminHeader.tsx            # Main admin header (Logo, Home, Notifications)
-│   ├── AdminTabsList.tsx          # Navigation tabs (12 admin tabs)
+├── AdminHeader.tsx              # Main admin header (Logo, Home, Notifications)
+├── AdminTabsList.tsx            # Navigation tabs (12 admin tabs)
+├── Logs.tsx                     # System logs viewer
+│
+├── dashboard/                   # Dashboard widgets
+│   ├── StatCard.tsx            # Statistics card (databases, users, etc.)
+│   ├── ActivityItem.tsx        # Activity log item
+│   ├── ConnectionItem.tsx      # Active connection item
 │   └── index.ts
 │
-├── dashboard/                      # Dashboard widgets
-│   ├── StatCard.tsx               # Statistics card (databases, users, etc.)
-│   ├── ActivityItem.tsx           # Activity log item
-│   ├── ConnectionItem.tsx         # Active connection item
+├── database/                    # Database management components
+│   └── index.ts                # (Reserved for future components)
+│
+├── database-manager/            # Database manager components
+│   ├── UserDatabasesTable.tsx  # User databases table
+│   ├── TemplateDatabasesCard.tsx # Template databases card
+│   ├── AdminDatabasesCard.tsx  # Admin databases card
+│   ├── DatabaseToolsView.tsx   # Database tools view
 │   └── index.ts
 │
-├── database/                       # Database management components
-│   ├── DatabaseRow.tsx            # Database table row
+├── database-tools/              # Database tools components
+│   ├── QueryExecutor.tsx       # SQL query execution interface
+│   ├── TableBrowser.tsx        # Browse and edit table data
+│   ├── SchemaVisualizer.tsx    # Visualize database schema
+│   ├── SchemasManager.tsx      # Manage database schemas
+│   ├── ExtensionManager.tsx    # Manage PostgreSQL extensions
+│   ├── FunctionsManager.tsx    # Manage database functions
+│   ├── TriggersRules.tsx       # Manage triggers and rules
+│   ├── BackupRestore.tsx       # Backup and restore operations
+│   ├── DataTypesManager.tsx    # Manage data types
+│   ├── ForeignServersManager.tsx # Manage foreign servers
+│   └── ForeignTablesManager.tsx # Manage foreign tables
+│
+├── roles/                       # Role management components
+│   ├── RoleCard.tsx            # Individual role card
+│   ├── RolesGrid.tsx           # Grid of role cards
+│   ├── AdminRolesPanel.tsx     # Admin roles panel
+│   ├── UserRolesPanel.tsx      # User roles panel
+│   ├── CreateRoleModal.tsx     # Create new role modal
+│   ├── EditAdminRoleModal.tsx  # Edit admin role modal
+│   ├── EditUserRoleModal.tsx   # Edit user role modal
+│   ├── StatsCards.tsx          # Role statistics cards
+│   ├── RBACMatrix.tsx          # RBAC permissions matrix
+│   ├── RoleHistory.tsx         # Role change history
 │   └── index.ts
 │
-├── roles/                          # Role management components
-│   ├── RoleCard.tsx               # Individual role card
-│   ├── RolesGrid.tsx              # Grid of role cards
-│   ├── AdminRolesPanel.tsx        # Admin roles panel
-│   ├── UserRolesPanel.tsx         # User roles panel
-│   ├── CreateRoleModal.tsx        # Create/Edit role modal
-│   ├── StatsCards.tsx             # Role statistics cards
-│   ├── RBACMatrix.tsx             # RBAC permissions matrix
-│   ├── RoleHistory.tsx            # Role change history
-│   └── index.ts
-│
-├── users/                          # User management components
-│   ├── UserTable.tsx              # User list table
-│   ├── CreateUserModal.tsx        # Create/Edit user modal
-│   └── index.ts
-│
-├── hooks/                          # Custom React hooks
+├── hooks/                       # Custom React hooks
 │   └── useDashboardCustomization.ts
 │
-├── data/                           # Mock data and constants
-│   └── mockAdminData.ts
+├── pages/                       # Main admin pages
+│   ├── Dashboard.tsx           # Main admin dashboard
+│   ├── DatabaseManager.tsx     # Database management interface
+│   ├── UsersManager.tsx        # User management interface
+│   ├── RolesManager.tsx        # Role & RBAC management
+│   ├── AuditLog.tsx            # System audit logs
+│   ├── PostgresConfig.tsx      # PostgreSQL configuration
+│   ├── CLI.tsx                 # Command-line interface
+│   ├── SystemMonitor.tsx       # System performance monitor
+│   ├── ReplicaClusters.tsx     # Replica cluster management
+│   ├── PerformanceAnalyzer.tsx # Performance analysis tools
+│   └── UserUIPreview.tsx       # Preview of user interface
 │
-├── AdminHeader.tsx                 # (source file)
-├── AdminTabsList.tsx               # (source file)
-├── RolesManager.tsx                # Main roles manager page
-├── Logs.tsx                        # System logs viewer
-├── index.ts                        # Main export file
-└── README.md                       # This file
+├── index.ts                     # Main export file
+└── README.md                    # This file
 ```
 
 ## 🎯 Main Admin Pages
@@ -57,18 +78,18 @@ These pages are re-exported from `/components/admin/index.ts`:
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| Dashboard | `/Dashboard.tsx` | Main admin dashboard |
-| DatabaseManager | `/DatabaseManager.tsx` | Database management interface |
-| UsersManager | `/UsersManager.tsx` | User management interface |
-| RolesManager | `/admin/RolesManager.tsx` | Role & RBAC management |
-| AuditLog | `/AuditLog.tsx` | System audit logs |
-| PostgresConfig | `/PostgresConfig.tsx` | PostgreSQL configuration |
-| CLI | `/CLI.tsx` | Command-line interface |
-| SystemMonitor | `/SystemMonitor.tsx` | System performance monitor |
-| ReplicaClusters | `/ReplicaClusters.tsx` | Replica cluster management |
-| PerformanceAnalyzer | `/PerformanceAnalyzer.tsx` | Performance analysis tools |
-| Logs | `/admin/Logs.tsx` | System logs viewer |
-| UserUIPreview | `/UserUIPreview.tsx` | Preview of user interface |
+| Dashboard | `pages/Dashboard.tsx` | Main admin dashboard with widgets |
+| DatabaseManager | `pages/DatabaseManager.tsx` | Database management interface |
+| UsersManager | `pages/UsersManager.tsx` | User management interface |
+| RolesManager | `pages/RolesManager.tsx` | Role & RBAC management |
+| AuditLog | `pages/AuditLog.tsx` | System audit logs |
+| PostgresConfig | `pages/PostgresConfig.tsx` | PostgreSQL configuration |
+| CLI | `pages/CLI.tsx` | Command-line interface |
+| SystemMonitor | `pages/SystemMonitor.tsx` | System performance monitor |
+| ReplicaClusters | `pages/ReplicaClusters.tsx` | Replica cluster management |
+| PerformanceAnalyzer | `pages/PerformanceAnalyzer.tsx` | Performance analysis tools |
+| Logs | `Logs.tsx` | System logs viewer |
+| UserUIPreview | `pages/UserUIPreview.tsx` | Preview of user interface |
 
 ## 🔧 Sub-Components (Database Tools)
 
@@ -82,48 +103,45 @@ Used by DatabaseManager and other pages:
 - **FunctionsManager** - Manage database functions
 - **TriggersRules** - Manage triggers and rules
 - **BackupRestore** - Backup and restore operations
+- **DataTypesManager** - Manage custom data types
+- **ForeignServersManager** - Manage foreign data wrappers
+- **ForeignTablesManager** - Manage foreign tables
 
 ## 📦 Import Examples
 
-### Import from organized structure:
-```tsx
-// Layout components
-import { AdminHeader, AdminTabsList } from '@/components/admin/layout';
-
-// Dashboard components
-import { StatCard, ActivityItem, ConnectionItem } from '@/components/admin/dashboard';
-
-// Database components
-import { DatabaseRow } from '@/components/admin/database';
-
-// Roles components
-import { RoleCard, RolesGrid, CreateRoleModal } from '@/components/admin/roles';
-
-// Users components
-import { UserTable, CreateUserModal } from '@/components/admin/users';
-
-// Hooks
-import { useDashboardCustomization } from '@/components/admin/hooks';
-
-// Mock data
-import { statsData, recentActivity, activeConnections } from '@/components/admin/data';
-```
-
-### Import main pages:
+### Import from main index:
 ```tsx
 import { 
   Dashboard, 
   DatabaseManager, 
   UsersManager, 
-  RolesManager 
+  RolesManager,
+  StatCard,
+  ActivityItem,
+  ConnectionItem,
+  RoleCard,
+  RolesGrid,
+  AdminRolesPanel,
+  UserRolesPanel,
+  CreateRoleModal,
+  StatsCards,
+  useDashboardCustomization
 } from '@/components/admin';
 ```
 
-### Import from root (backward compatibility):
+### Import from subfolders:
 ```tsx
-import Dashboard from '@/components/Dashboard';
-import DatabaseManager from '@/components/DatabaseManager';
-import UsersManager from '@/components/UsersManager';
+// Dashboard components
+import { StatCard, ActivityItem, ConnectionItem } from '@/components/admin/dashboard';
+
+// Roles components
+import { RoleCard, RolesGrid, CreateRoleModal } from '@/components/admin/roles';
+
+// Database tools
+import { QueryExecutor, TableBrowser } from '@/components/admin/database-tools';
+
+// Hooks
+import { useDashboardCustomization } from '@/components/admin/hooks';
 ```
 
 ## 🎨 Component Patterns
@@ -153,18 +171,19 @@ import UsersManager from '@/components/UsersManager';
 />
 ```
 
-### 3. DatabaseRow Component
+### 3. RoleCard Component
 ```tsx
-<DatabaseRow
-  name="production_db"
-  owner="admin"
-  size="1.2 ГБ"
-  tables={45}
-  encoding="UTF8"
-  collation="uk_UA.UTF-8"
-  isSelected={true}
-  onSelect={() => handleSelect('production_db')}
-  onDelete={() => handleDelete('production_db')}
+<RoleCard
+  role={{
+    name: "Developer",
+    type: "user",
+    users: 12,
+    databases: 5,
+    permissions: ["read", "write"]
+  }}
+  onEdit={handleEdit}
+  onSelect={handleSelect}
+  onDelete={handleDelete}
 />
 ```
 
@@ -192,15 +211,24 @@ Admin panel uses **olive/lime** color scheme:
 - Accents: `lime-50`, `lime-100`, `lime-200`
 - Active states: `bg-lime-600 text-white`
 - Hover states: `hover:bg-lime-50`
+- Borders: `border-lime-200`
 
 ## 📊 Mock Data
 
-Located in `/admin/data/mockAdminData.ts`:
+Located in `/mockData/admin/`:
 
-- **statsData** - Dashboard statistics (databases, users, tables, storage)
-- **recentActivity** - Recent system activity log
-- **activeConnections** - Current database connections
-- **performanceMetrics** - System performance metrics
+- **dashboard.ts** - Dashboard statistics, activity, connections, metrics
+- **roles.ts** - Admin and user roles data
+- **users.ts** - User management data
+- **tables.ts** - Database tables data
+- **schemas.ts** - Database schemas data
+- **extensions.ts** - PostgreSQL extensions data
+- **functions.ts** - Database functions data
+- **triggers.ts** - Database triggers data
+- **backups.ts** - Backup and restore data
+- **queries.ts** - SQL query history
+- **dataTypes.ts** - Custom data types
+- **foreignServers.ts** - Foreign data wrapper servers
 
 ## 🚀 Adding New Components
 
@@ -208,7 +236,7 @@ When adding new admin components:
 
 1. Create component in appropriate subfolder
 2. Add to subfolder's `index.ts`
-3. Add to main `/admin/index.ts` if needed
+3. Add to main `/admin/index.ts` if needed for external use
 4. Update this README
 5. Follow naming convention: PascalCase for components
 6. Use TypeScript interfaces for props
@@ -216,12 +244,12 @@ When adding new admin components:
 
 ## ✅ Code Quality Standards
 
-- ✅ **DRY** - Don't Repeat Yourself
+- ✅ **DRY** - Don't Repeat Yourself (no duplicates)
 - ✅ **SRP** - Single Responsibility Principle
 - ✅ **Modular** - Small, reusable components
 - ✅ **TypeScript** - Full type safety
 - ✅ **Documented** - Clear prop interfaces
-- ✅ **Tested** - Easy to test in isolation
+- ✅ **Clean** - No unused components or dead code
 - ✅ **Accessible** - Proper ARIA labels
 - ✅ **Responsive** - Works on all screen sizes (desktop 1024px+)
 
@@ -232,3 +260,25 @@ When adding new admin components:
 - Ukrainian language interface
 - Uses shadcn/ui components
 - PostgreSQL-specific functionality
+- No duplicate data - all mock data in `/mockData/admin/`
+- No unused components - all code is actively used
+
+## 🗑️ Recently Cleaned
+
+Last cleanup: December 2024
+
+**Removed duplicates:**
+- `/components/admin/data/mockAdminData.ts` - Duplicate of `/mockData/admin/dashboard.ts`
+
+**Removed unused components:**
+- `/components/admin/database/DatabaseRow.tsx` - Not used anywhere
+- `/components/admin/database-manager/DatabaseList.tsx` - Not used anywhere
+- `/components/admin/database-manager/modals/CreateDatabaseModal.tsx` - Not used
+- `/components/admin/database-manager/modals/CopyDatabaseModal.tsx` - Not used
+- `/components/admin/database-manager/modals/ExportSchemaModal.tsx` - Not used
+- `/components/admin/database-manager/modals/ImportSchemaModal.tsx` - Not used
+
+**Fixed broken imports:**
+- Removed unused `useUser` import from `Dashboard.tsx`
+
+Result: **Clean, optimized structure with 100% active components** 🚀

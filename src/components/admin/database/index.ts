@@ -1,2 +1,2 @@
 // Database Components
-export { default as DatabaseRow } from './DatabaseRow';
+// This directory is reserved for future database-related components

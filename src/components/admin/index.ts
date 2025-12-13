@@ -10,9 +10,6 @@ export { default as StatCard } from './dashboard/StatCard';
 export { default as ActivityItem } from './dashboard/ActivityItem';
 export { default as ConnectionItem } from './dashboard/ConnectionItem';
 
-// ==================== DATABASE COMPONENTS ====================
-export { default as DatabaseRow } from './database/DatabaseRow';
-
 // ==================== ROLES COMPONENTS ====================
 export { default as RoleCard } from './roles/RoleCard';
 export { default as RolesGrid } from './roles/RolesGrid';
@@ -28,9 +25,6 @@ export { default as CreateUserModal } from '../users/CreateUserModal';
 // ==================== CUSTOM HOOKS ====================
 export { useDashboardCustomization } from './hooks/useDashboardCustomization';
 export type { DashboardCard } from './hooks/useDashboardCustomization';
-
-// ==================== MOCK DATA ====================
-export * from './data/mockAdminData';
 
 // ==================== MAIN ADMIN PAGES ====================
 // These are re-exported from pages directory

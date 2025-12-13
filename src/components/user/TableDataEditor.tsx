@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Table2, Plus, Edit, Trash2, Search, Download, Filter, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Eye, EyeOff, Paperclip, X, Check, Save } from 'lucide-react';
+import { Paperclip, X, Check, Save, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader as TableHeaderUI, TableRow } from '../ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Input } from '../ui/input';
 import { tableSchemas, defaultTableSchema } from '../../mockData/user';
+import { TableHeader, TableInfoCard, TablePagination, TableSearchBar } from './table';
 
 interface TableDataEditorProps {
   database: string;
@@ -35,7 +35,6 @@ export default function TableDataEditor({ database, table, permissions, highligh
   const [selectedRecord, setSelectedRecord] = useState<TableRecord | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
 
-  // Mock data based on table name
   const getTableSchema = () => {
     return tableSchemas[table] || defaultTableSchema;
   };
@@ -49,7 +48,6 @@ export default function TableDataEditor({ database, table, permissions, highligh
     )
   );
 
-  // Pagination
   const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -115,53 +113,25 @@ export default function TableDataEditor({ database, table, permissions, highligh
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack}>
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Назад
-          </Button>
-          <div>
-            <h2 className="text-slate-900">Редактор даних: {table}</h2>
-            <p className="text-slate-600">База даних: {database}</p>
-          </div>
-        </div>
-        {canInsert && (
-          <Button
-            onClick={openCreateModal}
-            className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Новий запис
-          </Button>
-        )}
-      </div>
+      <TableHeader
+        database={database}
+        table={table}
+        canInsert={canInsert}
+        onBack={onBack}
+        onCreateRecord={openCreateModal}
+      />
 
       {/* Permissions Info */}
-      <Card className="border-violet-200 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-600">
-              База даних: <span className="font-medium text-slate-900">{database}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-slate-600">
-              <span>{filteredRecords.length} записів</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <TableInfoCard 
+        database={database}
+        recordsCount={filteredRecords.length}
+      />
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <Input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Пошук записів..."
-          className="pl-10"
-        />
-      </div>
+      <TableSearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+      />
 
       {/* Table */}
       <Card className="border-violet-200 shadow-sm">
@@ -172,7 +142,7 @@ export default function TableDataEditor({ database, table, permissions, highligh
         <CardContent className="p-0">
           <div className="border-t border-slate-200">
             <Table>
-              <TableHeader>
+              <TableHeaderUI>
                 <TableRow className="bg-slate-50/50 hover:bg-slate-50/50">
                   {schema.columns.map((col: any) => (
                     <TableHead key={col.name} className="font-medium">
@@ -184,7 +154,7 @@ export default function TableDataEditor({ database, table, permissions, highligh
                     <TableHead className="text-center font-medium w-[120px]">Дії</TableHead>
                   )}
                 </TableRow>
-              </TableHeader>
+              </TableHeaderUI>
               <TableBody>
                 {currentRecords.length > 0 ? (
                   currentRecords.map((record) => (
@@ -256,88 +226,16 @@ export default function TableDataEditor({ database, table, permissions, highligh
 
           {/* Pagination */}
           {filteredRecords.length > 0 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50/30">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Показувати по:</span>
-                <Select
-                  value={itemsPerPage.toString()}
-                  onValueChange={(value) => {
-                    setItemsPerPage(Number(value));
-                    setCurrentPage(1);
-                  }}
-                >
-                  <SelectTrigger className="w-[70px] h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-slate-600">
-                  Показано {startIndex + 1}-{Math.min(endIndex, filteredRecords.length)} з {filteredRecords.length}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronsLeft className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={`h-8 w-8 p-0 ${
-                        currentPage === page
-                          ? 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700'
-                          : ''
-                      }`}
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronsRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              startIndex={startIndex}
+              endIndex={endIndex}
+              totalRecords={filteredRecords.length}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
           )}
         </CardContent>
       </Card>

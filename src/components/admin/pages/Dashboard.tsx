@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../ui/dialog';
 import { Checkbox } from '../../ui/checkbox';
 import { Label } from '../../ui/label';
-import { useUser } from '../hooks/useUser';
 import StatCard from '../dashboard/StatCard';
 import ActivityItem from '../dashboard/ActivityItem';
 import ConnectionItem from '../dashboard/ConnectionItem';

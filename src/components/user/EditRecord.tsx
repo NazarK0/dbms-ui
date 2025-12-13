@@ -1,20 +1,17 @@
 import { useState } from 'react';
-import { ArrowLeft, Save, Trash2, X, Upload, Download, Eye, EyeOff, Code, Database as DatabaseIcon, Table as TableIcon, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { ScrollArea } from '../ui/scroll-area';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Textarea } from '../ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Calendar } from '../ui/calendar';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
-import ReactMarkdown from 'react-markdown';
 import { simpleTableSchema } from '../../mockData/user';
+import FormField from './form/FormField';
+import FileUpload from './form/FileUpload';
+import ExistingFilesList from './form/ExistingFilesList';
+import RecordBreadcrumb from './form/RecordBreadcrumb';
+import DeleteConfirmation from './form/DeleteConfirmation';
+import { shouldHideField, isFieldReadOnly, validateFormData } from './form/formUtils';
 
 interface EditRecordProps {
   database: string;
@@ -60,31 +57,13 @@ export default function EditRecord({
     }
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    tableSchema.forEach(field => {
-      // Skip auto-increment, system-generated fields
-      if (field.autoIncrement || field.systemGenerated) return;
-      
-      // Also skip common system field names as fallback
-      const systemFieldNames = ['created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
-      if (systemFieldNames.includes(field.name.toLowerCase())) return;
-      
-      // Check required fields
-      if (!field.nullable && !formData[field.name]) {
-        newErrors[field.name] = `Поле \"${field.name}\" обов'язкове`;
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
+    const validationErrors = validateFormData(tableSchema, formData, 'edit');
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
       onSave();
     }
   };
@@ -112,7 +91,6 @@ export default function EditRecord({
 
   const handleDownloadFile = (filename: string) => {
     // В реальності це буде API запит для завантаження файлу
-    // Наприклад: fetch(`/api/files/${database}/${table}/${recordId}/${filename}`)
     console.log('Downloading file:', filename);
     
     // Mock download - створюємо посилання для завантаження
@@ -125,228 +103,8 @@ export default function EditRecord({
     alert(`Завантаження файлу: ${filename}\n\nURL: https://api.dbms.company.com/v1/databases/${database}/tables/${table}/records/${recordId}/files/${filename}`);
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const getFileIcon = (filename: string) => {
-    const ext = filename.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) {
-      return '🖼️';
-    }
-    if (['pdf'].includes(ext || '')) {
-      return '📄';
-    }
-    if (['doc', 'docx'].includes(ext || '')) {
-      return '📝';
-    }
-    if (['xls', 'xlsx'].includes(ext || '')) {
-      return '📊';
-    }
-    if (['zip', 'rar', '7z'].includes(ext || '')) {
-      return '🗜️';
-    }
-    return '📎';
-  };
-
-  const getFieldInput = (field: typeof tableSchema[0]) => {
-    // Primary key and auto-increment fields are read-only - display as text
-    const isReadOnly = field.primaryKey || field.autoIncrement;
-    const isRequired = !field.nullable;
-    const value = formData[field.name] || '';
-
-    // Display as plain text for read-only fields (ID, primary keys, auto-increment)
-    if (isReadOnly) {
-      return (
-        <div className="px-4 py-2 bg-slate-50 rounded-md border border-slate-200">
-          <p className="text-slate-900">{value || recordId}</p>
-        </div>
-      );
-    }
-
-    // Enum - dropdown select
-    if (field.type === 'enum' && field.enumValues) {
-      return (
-        <Select value={value} onValueChange={(val) => handleChange(field.name, val)}>
-          <SelectTrigger className={errors[field.name] ? 'border-red-500' : ''}>
-            <SelectValue placeholder={`Оберіть ${field.name}...`} />
-          </SelectTrigger>
-          <SelectContent>
-            {field.enumValues.map((enumValue) => (
-              <SelectItem key={enumValue} value={enumValue}>
-                {enumValue}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
-    }
-
-    // Date - calendar picker
-    if (field.type === 'date') {
-      return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={`w-full justify-start text-left ${errors[field.name] ? 'border-red-500' : ''}`}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {value ? format(new Date(value), 'PPP', { locale: uk }) : <span>Оберіть дату</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={value ? new Date(value) : undefined}
-              onSelect={(date) => handleChange(field.name, date ? format(date, 'yyyy-MM-dd') : '')}
-              locale={uk}
-            />
-          </PopoverContent>
-        </Popover>
-      );
-    }
-
-    // Timestamp - datetime picker
-    if (field.type === 'timestamp') {
-      return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={`w-full justify-start text-left ${errors[field.name] ? 'border-red-500' : ''}`}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {value ? format(new Date(value), 'PPP HH:mm', { locale: uk }) : <span>Оберіть дату та час</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={value ? new Date(value) : undefined}
-              onSelect={(date) => handleChange(field.name, date ? date.toISOString() : '')}
-              locale={uk}
-            />
-          </PopoverContent>
-        </Popover>
-      );
-    }
-
-    // Text area for text type with markdown support
-    if (field.type === 'text') {
-      const isPreview = markdownPreview[field.name];
-      
-      return (
-        <div className="space-y-2">
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setMarkdownPreview(prev => ({ ...prev, [field.name]: false }))}
-              className={`gap-2 ${!isPreview ? 'bg-violet-100 text-violet-700' : ''}`}
-            >
-              <Code className="w-4 h-4" />
-              Код
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setMarkdownPreview(prev => ({ ...prev, [field.name]: true }))}
-              className={`gap-2 ${isPreview ? 'bg-violet-100 text-violet-700' : ''}`}
-            >
-              <Eye className="w-4 h-4" />
-              Перегляд
-            </Button>
-          </div>
-          
-          {isPreview ? (
-            <div className="px-4 py-3 bg-slate-50 rounded-md border border-slate-200 min-h-[100px] prose prose-sm max-w-none">
-              {value ? (
-                <ReactMarkdown>{value}</ReactMarkdown>
-              ) : (
-                <p className="text-slate-400 italic">Немає вмісту для відображення</p>
-              )}
-            </div>
-          ) : (
-            <Textarea
-              id={field.name}
-              value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              placeholder={`Введіть ${field.name}... (підтримується Markdown)`}
-              className={errors[field.name] ? 'border-red-500' : ''}
-              rows={6}
-            />
-          )}
-        </div>
-      );
-    }
-
-    // Checkbox for boolean
-    if (field.type === 'boolean') {
-      return (
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id={field.name}
-            checked={value === true || value === 'true' || value === 1}
-            onChange={(e) => handleChange(field.name, e.target.checked)}
-            className="w-4 h-4 text-violet-600 rounded focus:ring-violet-500"
-          />
-          <label htmlFor={field.name} className="text-sm text-slate-600">
-            Активувати
-          </label>
-        </div>
-      );
-    }
-
-    // Decimal input
-    if (field.type === 'decimal') {
-      return (
-        <Input
-          type="number"
-          step="0.01"
-          id={field.name}
-          value={value}
-          onChange={(e) => handleChange(field.name, parseFloat(e.target.value) || '')}
-          placeholder={`Введіть ${field.name}...`}
-          className={errors[field.name] ? 'border-red-500' : ''}
-          min={field.min}
-          max={field.max}
-        />
-      );
-    }
-
-    // Number input for integer
-    if (field.type === 'integer') {
-      return (
-        <Input
-          type="number"
-          id={field.name}
-          value={value}
-          onChange={(e) => handleChange(field.name, parseInt(e.target.value) || '')}
-          placeholder={`Введіть ${field.name}...`}
-          className={errors[field.name] ? 'border-red-500' : ''}
-          min={field.min}
-          max={field.max}
-        />
-      );
-    }
-
-    // Default text input for varchar and others
-    return (
-      <Input
-        type="text"
-        id={field.name}
-        value={value}
-        onChange={(e) => handleChange(field.name, e.target.value)}
-        placeholder={`Введіть ${field.name}...`}
-        className={errors[field.name] ? 'border-red-500' : ''}
-      />
-    );
+  const toggleMarkdownPreview = (fieldName: string) => {
+    setMarkdownPreview(prev => ({ ...prev, [fieldName]: !prev[fieldName] }));
   };
 
   return (
@@ -378,48 +136,18 @@ export default function EditRecord({
       </div>
 
       {/* Breadcrumb */}
-      <Card className="border-violet-200 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <DatabaseIcon className="w-4 h-4" />
-            <span className="font-medium text-slate-900">{database}</span>
-            <span>/</span>
-            <TableIcon className="w-4 h-4" />
-            <span className="font-medium text-slate-900">{table}</span>
-            <span>/</span>
-            <span className="text-violet-600">Запис #{recordId}</span>
-          </div>
-        </CardContent>
-      </Card>
+      <RecordBreadcrumb
+        database={database}
+        table={table}
+        action={`Запис #${recordId}`}
+      />
 
       {/* Delete Confirmation */}
       {showDeleteConfirm && (
-        <Card className="border-red-500 bg-red-50">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-900 font-medium">Підтвердити видалення</p>
-                <p className="text-sm text-slate-600">Ця дія незворотна. Запис буде видалено назавжди.</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleDelete}
-                >
-                  Так, видалити
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  Скасувати
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <DeleteConfirmation
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
       )}
 
       {/* Form */}
@@ -438,46 +166,24 @@ export default function EditRecord({
             <ScrollArea className="h-[calc(100vh-400px)]">
               <div className="space-y-6 pr-4">
                 {tableSchema.map((field) => {
-                  const isReadOnly = field.primaryKey || field.autoIncrement;
-                  const isSystemGenerated = field.systemGenerated;
-                  
-                  // Skip system-generated fields entirely
-                  const systemFieldNames = ['created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
-                  if (isSystemGenerated || systemFieldNames.includes(field.name.toLowerCase())) {
-                    return null;
-                  }
+                  // Skip fields that should be hidden
+                  if (shouldHideField(field, 'edit')) return null;
 
                   return (
-                    <div key={field.name} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor={field.name} className="text-slate-900">
-                          {field.name}
-                        </Label>
-                        {field.primaryKey && (
-                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
-                            Primary Key
-                          </Badge>
-                        )}
-                        {isReadOnly && (
-                          <Badge variant="outline" className="text-xs bg-slate-100 text-slate-600">
-                            Тільки для читання
-                          </Badge>
-                        )}
-                        {!field.nullable && !isReadOnly && (
-                          <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-300">
-                            Обов'язкове
-                          </Badge>
-                        )}
-                      </div>
-                      {getFieldInput(field)}
-                      {errors[field.name] && (
-                        <p className="text-xs text-red-600">{errors[field.name]}</p>
-                      )}
-                    </div>
+                    <FormField
+                      key={field.name}
+                      field={field}
+                      value={formData[field.name] || recordId}
+                      error={errors[field.name]}
+                      onChange={(value) => handleChange(field.name, value)}
+                      isReadOnly={isFieldReadOnly(field)}
+                      isPreview={markdownPreview[field.name]}
+                      onTogglePreview={() => toggleMarkdownPreview(field.name)}
+                    />
                   );
                 })}
 
-                {/* File Upload Section */}
+                {/* File Management Section */}
                 <div className="space-y-3 pt-4 border-t border-slate-200">
                   <div className="flex items-center gap-2">
                     <Upload className="w-4 h-4 text-violet-600" />
@@ -488,95 +194,19 @@ export default function EditRecord({
                   </div>
 
                   {/* Existing Files */}
-                  {existingFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-500">Існуючі файли:</p>
-                      {existingFiles.map((filename, index) => (
-                        <div
-                          key={`existing-${index}`}
-                          className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200"
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <span className="text-2xl flex-shrink-0">{getFileIcon(filename)}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-slate-900 truncate">{filename}</p>
-                              <p className="text-xs text-green-600">Збережено</p>
-                            </div>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveExistingFile(index)}
-                            className="flex-shrink-0 hover:bg-red-100 hover:text-red-600"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownloadFile(filename)}
-                            className="flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
-                          >
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <ExistingFilesList
+                    files={existingFiles}
+                    onRemoveFile={handleRemoveExistingFile}
+                    onDownloadFile={handleDownloadFile}
+                  />
 
                   {/* Upload New Files */}
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="file-upload"
+                  <FileUpload
+                    files={attachedFiles}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={handleRemoveNewFile}
+                    showNewFileLabel={true}
                   />
-                  <label htmlFor="file-upload">
-                    <div className="cursor-pointer border-2 border-dashed border-violet-300 rounded-lg p-6 hover:border-violet-500 hover:bg-violet-50/50 transition-colors text-center">
-                      <Upload className="w-8 h-8 text-violet-400 mx-auto mb-2" />
-                      <p className="text-sm text-slate-600 mb-1">
-                        Натисніть для вибору файлів або перетягніть сюди
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Підтримуються всі типи файлів
-                      </p>
-                    </div>
-                  </label>
-
-                  {/* New Files List */}
-                  {attachedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-500">
-                        Нових файлів для завантаження: {attachedFiles.length}
-                      </p>
-                      {attachedFiles.map((file, index) => (
-                        <div
-                          key={`new-${index}`}
-                          className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <span className="text-2xl flex-shrink-0">{getFileIcon(file.name)}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-slate-900 truncate">{file.name}</p>
-                              <p className="text-xs text-slate-500">{formatFileSize(file.size)}</p>
-                            </div>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveNewFile(index)}
-                            className="flex-shrink-0 hover:bg-red-100 hover:text-red-600"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             </ScrollArea>
