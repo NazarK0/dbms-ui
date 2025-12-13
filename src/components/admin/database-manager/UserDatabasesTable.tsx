@@ -1,4 +1,4 @@
-import { Database as DatabaseIcon, Download, Copy, Edit, Trash2 } from 'lucide-react';
+import { Database as DatabaseIcon, Download, Copy, Edit, Trash2, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Badge } from '../../ui/badge';
@@ -74,6 +74,14 @@ export default function UserDatabasesTable({
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => onDatabaseSelect(db.name)}
+                      title="Переглянути"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => onExport(db.name)}
                       title="Експорт схеми"
                     >
@@ -95,6 +103,7 @@ export default function UserDatabasesTable({
                       size="icon"
                       onClick={() => onDeleteDatabase(db.name)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title="Видалити"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

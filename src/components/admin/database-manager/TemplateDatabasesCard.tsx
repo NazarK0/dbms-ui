@@ -1,28 +1,21 @@
-import { Lock } from 'lucide-react';
+import { Lock, Download, Copy, Edit, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { templateDatabases } from '../../../mockData/admin';
 
-export default function TemplateDatabasesCard() {
-  const templateDatabases = [
-    {
-      name: 'template0',
-      description: 'Базовий незмінний шаблон PostgreSQL',
-      size: '7.8 МБ',
-      encoding: 'UTF8',
-      collation: 'uk_UA.UTF-8',
-      allowCloning: false,
-    },
-    {
-      name: 'template1',
-      description: 'Шаблон за замовчуванням для нових БД',
-      size: '7.9 МБ',
-      encoding: 'UTF8',
-      collation: 'uk_UA.UTF-8',
-      allowCloning: true,
-    },
-  ];
+interface TemplateDatabasesCardProps {
+  onDatabaseSelect: (dbName: string) => void;
+  onExport: (dbName: string) => void;
+  onCopy: (dbName: string) => void;
+}
 
+export default function TemplateDatabasesCard({ 
+  onDatabaseSelect, 
+  onExport,
+  onCopy 
+}: TemplateDatabasesCardProps) {
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader>
@@ -43,14 +36,20 @@ export default function TemplateDatabasesCard() {
               <TableHead>Назва</TableHead>
               <TableHead>Опис</TableHead>
               <TableHead>Розмір</TableHead>
+              <TableHead>Таблиці</TableHead>
               <TableHead>Кодування</TableHead>
               <TableHead>Сортування</TableHead>
-              <TableHead>Дозволене клонування</TableHead>
+              <TableHead>Клонування</TableHead>
+              <TableHead className="text-right">Дії</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {templateDatabases.map((db) => (
-              <TableRow key={db.name} className="bg-yellow-50/30">
+              <TableRow 
+                key={db.name} 
+                className="bg-yellow-50/30 cursor-pointer hover:bg-yellow-50/50 transition-colors"
+                onClick={() => onDatabaseSelect(db.name)}
+              >
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
@@ -61,12 +60,50 @@ export default function TemplateDatabasesCard() {
                 </TableCell>
                 <TableCell className="text-slate-600">{db.description}</TableCell>
                 <TableCell className="text-slate-600">{db.size}</TableCell>
+                <TableCell className="text-slate-600">{db.tables}</TableCell>
                 <TableCell className="text-slate-600">{db.encoding}</TableCell>
                 <TableCell className="text-slate-600">{db.collation}</TableCell>
                 <TableCell>
                   <Badge variant={db.allowCloning ? 'default' : 'destructive'}>
                     {db.allowCloning ? 'Так' : 'Ні'}
                   </Badge>
+                </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDatabaseSelect(db.name)}
+                      title="Переглянути"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onExport(db.name)}
+                      title="Експорт схеми"
+                    >
+                      <Download className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onCopy(db.name)}
+                      title="Копіювати БД"
+                      disabled={!db.allowCloning}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      title="Редагувати"
+                      disabled
+                    >
+                      <Edit className="w-4 h-4 text-slate-400" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

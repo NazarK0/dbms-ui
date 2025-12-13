@@ -3547,6 +3547,18 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-red-50\/50:hover {
+      background-color: color-mix(in srgb, oklch(.971 .013 17.38) 50%, transparent);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-red-50\/50:hover {
+        background-color: color-mix(in oklab, var(--color-red-50) 50%, transparent);
+      }
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-red-100:hover {
       background-color: var(--color-red-100);
     }
@@ -3651,6 +3663,18 @@
   @media (hover: hover) {
     .hover\:bg-white:hover {
       background-color: var(--color-white);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:bg-yellow-50\/50:hover {
+      background-color: color-mix(in srgb, oklch(.987 .026 102.212) 50%, transparent);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-yellow-50\/50:hover {
+        background-color: color-mix(in oklab, var(--color-yellow-50) 50%, transparent);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 // Central export for all admin mock data
 
+export * from './databases';
 export * from './extensions';
 export * from './schemas';
 export * from './foreignServers';
