@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '../../ui/card';
 import {
   ConfigHeader,
@@ -12,6 +12,8 @@ import {
   calculateStatistics,
 } from './config';
 import { configParams, savedProfiles as initialProfiles } from '@/mockData/admin/postgresConfig';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonCard } from '../../ui/skeletons';
 
 export default function PostgresConfig() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -20,7 +22,19 @@ export default function PostgresConfig() {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [profiles, setProfiles] = useState(initialProfiles);
 
-  const statistics = calculateStatistics(configParams);
+  // Loading states
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+  const [config, setConfig] = useState<any[]>([]);
+  const [statistics, setStatistics] = useState<any>(null);
+
+  useEffect(() => {
+    // Load configuration
+    mockApiCall('config/parameters', {}, 1000).then((data) => {
+      setConfig(configParams);
+      setStatistics(calculateStatistics(configParams));
+      setIsLoadingConfig(false);
+    });
+  }, []);
 
   const handleParamChange = (paramName: string, value: string) => {
     setHasChanges(true);
@@ -85,35 +99,45 @@ export default function PostgresConfig() {
 
       <RestartDialog open={restartDialogOpen} onClose={setRestartDialogOpen} />
 
-      <RestartAlert count={statistics.requiresRestart} />
+      {isLoadingConfig ? (
+        <>
+          <SkeletonCard />
+          <SkeletonCardGrid count={4} columns={2} />
+          <SkeletonCard showHeader contentLines={5} />
+        </>
+      ) : (
+        <>
+          <RestartAlert count={statistics?.requiresRestart || 0} />
 
-      <ConfigStatistics statistics={statistics} />
+          <ConfigStatistics statistics={statistics} />
 
-      <ConfigAccordion
-        params={configParams}
-        hasChanges={hasChanges}
-        onParamChange={handleParamChange}
-        onSave={handleSave}
-        onReset={handleReset}
-      />
+          <ConfigAccordion
+            params={config}
+            hasChanges={hasChanges}
+            onParamChange={handleParamChange}
+            onSave={handleSave}
+            onReset={handleReset}
+          />
 
-      <ConfigPreview params={configParams} />
+          <ConfigPreview params={config} />
 
-      <ProfilesManager
-        profiles={profiles}
-        saveDialogOpen={saveDialogOpen}
-        importDialogOpen={importDialogOpen}
-        parametersCount={statistics.totalParams}
-        onSaveDialogChange={setSaveDialogOpen}
-        onImportDialogChange={setImportDialogOpen}
-        onSaveProfile={handleSaveProfile}
-        onImportFile={handleImportFile}
-        onApplyProfile={handleApplyProfile}
-        onDownloadProfile={handleDownloadProfile}
-        onDeleteProfile={handleDeleteProfile}
-      />
+          <ProfilesManager
+            profiles={profiles}
+            saveDialogOpen={saveDialogOpen}
+            importDialogOpen={importDialogOpen}
+            parametersCount={statistics?.totalParams || 0}
+            onSaveDialogChange={setSaveDialogOpen}
+            onImportDialogChange={setImportDialogOpen}
+            onSaveProfile={handleSaveProfile}
+            onImportFile={handleImportFile}
+            onApplyProfile={handleApplyProfile}
+            onDownloadProfile={handleDownloadProfile}
+            onDeleteProfile={handleDeleteProfile}
+          />
 
-      <QuickPresets onApplyPreset={handleApplyPreset} />
+          <QuickPresets onApplyPreset={handleApplyPreset} />
+        </>
+      )}
     </div>
   );
 }

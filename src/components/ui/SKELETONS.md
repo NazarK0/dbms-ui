@@ -232,9 +232,106 @@ Skeleton для дерева (файлова структура, категор�
 
 **Приклад:**
 ```tsx
-import { SkeletonTree } from './ui/skeleton-list';
+import { SkeletonTree } from './ui/skeleton-form';
 
 <SkeletonTree depth={4} itemsPerLevel={4} />
+```
+
+## Form & Special Skeletons
+
+### `SkeletonForm`
+
+Skeleton для форм з полями введення.
+
+**Props:**
+- `fields?: number` - Кількість полів (за замовчуванням: 4)
+- `showButtons?: boolean` - Показувати кнопки (за замовчуванням: true)
+- `className?: string` - Додаткові CSS класи
+
+**Приклад:**
+```tsx
+import { SkeletonForm } from './ui/skeleton-form';
+
+<SkeletonForm fields={6} showButtons={true} />
+```
+
+### `SkeletonAccordion`
+
+Skeleton для accordion/collapsible секцій.
+
+**Props:**
+- `items?: number` - Кількість елементів (за замовчуванням: 3)
+- `className?: string` - Додаткові CSS класи
+
+**Приклад:**
+```tsx
+import { SkeletonAccordion } from './ui/skeleton-form';
+
+<SkeletonAccordion items={5} />
+```
+
+### `SkeletonDiagram`
+
+Skeleton для топології/діаграм (наприклад, реплікація кластерів).
+
+**Приклад:**
+```tsx
+import { SkeletonDiagram } from './ui/skeleton-form';
+
+<SkeletonDiagram />
+```
+
+### `SkeletonCodeEditor`
+
+Skeleton для code editor/preview блоків.
+
+**Приклад:**
+```tsx
+import { SkeletonCodeEditor } from './ui/skeleton-form';
+
+<SkeletonCodeEditor />
+```
+
+### `SkeletonTabs`
+
+Skeleton для tabs з вмістом.
+
+**Props:**
+- `tabs?: number` - Кількість табів (за замовчуванням: 3)
+- `contentLines?: number` - Рядків контенту (за замовчуванням: 5)
+- `className?: string` - Додаткові CSS класи
+
+**Приклад:**
+```tsx
+import { SkeletonTabs } from './ui/skeleton-form';
+
+<SkeletonTabs tabs={4} contentLines={8} />
+```
+
+### `SkeletonBadgeGroup`
+
+Skeleton для групи badges/тегів.
+
+**Props:**
+- `count?: number` - Кількість badges (за замовчуванням: 5)
+- `className?: string` - Додаткові CSS класи
+
+**Приклад:**
+```tsx
+import { SkeletonBadgeGroup } from './ui/skeleton-form';
+
+<SkeletonBadgeGroup count={8} />
+```
+
+### `SkeletonProgress`
+
+Skeleton для progress card з кількома індикаторами прогресу.
+
+**Приклад:**
+```tsx
+import { SkeletonProgress } from './ui/skeleton-form';
+
+<SkeletonProgress />
 ```
 
 ## Chart Skeletons
@@ -463,5 +560,12 @@ import {
   SkeletonChart,
   SkeletonChartGrid,
   SkeletonStatsRow,
+  SkeletonForm,
+  SkeletonAccordion,
+  SkeletonDiagram,
+  SkeletonCodeEditor,
+  SkeletonTabs,
+  SkeletonBadgeGroup,
+  SkeletonProgress,
 } from './ui/skeletons';
 ```

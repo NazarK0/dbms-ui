@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { TableHeader, TableInfoCard, TablePagination, TableSearchBar } from './table';
 import {
   TableDataGrid,
@@ -7,6 +8,8 @@ import {
   useTableDataEditor,
 } from './table-data-editor';
 import type { TableDataEditorProps } from './table-data-editor';
+import { mockApiCall } from '../../utils/mockApi';
+import { SkeletonTable, SkeletonCard } from '../ui/skeletons';
 
 export default function TableDataEditor({
   database,
@@ -17,6 +20,8 @@ export default function TableDataEditor({
   onCreateRecord,
   onEditRecord,
 }: TableDataEditorProps) {
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
   const {
     schema,
     filteredRecords,
@@ -50,6 +55,13 @@ export default function TableDataEditor({
     closeDeleteModal,
   } = useTableDataEditor(table, permissions);
 
+  useEffect(() => {
+    // Load table data
+    mockApiCall('table/records', { database, table }, 900).then((data) => {
+      setIsLoadingData(false);
+    });
+  }, [database, table]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -61,35 +73,44 @@ export default function TableDataEditor({
         onCreateRecord={() => openCreateModal(onCreateRecord)}
       />
 
-      {/* Info Card */}
-      <TableInfoCard database={database} recordsCount={filteredRecords.length} />
+      {isLoadingData ? (
+        <>
+          <SkeletonCard contentLines={2} />
+          <SkeletonTable rows={10} columns={schema.length} showActions={canUpdate || canDelete} />
+        </>
+      ) : (
+        <>
+          {/* Info Card */}
+          <TableInfoCard database={database} recordsCount={filteredRecords.length} />
 
-      {/* Search */}
-      <TableSearchBar value={searchTerm} onChange={setSearchTerm} />
+          {/* Search */}
+          <TableSearchBar value={searchTerm} onChange={setSearchTerm} />
 
-      {/* Data Table */}
-      <TableDataGrid
-        schema={schema}
-        currentRecords={currentRecords}
-        highlightRecordId={highlightRecordId}
-        canUpdate={canUpdate}
-        canDelete={canDelete}
-        onEditRecord={(record) => openEditModal(record, onEditRecord)}
-        onDeleteRecord={openDeleteModal}
-      />
+          {/* Data Table */}
+          <TableDataGrid
+            schema={schema}
+            currentRecords={currentRecords}
+            highlightRecordId={highlightRecordId}
+            canUpdate={canUpdate}
+            canDelete={canDelete}
+            onEditRecord={(record) => openEditModal(record, onEditRecord)}
+            onDeleteRecord={openDeleteModal}
+          />
 
-      {/* Pagination */}
-      {filteredRecords.length > 0 && (
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalRecords={filteredRecords.length}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
+          {/* Pagination */}
+          {filteredRecords.length > 0 && (
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              startIndex={startIndex}
+              endIndex={endIndex}
+              totalRecords={filteredRecords.length}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          )}
+        </>
       )}
 
       {/* Create Modal */}

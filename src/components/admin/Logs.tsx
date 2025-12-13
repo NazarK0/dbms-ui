@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   LogsHeader,
   LogStats,
@@ -11,6 +11,8 @@ import {
 } from './logs';
 import type { LogEntry } from './logs';
 import { mockLogs } from '@/mockData/admin/logs';
+import { mockApiCall } from '../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonTable } from '../ui/skeletons';
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,9 +22,29 @@ export default function Logs() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
 
+  // Loading states
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    // Load statistics
+    mockApiCall('logs/statistics', {}, 700).then((data) => {
+      setStats(calculateLogStats(mockLogs));
+      setIsLoadingStats(false);
+    });
+
+    // Load logs
+    mockApiCall('logs/list', {}, 1000).then((data) => {
+      setLogs(mockLogs);
+      setIsLoadingLogs(false);
+    });
+  }, []);
+
   // Filter logs
   const filteredLogs = filterLogs(
-    mockLogs,
+    logs,
     searchTerm,
     selectedLevel,
     selectedSource
@@ -36,14 +58,15 @@ export default function Logs() {
   );
   const currentLogs = filteredLogs.slice(startIndex, endIndex);
 
-  // Calculate statistics
-  const logStats = calculateLogStats(mockLogs);
-
   return (
     <div className="space-y-6">
       <LogsHeader />
 
-      <LogStats stats={logStats} />
+      {isLoadingStats ? (
+        <SkeletonCardGrid count={4} columns={4} cardType="stat" />
+      ) : (
+        <LogStats stats={stats} />
+      )}
 
       <LogFilters
         searchTerm={searchTerm}
@@ -54,16 +77,20 @@ export default function Logs() {
         onSourceChange={setSelectedSource}
       />
 
-      <LogsTable
-        logs={currentLogs}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        totalLogs={filteredLogs.length}
-        onPageChange={setCurrentPage}
-        onItemsPerPageChange={setItemsPerPage}
-        onLogClick={setSelectedLog}
-      />
+      {isLoadingLogs ? (
+        <SkeletonTable rows={10} columns={6} showActions />
+      ) : (
+        <LogsTable
+          logs={currentLogs}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalLogs={filteredLogs.length}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={setItemsPerPage}
+          onLogClick={setSelectedLog}
+        />
+      )}
 
       {selectedLog && (
         <LogDetailsModal log={selectedLog} onClose={() => setSelectedLog(null)} />

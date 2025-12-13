@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '../../ui/card';
 import { Tabs } from '../../ui/tabs';
 import { getSchemasByDatabase } from '../../../mockData';
@@ -12,6 +12,8 @@ import {
   type SchemaFormData,
   type SchemaTab,
 } from './schemas';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonTable } from '../../ui/skeletons';
 
 interface SchemasManagerProps {
   selectedDatabase: string;
@@ -21,9 +23,17 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
   const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
   const [activeSchemaTab, setActiveSchemaTab] = useState<SchemaTab>('tables');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isLoadingSchemas, setIsLoadingSchemas] = useState(true);
+  const [schemas, setSchemas] = useState<any[]>([]);
 
-  // Get schemas for the selected database
-  const schemas = getSchemasByDatabase(selectedDatabase);
+  useEffect(() => {
+    // Load schemas
+    setIsLoadingSchemas(true);
+    mockApiCall('schemas/list', { database: selectedDatabase }, 700).then((data) => {
+      setSchemas(getSchemasByDatabase(selectedDatabase));
+      setIsLoadingSchemas(false);
+    });
+  }, [selectedDatabase]);
 
   const handleCreateSchema = (data: SchemaFormData) => {
     // Mock creation - in real app, this would call API
@@ -85,13 +95,17 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
         </CardHeader>
         
         <CardContent>
-          <SchemasTable
-            schemas={schemas}
-            onSelectSchema={setSelectedSchema}
-            onExport={handleExportSchema}
-            onEdit={handleEditSchema}
-            onDelete={handleDeleteSchema}
-          />
+          {isLoadingSchemas ? (
+            <SkeletonTable rows={5} columns={3} />
+          ) : (
+            <SchemasTable
+              schemas={schemas}
+              onSelectSchema={setSelectedSchema}
+              onExport={handleExportSchema}
+              onEdit={handleEditSchema}
+              onDelete={handleDeleteSchema}
+            />
+          )}
         </CardContent>
       </Card>
 

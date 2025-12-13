@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { userDatabases } from '../../../mockData/admin';
 import {
   DatabaseToolsView,
@@ -10,10 +10,13 @@ import {
   ExportDatabaseModal,
   ImportDatabaseModal,
 } from '../database-manager';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonCardGrid } from '../../ui/skeletons';
 
 export default function DatabaseManager() {
   const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
   const [databases, setDatabases] = useState(userDatabases);
+  const [isLoadingDatabases, setIsLoadingDatabases] = useState(true);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
@@ -22,6 +25,14 @@ export default function DatabaseManager() {
   const [selectedDb, setSelectedDb] = useState<string | null>(null);
   const [newDbName, setNewDbName] = useState('');
   const [newDbOwner, setNewDbOwner] = useState('admin');
+
+  useEffect(() => {
+    // Load databases
+    mockApiCall('databases/list', {}, 900).then((data) => {
+      setDatabases(userDatabases);
+      setIsLoadingDatabases(false);
+    });
+  }, []);
 
   const handleCreateDatabase = () => {
     if (newDbName.trim()) {
@@ -109,13 +120,17 @@ export default function DatabaseManager() {
       )}
 
       {!selectedDatabase && (
-        <DatabaseListView
-          databases={databases}
-          onDatabaseSelect={handleSelectDatabase}
-          onDeleteDatabase={handleDeleteDatabase}
-          onExport={handleExport}
-          onCopy={handleCopy}
-        />
+        isLoadingDatabases ? (
+          <SkeletonCardGrid count={6} columns={3} />
+        ) : (
+          <DatabaseListView
+            databases={databases}
+            onDatabaseSelect={handleSelectDatabase}
+            onDeleteDatabase={handleDeleteDatabase}
+            onExport={handleExport}
+            onCopy={handleCopy}
+          />
+        )
       )}
 
       <CreateDatabaseModal

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ReplicaHeader,
   ReplicationStats,
@@ -13,11 +13,46 @@ import {
   replicationActivity 
 } from '@/mockData/admin/replicas';
 import type { AddReplicaFormData } from './replicas/types';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonTable, SkeletonDiagram } from '../../ui/skeletons';
 
 export default function ReplicaClusters() {
   const [selectedCluster, setSelectedCluster] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [clusters, setClusters] = useState(initialClusters);
+
+  // Loading states
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingTopology, setIsLoadingTopology] = useState(true);
+  const [isLoadingClusters, setIsLoadingClusters] = useState(true);
+  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+  const [activity, setActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load replication stats
+    mockApiCall('replicas/stats', {}, 800).then((data) => {
+      setStats(replicationStats);
+      setIsLoadingStats(false);
+    });
+
+    // Load topology
+    mockApiCall('replicas/topology', {}, 1100).then((data) => {
+      setIsLoadingTopology(false);
+    });
+
+    // Load clusters
+    mockApiCall('replicas/clusters', {}, 1000).then((data) => {
+      setClusters(initialClusters);
+      setIsLoadingClusters(false);
+    });
+
+    // Load activity
+    mockApiCall('replicas/activity', {}, 1200).then((data) => {
+      setActivity(replicationActivity);
+      setIsLoadingActivity(false);
+    });
+  }, []);
 
   const handleAddReplica = (data: AddReplicaFormData) => {
     console.log('Adding replica:', data);
@@ -55,18 +90,34 @@ export default function ReplicaClusters() {
     <div className="space-y-6">
       <ReplicaHeader onAddReplica={() => setShowAddModal(true)} />
 
-      <ReplicationStats stats={replicationStats} />
+      {isLoadingStats ? (
+        <SkeletonCardGrid count={3} columns={3} cardType="stat" />
+      ) : (
+        stats && <ReplicationStats stats={stats} />
+      )}
 
-      <TopologyDiagram />
+      {isLoadingTopology ? (
+        <SkeletonDiagram />
+      ) : (
+        <TopologyDiagram />
+      )}
 
-      <ClusterDetailsTable
-        clusters={clusters}
-        onSelectCluster={handleSelectCluster}
-        onConfigureCluster={handleConfigureCluster}
-        onPromoteReplica={handlePromoteReplica}
-      />
+      {isLoadingClusters ? (
+        <SkeletonTable />
+      ) : (
+        <ClusterDetailsTable
+          clusters={clusters}
+          onSelectCluster={handleSelectCluster}
+          onConfigureCluster={handleConfigureCluster}
+          onPromoteReplica={handlePromoteReplica}
+        />
+      )}
 
-      <ReplicationActivityTable activities={replicationActivity} />
+      {isLoadingActivity ? (
+        <SkeletonTable />
+      ) : (
+        <ReplicationActivityTable activities={activity} />
+      )}
 
       <AddReplicaDialog
         open={showAddModal}

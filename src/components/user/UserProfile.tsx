@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { UserInfoCard, DatabaseAccessCard } from './profile';
+import { mockApiCall } from '../../utils/mockApi';
+import { SkeletonCard } from '../ui/skeletons';
 
 interface UserRole {
   id: number;
@@ -13,6 +16,21 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ userRoles, onBack }: UserProfileProps) {
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isLoadingDatabases, setIsLoadingDatabases] = useState(true);
+
+  useEffect(() => {
+    // Load user profile data
+    mockApiCall('user/profile', {}, 800).then((data) => {
+      setIsLoadingUser(false);
+    });
+
+    // Load database access data
+    mockApiCall('user/database-access', {}, 900).then((data) => {
+      setIsLoadingDatabases(false);
+    });
+  }, []);
+
   const user = {
     name: 'Олександр Петренко',
     email: 'oleksandr.petrenko@example.com',
@@ -57,16 +75,24 @@ export default function UserProfile({ userRoles, onBack }: UserProfileProps) {
       </div>
 
       {/* User Info */}
-      <UserInfoCard 
-        user={user}
-        userRoles={userRoles}
-        activityStats={activityStats}
-      />
+      {isLoadingUser ? (
+        <SkeletonCard height="300px" />
+      ) : (
+        <UserInfoCard 
+          user={user}
+          userRoles={userRoles}
+          activityStats={activityStats}
+        />
+      )}
 
       {/* Database Access by Role */}
-      <DatabaseAccessCard 
-        groupedDatabases={groupedDatabases}
-      />
+      {isLoadingDatabases ? (
+        <SkeletonCard height="400px" />
+      ) : (
+        <DatabaseAccessCard 
+          groupedDatabases={groupedDatabases}
+        />
+      )}
     </div>
   );
 }

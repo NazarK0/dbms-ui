@@ -855,6 +855,10 @@
     margin-left: calc(var(--spacing) * 4);
   }
 
+  .ml-6 {
+    margin-left: calc(var(--spacing) * 6);
+  }
+
   .ml-auto {
     margin-left: auto;
   }
@@ -1112,6 +1116,14 @@
     min-height: 200px;
   }
 
+  .min-h-\[300px\] {
+    min-height: 300px;
+  }
+
+  .min-h-\[400px\] {
+    min-height: 400px;
+  }
+
   .min-h-\[500px\] {
     min-height: 500px;
   }
@@ -1214,6 +1226,10 @@
 
   .w-32 {
     width: calc(var(--spacing) * 32);
+  }
+
+  .w-36 {
+    width: calc(var(--spacing) * 36);
   }
 
   .w-40 {
@@ -2269,6 +2285,10 @@
 
   .bg-slate-500 {
     background-color: var(--color-slate-500);
+  }
+
+  .bg-slate-700 {
+    background-color: var(--color-slate-700);
   }
 
   .bg-slate-800 {

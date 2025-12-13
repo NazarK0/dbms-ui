@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Archive, Upload, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
@@ -12,9 +12,29 @@ import {
   ScheduleHeader,
   SchedulesTable,
 } from './backup-restore';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonTable } from '../../ui/skeletons';
 
 export default function BackupRestore({ selectedDatabase }: { selectedDatabase?: string }) {
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isLoadingBackups, setIsLoadingBackups] = useState(true);
+  const [isLoadingSchedules, setIsLoadingSchedules] = useState(true);
+  const [backupsList, setBackupsList] = useState<any[]>([]);
+  const [schedulesList, setSchedulesList] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load backups
+    mockApiCall('backups/list', { database: selectedDatabase }, 900).then((data) => {
+      setBackupsList(backups);
+      setIsLoadingBackups(false);
+    });
+
+    // Load schedules
+    mockApiCall('backups/schedules', { database: selectedDatabase }, 950).then((data) => {
+      setSchedulesList(backupSchedules);
+      setIsLoadingSchedules(false);
+    });
+  }, [selectedDatabase]);
 
   const handleCreateBackup = () => {
     setIsBackingUp(true);
@@ -82,11 +102,15 @@ export default function BackupRestore({ selectedDatabase }: { selectedDatabase?:
                   estimatedTimeRemaining="~8 хвилин" 
                 />
               )}
-              <BackupsTable
-                backups={backups}
-                onDownload={handleDownloadBackup}
-                onRestore={handleRestoreBackup}
-              />
+              {isLoadingBackups ? (
+                <SkeletonTable rows={5} columns={4} />
+              ) : (
+                <BackupsTable
+                  backups={backupsList}
+                  onDownload={handleDownloadBackup}
+                  onRestore={handleRestoreBackup}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -110,11 +134,15 @@ export default function BackupRestore({ selectedDatabase }: { selectedDatabase?:
           <Card className="border-slate-200 shadow-sm">
             <ScheduleHeader onAddSchedule={handleAddSchedule} />
             <CardContent>
-              <SchedulesTable
-                schedules={backupSchedules}
-                onToggleSchedule={handleToggleSchedule}
-                onEditSchedule={handleEditSchedule}
-              />
+              {isLoadingSchedules ? (
+                <SkeletonTable rows={5} columns={4} />
+              ) : (
+                <SchedulesTable
+                  schedules={schedulesList}
+                  onToggleSchedule={handleToggleSchedule}
+                  onEditSchedule={handleEditSchedule}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

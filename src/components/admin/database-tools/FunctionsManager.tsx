@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Code, Plus, Trash2, Search, Edit, FileCode } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -6,9 +6,21 @@ import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { functions, functionCode } from '../../../mockData/admin';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonTable, SkeletonCodeEditor } from '../../ui/skeletons';
 
 export default function FunctionsManager({ selectedDatabase }: { selectedDatabase?: string }) {
   const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
+  const [isLoadingFunctions, setIsLoadingFunctions] = useState(true);
+  const [functionsList, setFunctionsList] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load functions
+    mockApiCall('functions/list', { database: selectedDatabase }, 750).then((data) => {
+      setFunctionsList(functions);
+      setIsLoadingFunctions(false);
+    });
+  }, [selectedDatabase]);
 
   return (
     <div className="space-y-6">
@@ -28,51 +40,55 @@ export default function FunctionsManager({ selectedDatabase }: { selectedDatabas
           <CardDescription>База даних: {selectedDatabase}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Назва</TableHead>
-                <TableHead>Схема</TableHead>
-                <TableHead>Аргументи</TableHead>
-                <TableHead>Повертає</TableHead>
-                <TableHead>Мова</TableHead>
-                <TableHead className="text-right">Дії</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {functions.map((func) => (
-                <TableRow 
-                  key={func.name}
-                  onClick={() => setSelectedFunction(func.name)}
-                  className="cursor-pointer"
-                >
-                  <TableCell className="font-medium text-slate-900">{func.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{func.schema}</Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-slate-600">
-                    {func.arguments || <span className="text-slate-400">—</span>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{func.returns}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge>{func.language}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-red-600">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+          {isLoadingFunctions ? (
+            <SkeletonTable rows={6} columns={6} showActions />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Назва</TableHead>
+                  <TableHead>Схема</TableHead>
+                  <TableHead>Аргументи</TableHead>
+                  <TableHead>Повертає</TableHead>
+                  <TableHead>Мова</TableHead>
+                  <TableHead className="text-right">Дії</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {functionsList.map((func) => (
+                  <TableRow 
+                    key={func.name}
+                    onClick={() => setSelectedFunction(func.name)}
+                    className="cursor-pointer"
+                  >
+                    <TableCell className="font-medium text-slate-900">{func.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{func.schema}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-slate-600">
+                      {func.arguments || <span className="text-slate-400">—</span>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{func.returns}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge>{func.language}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-red-600">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -15,6 +15,8 @@ import {
   filterAuditEntries,
 } from './audit-log/utils';
 import type { AuditFilters as AuditFiltersType } from './audit-log/types';
+import { mockApiCall } from '../../../utils/mockApi';
+import { SkeletonCardGrid, SkeletonTable, SkeletonChart } from '../../ui/skeletons';
 
 export default function AuditLog() {
   const [filters, setFilters] = useState<AuditFiltersType>({
@@ -24,15 +26,40 @@ export default function AuditLog() {
     filterCategory: 'all',
   });
 
+  // Loading states
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingChart, setIsLoadingChart] = useState(true);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [statistics, setStatistics] = useState<any>(null);
+  const [actionTypeStats, setActionTypeStats] = useState<any>(null);
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load statistics
+    mockApiCall('audit/statistics', {}, 800).then((data) => {
+      setStatistics(calculateStatistics(auditEntries));
+      setIsLoadingStats(false);
+    });
+
+    // Load action type stats
+    mockApiCall('audit/action-stats', {}, 1000).then((data) => {
+      setActionTypeStats(calculateActionTypeStats(auditEntries));
+      setIsLoadingChart(false);
+    });
+
+    // Load audit logs
+    mockApiCall('audit/logs', {}, 1200).then((data) => {
+      setLogs(auditEntries);
+      setIsLoadingLogs(false);
+    });
+  }, []);
+
   const handleFiltersChange = (newFilters: Partial<AuditFiltersType>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  const statistics = calculateStatistics(auditEntries);
-  const actionTypeStats = calculateActionTypeStats(auditEntries);
-
   const filteredEntries = filterAuditEntries(
-    auditEntries,
+    logs,
     filters.searchQuery,
     filters.filterUser,
     filters.filterAction,
@@ -46,10 +73,18 @@ export default function AuditLog() {
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <AuditStatisticsCards statistics={statistics} />
+      {isLoadingStats ? (
+        <SkeletonCardGrid count={4} columns={4} cardType="stat" />
+      ) : (
+        statistics && <AuditStatisticsCards statistics={statistics} />
+      )}
 
       {/* Action Type Statistics */}
-      <ActionTypeStats statistics={actionTypeStats} />
+      {isLoadingChart ? (
+        <SkeletonChart />
+      ) : (
+        actionTypeStats && <ActionTypeStats statistics={actionTypeStats} />
+      )}
 
       {/* Filters and Search */}
       <Card className="border-slate-200 shadow-sm">
@@ -74,7 +109,11 @@ export default function AuditLog() {
               filteredCount={filteredEntries.length}
             />
 
-            <AuditLogTable entries={filteredEntries} />
+            {isLoadingLogs ? (
+              <SkeletonTable />
+            ) : (
+              <AuditLogTable entries={filteredEntries} />
+            )}
           </div>
         </CardContent>
       </Card>
