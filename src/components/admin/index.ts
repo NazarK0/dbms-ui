@@ -33,26 +33,26 @@ export type { DashboardCard } from './hooks/useDashboardCustomization';
 export * from './data/mockAdminData';
 
 // ==================== MAIN ADMIN PAGES ====================
-// These are re-exported from root /components for backward compatibility
-export { default as Dashboard } from '../Dashboard';
-export { default as DatabaseManager } from '../DatabaseManager';
-export { default as UsersManager } from '../UsersManager';
-export { default as RolesManager } from './RolesManager';
-export { default as AuditLog } from '../AuditLog';
-export { default as PostgresConfig } from '../PostgresConfig';
-export { default as CLI } from '../CLI';
-export { default as SystemMonitor } from '../SystemMonitor';
-export { default as ReplicaClusters } from '../ReplicaClusters';
-export { default as PerformanceAnalyzer } from '../PerformanceAnalyzer';
+// These are re-exported from pages directory
+export { default as Dashboard } from './pages/Dashboard';
+export { default as DatabaseManager } from './pages/DatabaseManager';
+export { default as UsersManager } from './pages/UsersManager';
+export { default as RolesManager } from './pages/RolesManager';
+export { default as AuditLog } from './pages/AuditLog';
+export { default as PostgresConfig } from './pages/PostgresConfig';
+export { default as CLI } from './pages/CLI';
+export { default as SystemMonitor } from './pages/SystemMonitor';
+export { default as ReplicaClusters } from './pages/ReplicaClusters';
+export { default as PerformanceAnalyzer } from './pages/PerformanceAnalyzer';
 export { default as Logs } from './Logs';
-export { default as UserUIPreview } from '../UserUIPreview';
+export { default as UserUIPreview } from './pages/UserUIPreview';
 
 // ==================== SUB-COMPONENTS (used by main pages) ====================
-export { default as QueryExecutor } from '../QueryExecutor';
-export { default as TableBrowser } from '../TableBrowser';
-export { default as SchemaVisualizer } from '../SchemaVisualizer';
-export { default as SchemasManager } from '../SchemasManager';
-export { default as ExtensionManager } from '../ExtensionManager';
-export { default as FunctionsManager } from '../FunctionsManager';
-export { default as TriggersRules } from '../TriggersRules';
-export { default as BackupRestore } from '../BackupRestore';
+export { default as QueryExecutor } from './database-tools/QueryExecutor';
+export { default as TableBrowser } from './database-tools/TableBrowser';
+export { default as SchemaVisualizer } from './database-tools/SchemaVisualizer';
+export { default as SchemasManager } from './database-tools/SchemasManager';
+export { default as ExtensionManager } from './database-tools/ExtensionManager';
+export { default as FunctionsManager } from './database-tools/FunctionsManager';
+export { default as TriggersRules } from './database-tools/TriggersRules';
+export { default as BackupRestore } from './database-tools/BackupRestore';

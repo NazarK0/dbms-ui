@@ -1,19 +1,31 @@
 import { useState } from 'react';
-import { Users, Plus, UserCog, Shield, Calendar } from 'lucide-react';
+import { Users, UserCog, Shield, Calendar, Info } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
-import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import UserTable from '../../users/UserTable';
-import CreateUserModal from '../../users/CreateUserModal';
+import EditUserPermissionsModal from '../../users/EditUserPermissionsModal';
 
 type UserType = 'admin' | 'user';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  roleColor: string;
+  status: string;
+  avatar: string;
+  lastActive?: string;
+  registered?: string;
+}
+
 export default function UsersManager() {
   const [activeTab, setActiveTab] = useState<UserType>('admin');
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const administrators = [
+  const administrators: User[] = [
     {
       id: 1,
       name: 'Іван Петренко',
@@ -44,14 +56,34 @@ export default function UsersManager() {
       status: 'inactive',
       avatar: 'ОШ'
     },
+    {
+      id: 4,
+      name: 'Катерина Мельник',
+      email: 'kateryna@company.com',
+      role: 'Analyst',
+      roleColor: 'from-green-500 to-lime-600',
+      lastActive: '2024-12-12 09:20',
+      status: 'active',
+      avatar: 'КМ'
+    },
+    {
+      id: 5,
+      name: 'Андрій Ткач',
+      email: 'andriy@company.com',
+      role: 'Viewer',
+      roleColor: 'from-lime-600 to-yellow-600',
+      lastActive: '2024-12-10 16:45',
+      status: 'active',
+      avatar: 'АТ'
+    },
   ];
 
-  const endUsers = [
+  const endUsers: User[] = [
     {
       id: 101,
       name: 'Анна Сидоренко',
-      email: 'anna.s@gmail.com',
-      role: 'Premium User',
+      email: 'anna.s@example.com',
+      role: 'Data Analyst',
       roleColor: 'from-violet-500 to-purple-600',
       registered: '2024-10-15',
       status: 'active',
@@ -60,8 +92,8 @@ export default function UsersManager() {
     {
       id: 102,
       name: 'Дмитро Мельник',
-      email: 'dmytro.m@gmail.com',
-      role: 'Standard User',
+      email: 'dmytro.m@example.com',
+      role: 'Content Manager',
       roleColor: 'from-blue-500 to-cyan-600',
       registered: '2024-11-20',
       status: 'active',
@@ -70,9 +102,9 @@ export default function UsersManager() {
     {
       id: 103,
       name: 'Олена Бондаренко',
-      email: 'olena.b@gmail.com',
-      role: 'Free User',
-      roleColor: 'from-slate-400 to-slate-500',
+      email: 'olena.b@example.com',
+      role: 'Report Viewer',
+      roleColor: 'from-indigo-500 to-violet-600',
       registered: '2024-12-01',
       status: 'active',
       avatar: 'ОБ'
@@ -80,14 +112,29 @@ export default function UsersManager() {
     {
       id: 104,
       name: 'Сергій Ткаченко',
-      email: 'sergiy.t@gmail.com',
-      role: 'Trial User',
-      roleColor: 'from-amber-500 to-orange-600',
+      email: 'sergiy.t@example.com',
+      role: 'Guest User',
+      roleColor: 'from-slate-400 to-slate-500',
       registered: '2024-12-10',
-      status: 'trial',
+      status: 'active',
       avatar: 'СТ'
     },
   ];
+
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteUser = (user: User) => {
+    console.log('Delete user:', user);
+    // TODO: Implement delete functionality
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -157,18 +204,24 @@ export default function UsersManager() {
       {/* Users Table with Tabs */}
       <Card className="border-slate-200 shadow-sm">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Користувачі системи</CardTitle>
-              <CardDescription>Управління адміністраторами та користувачами</CardDescription>
-            </div>
-            <Button onClick={() => setShowCreateModal(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Створити {activeTab === 'admin' ? 'адміністратора' : 'користувача'}
-            </Button>
+          <div>
+            <CardTitle>Користувачі системи</CardTitle>
+            <CardDescription>Управління адміністраторами та користувачами</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
+          {/* Microsoft AD Info Banner */}
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+            <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="text-blue-900 mb-1">Управління через Microsoft Active Directory</h4>
+              <p className="text-sm text-blue-800">
+                Користувачі автоматично синхронізуються з корпоративного Active Directory. 
+                Для створення нових облікових записів зверніться до системного адміністратора вашої організації.
+              </p>
+            </div>
+          </div>
+
           <Tabs defaultValue="admin" value={activeTab} onValueChange={(value) => setActiveTab(value as UserType)}>
             <TabsList className="w-full justify-start mb-6">
               <TabsTrigger value="admin" className="gap-2">
@@ -183,23 +236,36 @@ export default function UsersManager() {
 
             {/* Administrators Tab */}
             <TabsContent value="admin" className="space-y-4">
-              <UserTable users={administrators} type="admin" />
+              <UserTable 
+                users={administrators} 
+                type="admin"
+                onEdit={handleEditUser}
+                onDelete={handleDeleteUser}
+              />
             </TabsContent>
 
             {/* End Users Tab */}
             <TabsContent value="user" className="space-y-4">
-              <UserTable users={endUsers} type="user" />
+              <UserTable 
+                users={endUsers} 
+                type="user"
+                onEdit={handleEditUser}
+                onDelete={handleDeleteUser}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
 
-      {/* Create User Modal */}
-      <CreateUserModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-        userType={activeTab}
-      />
+      {/* Edit User Permissions Modal */}
+      {selectedUser && (
+        <EditUserPermissionsModal
+          open={showEditModal}
+          onOpenChange={handleCloseEditModal}
+          user={selectedUser}
+          userType={activeTab}
+        />
+      )}
     </div>
   );
 }

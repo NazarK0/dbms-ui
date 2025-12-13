@@ -11,13 +11,13 @@ type DeviceType = 'desktop' | 'tablet' | 'mobile';
 
 export default function UserUIPreview() {
   const [deviceType, setDeviceType] = useState<DeviceType>('desktop');
-  const [selectedRole, setSelectedRole] = useState('premium');
+  const [selectedRole, setSelectedRole] = useState('data-analyst');
 
   const roles = [
-    { id: 'premium', name: 'Premium User', color: 'from-violet-500 to-purple-600' },
-    { id: 'standard', name: 'Standard User', color: 'from-blue-500 to-cyan-600' },
-    { id: 'free', name: 'Free User', color: 'from-slate-400 to-slate-500' },
-    { id: 'trial', name: 'Trial User', color: 'from-amber-500 to-orange-600' },
+    { id: 'data-analyst', name: 'Data Analyst', color: 'from-violet-500 to-purple-600' },
+    { id: 'content-manager', name: 'Content Manager', color: 'from-blue-500 to-cyan-600' },
+    { id: 'report-viewer', name: 'Report Viewer', color: 'from-indigo-500 to-violet-600' },
+    { id: 'guest-user', name: 'Guest User', color: 'from-slate-400 to-slate-500' },
   ];
 
   const deviceSizes = {
@@ -27,7 +27,7 @@ export default function UserUIPreview() {
   };
 
   const permissions = {
-    premium: {
+    'data-analyst': {
       createProjects: true,
       deleteProjects: true,
       shareProjects: true,
@@ -37,7 +37,7 @@ export default function UserUIPreview() {
       customBranding: true,
       prioritySupport: true,
     },
-    standard: {
+    'content-manager': {
       createProjects: true,
       deleteProjects: true,
       shareProjects: true,
@@ -47,7 +47,7 @@ export default function UserUIPreview() {
       customBranding: false,
       prioritySupport: false,
     },
-    free: {
+    'report-viewer': {
       createProjects: true,
       deleteProjects: false,
       shareProjects: false,
@@ -57,7 +57,7 @@ export default function UserUIPreview() {
       customBranding: false,
       prioritySupport: false,
     },
-    trial: {
+    'guest-user': {
       createProjects: true,
       deleteProjects: true,
       shareProjects: true,

@@ -1,5 +1,8 @@
-import { Terminal, Layers, Network, Puzzle, Code, Zap, Archive } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { useState } from 'react';
+import { Terminal, Layers, Network, Puzzle, Code, Zap, Archive, ChevronDown, ChevronUp, Server } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../ui/collapsible';
 import QueryExecutor from '../database-tools/QueryExecutor';
 import SchemasManager from '../database-tools/SchemasManager';
 import SchemaVisualizer from '../database-tools/SchemaVisualizer';
@@ -7,74 +10,166 @@ import ExtensionManager from '../database-tools/ExtensionManager';
 import FunctionsManager from '../database-tools/FunctionsManager';
 import TriggersRules from '../database-tools/TriggersRules';
 import BackupRestore from '../database-tools/BackupRestore';
-
-type SubTab = 'query' | 'schemas' | 'schema' | 'extensions' | 'functions' | 'triggers' | 'backup';
+import ForeignServersManager from '../database-tools/ForeignServersManager';
 
 interface DatabaseToolsViewProps {
   selectedDatabase: string;
-  activeSubTab: SubTab;
-  onSubTabChange: (tab: SubTab) => void;
+  activeSubTab?: string;
+  onSubTabChange?: (tab: string) => void;
+}
+
+interface Section {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  component: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 export default function DatabaseToolsView({
   selectedDatabase,
-  activeSubTab,
-  onSubTabChange,
 }: DatabaseToolsViewProps) {
-  return (
-    <Tabs value={activeSubTab} onValueChange={(value) => onSubTabChange(value as SubTab)}>
-      <TabsList className="bg-white shadow-sm border border-slate-200 h-auto">
-        <TabsTrigger value="query" className="gap-2">
-          <Terminal className="w-4 h-4" />
-          Запити
-        </TabsTrigger>
-        <TabsTrigger value="schemas" className="gap-2">
-          <Layers className="w-4 h-4" />
-          Схеми
-        </TabsTrigger>
-        <TabsTrigger value="schema" className="gap-2">
-          <Network className="w-4 h-4" />
-          Схема БД
-        </TabsTrigger>
-        <TabsTrigger value="extensions" className="gap-2">
-          <Puzzle className="w-4 h-4" />
-          Розширення
-        </TabsTrigger>
-        <TabsTrigger value="functions" className="gap-2">
-          <Code className="w-4 h-4" />
-          Функції
-        </TabsTrigger>
-        <TabsTrigger value="triggers" className="gap-2">
-          <Zap className="w-4 h-4" />
-          Тригери
-        </TabsTrigger>
-        <TabsTrigger value="backup" className="gap-2">
-          <Archive className="w-4 h-4" />
-          Резервні копії
-        </TabsTrigger>
-      </TabsList>
+  // Track which sections are open
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    schemas: true,
+    query: false,
+    schema: false,
+    extensions: false,
+    functions: false,
+    triggers: false,
+    backup: false,
+    foreign_servers: false,
+  });
 
-      <TabsContent value="query">
-        <QueryExecutor selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="schemas">
-        <SchemasManager selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="schema">
-        <SchemaVisualizer selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="extensions">
-        <ExtensionManager selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="functions">
-        <FunctionsManager selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="triggers">
-        <TriggersRules selectedDatabase={selectedDatabase} />
-      </TabsContent>
-      <TabsContent value="backup">
-        <BackupRestore selectedDatabase={selectedDatabase} />
-      </TabsContent>
-    </Tabs>
+  const toggleSection = (sectionId: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
+  // Mock check for installed extensions
+  const getInstalledExtensions = () => {
+    // Mock data - in real app this would query the database
+    const extensions = [
+      { name: 'postgres_fdw', version: '1.1', description: 'Foreign-data wrapper for remote PostgreSQL servers' },
+      { name: 'pg_stat_statements', version: '1.10', description: 'Track planning and execution statistics' },
+      { name: 'pgcrypto', version: '1.3', description: 'Cryptographic functions' },
+    ];
+    return extensions;
+  };
+
+  const installedExtensions = getInstalledExtensions();
+  const hasFDWExtension = installedExtensions.some(ext => 
+    ext.name === 'postgres_fdw' || ext.name === 'mysql_fdw' || ext.name === 'oracle_fdw' || ext.name === 'multicorn'
+  );
+
+  const sections: Section[] = [
+    {
+      id: 'schemas',
+      title: 'Схеми',
+      description: 'Управління схемами та таблицями бази даних',
+      icon: Layers,
+      component: <SchemasManager selectedDatabase={selectedDatabase} />,
+      defaultOpen: true,
+    },
+    {
+      id: 'query',
+      title: 'SQL Запити',
+      description: 'Виконання SQL запитів до бази даних',
+      icon: Terminal,
+      component: <QueryExecutor selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'schema',
+      title: 'Граф бази даних',
+      description: 'Візуалізація структури та зв\'язків таблиць',
+      icon: Network,
+      component: <SchemaVisualizer selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'extensions',
+      title: 'Розширення',
+      description: 'Керування розширеннями PostgreSQL',
+      icon: Puzzle,
+      component: <ExtensionManager selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'foreign_servers',
+      title: 'Зовнішні сервери',
+      description: 'Керування зовнішніми серверами (FDW)',
+      icon: Server,
+      component: <ForeignServersManager selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'functions',
+      title: 'Функції',
+      description: 'Управління функціями та процедурами',
+      icon: Code,
+      component: <FunctionsManager selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'triggers',
+      title: 'Тригери',
+      description: 'Управління тригерами та правилами',
+      icon: Zap,
+      component: <TriggersRules selectedDatabase={selectedDatabase} />,
+    },
+    {
+      id: 'backup',
+      title: 'Резервні копії',
+      description: 'Створення та відновлення резервних копій',
+      icon: Archive,
+      component: <BackupRestore selectedDatabase={selectedDatabase} />,
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {sections.map((section) => {
+        const Icon = section.icon;
+        const isOpen = openSections[section.id];
+
+        return (
+          <Collapsible
+            key={section.id}
+            open={isOpen}
+            onOpenChange={() => toggleSection(section.id)}
+          >
+            <Card className="border-slate-200 shadow-sm">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-slate-900">{section.title}</CardTitle>
+                        <CardDescription>{section.description}</CardDescription>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="icon" className="shrink-0">
+                      {isOpen ? (
+                        <ChevronUp className="w-5 h-5 text-slate-600" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-slate-600" />
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  {section.component}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        );
+      })}
+    </div>
   );
 }

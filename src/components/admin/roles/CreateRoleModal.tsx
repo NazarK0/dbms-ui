@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Users, UserCog, Eye, ShieldCheck, AlertTriangle, Table2 } from 'lucide-react';
+import { Plus, Users, UserCog, Eye, ShieldCheck, AlertTriangle, Table2, Code2, Database, Key, Activity, Save } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -9,6 +9,7 @@ import { Checkbox } from '../../ui/checkbox';
 import { Switch } from '../../ui/switch';
 import { Separator } from '../../ui/separator';
 import { ScrollArea } from '../../ui/scroll-area';
+import { Role } from './RoleCard';
 
 type RoleType = 'admin' | 'user';
 
@@ -17,9 +18,12 @@ interface CreateRoleModalProps {
   onOpenChange: (open: boolean) => void;
   roleType: RoleType;
   onRoleTypeChange: (type: RoleType) => void;
+  editingRole?: Role | null;
 }
 
-export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTypeChange }: CreateRoleModalProps) {
+export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTypeChange, editingRole }: CreateRoleModalProps) {
+  const isEditMode = !!editingRole;
+  
   const [uiSettings, setUiSettings] = useState({
     dashboard: true,
     databases: true,
@@ -31,6 +35,17 @@ export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTy
     backups: true,
     logs: true,
     config: false,
+  });
+
+  const [uiDisplaySettings, setUiDisplaySettings] = useState({
+    restApi: false,
+    connectionStrings: false,
+    technicalIds: false,
+    debugInfo: false,
+    queryPlans: false,
+    rawSql: false,
+    systemSchemas: false,
+    internalTables: false,
   });
 
   const [rlsPolicies, setRlsPolicies] = useState<{[key: string]: {
@@ -100,12 +115,24 @@ export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTy
     }));
   };
 
+  const handleUiDisplaySettingChange = (settingId: string) => {
+    setUiDisplaySettings(prev => ({
+      ...prev,
+      [settingId]: !prev[settingId as keyof typeof prev]
+    }));
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Створити нову роль</DialogTitle>
-          <DialogDescription>Налаштуйте назву, опис, права доступу та видимість UI</DialogDescription>
+          <DialogTitle>{isEditMode ? 'Редагувати роль' : 'Створити нову роль'}</DialogTitle>
+          <DialogDescription>
+            {isEditMode 
+              ? 'Змініть налаштування ролі, права доступу та видимість UI'
+              : 'Налаштуйте назву, опис, права доступу та видимість UI'
+            }
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(90vh-200px)] pr-4">
           <div className="space-y-6 py-4">
@@ -197,9 +224,10 @@ export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTy
                   <option value="">Почати з порожніх прав</option>
                   {roleType === 'user' ? (
                     <>
-                      <option value="premium">Premium User</option>
-                      <option value="standard">Standard User</option>
-                      <option value="free">Free User</option>
+                      <option value="data-analyst">Data Analyst</option>
+                      <option value="content-manager">Content Manager</option>
+                      <option value="report-viewer">Report Viewer</option>
+                      <option value="guest-user">Guest User</option>
                     </>
                   ) : (
                     <>
@@ -209,6 +237,257 @@ export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTy
                     </>
                   )}
                 </select>
+              </div>
+            </div>
+
+            {roleType === 'admin' && (
+              <>
+                <Separator />
+
+                {/* UI Visibility Settings */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-5 h-5 text-lime-600" />
+                    <div>
+                      <h4 className="text-slate-900">Видимість інтерфейсу адмін-панелі</h4>
+                      <p className="text-sm text-slate-600">Оберіть які розділи будуть доступні для цієї ролі</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    {uiMenuItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div key={item.id} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                          <Checkbox
+                            id={`ui-${item.id}`}
+                            checked={uiSettings[item.id as keyof typeof uiSettings]}
+                            onCheckedChange={() => handleUiSettingChange(item.id)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor={`ui-${item.id}`} className="flex items-center gap-2 cursor-pointer">
+                              <Icon className="w-4 h-4 text-slate-600" />
+                              <span className="text-slate-900">{item.label}</span>
+                            </Label>
+                            <p className="text-xs text-slate-500 mt-1">{item.description}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-900">
+                      <strong>Примітка:</strong> Навіть якщо розділ видимий, фактичні можливості користувача будуть обмежені правами доступу RBAC.
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+              </>
+            )}
+
+            {/* UI Display Settings - для всіх типів ролей */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Eye className={`w-5 h-5 ${roleType === 'admin' ? 'text-lime-600' : 'text-violet-600'}`} />
+                <div>
+                  <h4 className="text-slate-900">Налаштування відображення інтерфейсу</h4>
+                  <p className="text-sm text-slate-600">
+                    Контроль видимості технічних деталей та розширеної інформації
+                  </p>
+                </div>
+              </div>
+
+              <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 p-4 rounded-lg border ${
+                roleType === 'admin' 
+                  ? 'bg-lime-50/30 border-lime-200' 
+                  : 'bg-violet-50/30 border-violet-200'
+              }`}>
+                {roleType === 'admin' && (
+                  <>
+                    {/* REST API Endpoints */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Code2 className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-restApi" className="text-sm text-slate-900 cursor-pointer">
+                            REST API рядки
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Показувати API endpoints та curl команди
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-restApi"
+                        checked={uiDisplaySettings.restApi}
+                        onCheckedChange={() => handleUiDisplaySettingChange('restApi')}
+                      />
+                    </div>
+
+                    {/* Technical IDs */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Database className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-technicalIds" className="text-sm text-slate-900 cursor-pointer">
+                            Технічні ID
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            OID, XID та інші системні ідентифікатори
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-technicalIds"
+                        checked={uiDisplaySettings.technicalIds}
+                        onCheckedChange={() => handleUiDisplaySettingChange('technicalIds')}
+                      />
+                    </div>
+
+                    {/* Debug Information */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Activity className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-debugInfo" className="text-sm text-slate-900 cursor-pointer">
+                            Debug інформація
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Детальні логи та діагностика
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-debugInfo"
+                        checked={uiDisplaySettings.debugInfo}
+                        onCheckedChange={() => handleUiDisplaySettingChange('debugInfo')}
+                      />
+                    </div>
+
+                    {/* Query Execution Plans */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Activity className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-queryPlans" className="text-sm text-slate-900 cursor-pointer">
+                            Плани запитів (EXPLAIN)
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Візуалізація та аналіз планів виконання
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-queryPlans"
+                        checked={uiDisplaySettings.queryPlans}
+                        onCheckedChange={() => handleUiDisplaySettingChange('queryPlans')}
+                      />
+                    </div>
+
+                    {/* Raw SQL */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Code2 className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-rawSql" className="text-sm text-slate-900 cursor-pointer">
+                            Raw SQL запити
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Показувати згенеровані SQL запити
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-rawSql"
+                        checked={uiDisplaySettings.rawSql}
+                        onCheckedChange={() => handleUiDisplaySettingChange('rawSql')}
+                      />
+                    </div>
+
+                    {/* System Schemas */}
+                    <div className="flex items-start justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-lime-300 transition-colors">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Database className="w-4 h-4 text-slate-600 mt-1" />
+                        <div>
+                          <Label htmlFor="display-systemSchemas" className="text-sm text-slate-900 cursor-pointer">
+                            Системні схеми
+                          </Label>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            pg_catalog, information_schema та інші
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id="display-systemSchemas"
+                        checked={uiDisplaySettings.systemSchemas}
+                        onCheckedChange={() => handleUiDisplaySettingChange('systemSchemas')}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Connection Strings - для всіх типів */}
+                <div className={`flex items-start justify-between p-3 bg-white rounded-lg border transition-colors ${
+                  roleType === 'admin' 
+                    ? 'border-slate-200 hover:border-lime-300' 
+                    : 'border-slate-200 hover:border-violet-300'
+                }`}>
+                  <div className="flex items-start gap-3 flex-1">
+                    <Key className="w-4 h-4 text-slate-600 mt-1" />
+                    <div>
+                      <Label htmlFor="display-connectionStrings" className="text-sm text-slate-900 cursor-pointer">
+                        Connection strings
+                      </Label>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Рядки підключення до БД
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="display-connectionStrings"
+                    checked={uiDisplaySettings.connectionStrings}
+                    onCheckedChange={() => handleUiDisplaySettingChange('connectionStrings')}
+                  />
+                </div>
+
+                {/* Internal Tables - для всіх типів */}
+                <div className={`flex items-start justify-between p-3 bg-white rounded-lg border transition-colors ${
+                  roleType === 'admin' 
+                    ? 'border-slate-200 hover:border-lime-300' 
+                    : 'border-slate-200 hover:border-violet-300'
+                }`}>
+                  <div className="flex items-start gap-3 flex-1">
+                    <Table2 className="w-4 h-4 text-slate-600 mt-1" />
+                    <div>
+                      <Label htmlFor="display-internalTables" className="text-sm text-slate-900 cursor-pointer">
+                        Тимчасові таблиці
+                      </Label>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Службові та тимчасові таблиці
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="display-internalTables"
+                    checked={uiDisplaySettings.internalTables}
+                    onCheckedChange={() => handleUiDisplaySettingChange('internalTables')}
+                  />
+                </div>
+              </div>
+
+              <div className={`rounded-lg p-3 border ${
+                roleType === 'admin' 
+                  ? 'bg-lime-50 border-lime-200' 
+                  : 'bg-violet-50 border-violet-200'
+              }`}>
+                <p className={`text-sm ${
+                  roleType === 'admin' ? 'text-lime-900' : 'text-violet-900'
+                }`}>
+                  <strong>Рекомендація:</strong> Технічні деталі варто показувати тільки досвідченим користувачам та розробникам для запобігання плутанини.
+                </p>
               </div>
             </div>
 
@@ -429,9 +708,22 @@ export default function CreateRoleModal({ open, onOpenChange, roleType, onRoleTy
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Скасувати
           </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Створити роль
+          <Button onClick={() => onOpenChange(false)} className={
+            isEditMode 
+              ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+              : 'bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700'
+          }>
+            {isEditMode ? (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Зберегти зміни
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Створити роль
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

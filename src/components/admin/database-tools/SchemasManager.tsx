@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layers, Plus, Trash2, Edit, Search, Table2, Lock, Users, ArrowLeft, Download, Eye, Code, Zap } from 'lucide-react';
+import { Layers, Plus, Trash2, Edit, Search, Table2, Lock, Users, ArrowLeft, Download, Eye, Code, Zap, Database, Type } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -14,12 +14,14 @@ import { Textarea } from '../../ui/textarea';
 import TableBrowser from './TableBrowser';
 import FunctionsManager from './FunctionsManager';
 import TriggersRules from './TriggersRules';
+import ForeignTablesManager from './ForeignTablesManager';
+import DataTypesManager from './DataTypesManager';
 
 interface SchemasManagerProps {
   selectedDatabase: string;
 }
 
-type SchemaTab = 'tables' | 'views' | 'functions' | 'triggers';
+type SchemaTab = 'tables' | 'views' | 'functions' | 'triggers' | 'foreign-tables' | 'data-types';
 
 export default function SchemasManager({ selectedDatabase }: SchemasManagerProps) {
   const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
@@ -112,6 +114,14 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
               <Zap className="w-4 h-4" />
               Тригери
             </TabsTrigger>
+            <TabsTrigger value="foreign-tables" className="gap-2">
+              <Database className="w-4 h-4" />
+              Зовнішні таблиці
+            </TabsTrigger>
+            <TabsTrigger value="data-types" className="gap-2">
+              <Type className="w-4 h-4" />
+              Типи даних
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="tables">
             {/* Tables for this schema */}
@@ -129,6 +139,14 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
             {/* Triggers for this schema */}
             <TriggersRules selectedDatabase={selectedDatabase} />
           </TabsContent>
+          <TabsContent value="foreign-tables">
+            {/* Foreign tables for this schema */}
+            <ForeignTablesManager selectedDatabase={selectedDatabase} />
+          </TabsContent>
+          <TabsContent value="data-types">
+            {/* Data types for this schema */}
+            <DataTypesManager selectedDatabase={selectedDatabase} />
+          </TabsContent>
         </Tabs>
       </div>
     );
@@ -140,7 +158,7 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center">
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -148,7 +166,10 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
                 <CardDescription>Клацніть на схему для перегляду таблиць</CardDescription>
               </div>
             </div>
-            <Button onClick={() => setShowCreateModal(true)}>
+            <Button 
+              onClick={() => setShowCreateModal(true)}
+              className="bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Створити схему
             </Button>
@@ -216,44 +237,6 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
         </CardContent>
       </Card>
 
-      {/* Schema Details */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader>
-          <CardTitle>Інформація про схему</CardTitle>
-          <CardDescription>Детальна інформація про SQL схеми PostgreSQL</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert className="bg-blue-50 border-blue-200">
-            <Layers className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-900">
-              <strong>Що таке схема?</strong> Схема - це іменований простір імен, який містить іменовані об'єкти (таблиці, типи даних, функції, оператори). 
-              Схеми дозволяють організувати об'єкти бази даних в логічні групи.
-            </AlertDescription>
-          </Alert>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <h4 className="text-slate-900 mb-2">Переваги використання схем</h4>
-              <ul className="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                <li>Логічне групування об'єктів</li>
-                <li>Запобігання конфліктів імен</li>
-                <li>Контроль доступу на рівні схеми</li>
-                <li>Ізоляція різних додатків</li>
-              </ul>
-            </div>
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <h4 className="text-slate-900 mb-2">Системні схеми</h4>
-              <ul className="text-sm text-slate-600 space-y-1">
-                <li><code className="text-blue-600">public</code> - схема за замовчуванням</li>
-                <li><code className="text-blue-600">pg_catalog</code> - системні таблиці</li>
-                <li><code className="text-blue-600">information_schema</code> - метадані</li>
-                <li><code className="text-blue-600">pg_toast</code> - TOAST таблиці</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Create Schema Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent>
@@ -307,7 +290,10 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
             <Button variant="outline" onClick={() => setShowCreateModal(false)}>
               Скасувати
             </Button>
-            <Button onClick={handleCreateSchema}>
+            <Button 
+              onClick={handleCreateSchema}
+              className="bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Створити
             </Button>

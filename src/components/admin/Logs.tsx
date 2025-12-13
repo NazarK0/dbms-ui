@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Search, Download, RefreshCw, Filter, AlertCircle, Info, AlertTriangle, XCircle, FileText, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Eye } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
-import { Button } from '../../ui/button';
-import { Badge } from '../../ui/badge';
-import { Input } from '../../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import {
   Table,
   TableBody,
@@ -12,14 +12,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table';
+} from '../ui/table';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../../ui/dialog';
+} from '../ui/dialog';
 
 interface LogEntry {
   id: number;
