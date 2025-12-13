@@ -1,0 +1,53 @@
+import { RefreshCw, Download } from 'lucide-react';
+import { Button } from '../../../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
+
+interface PerformanceHeaderProps {
+  timeRange: string;
+  onTimeRangeChange: (value: string) => void;
+  onRefresh?: () => void;
+  onExport?: () => void;
+}
+
+export default function PerformanceHeader({
+  timeRange,
+  onTimeRangeChange,
+  onRefresh,
+  onExport,
+}: PerformanceHeaderProps) {
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <h2 className="text-slate-900">Аналіз продуктивності</h2>
+        <p className="text-slate-600">
+          Статистика запитів та рекомендації з оптимізації (pg_stat_statements)
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <Select value={timeRange} onValueChange={onTimeRangeChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="15m">Останні 15 хвилин</SelectItem>
+            <SelectItem value="1h">Остання година</SelectItem>
+            <SelectItem value="24h">Останні 24 години</SelectItem>
+            <SelectItem value="7d">Останні 7 днів</SelectItem>
+          </SelectContent>
+        </Select>
+        {onRefresh && (
+          <Button variant="outline" onClick={onRefresh}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Оновити
+          </Button>
+        )}
+        {onExport && (
+          <Button onClick={onExport}>
+            <Download className="w-4 h-4 mr-2" />
+            Експорт звіту
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
