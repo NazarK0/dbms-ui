@@ -14,4 +14,34 @@ export { default as ModalHeader } from './ModalHeader';
 export { default as ModalFooter } from './ModalFooter';
 export * from './types';
 export * from './utils';
-export * from './data';
+
+// Export data constants from modular structure
+export {
+  defaultUiSettings,
+  defaultUiDisplaySettings,
+  defaultRlsPolicies,
+  uiMenuItems,
+  displaySettingItems,
+  roleTypeData,
+  userBaseRoles,
+  adminBaseRoles,
+  defaultRoleType,
+  modalTitle,
+  modalDescription,
+  sectionTitles,
+  sectionDescriptions,
+  labels,
+  placeholders,
+  hints,
+  buttonLabels,
+  operationLabels,
+  tableDescriptions,
+  colorClasses,
+  alertStyles,
+  buttonStyles,
+  gridLayouts,
+  iconSizes,
+  defaultFormData,
+  validationRules,
+  rlsTableNames,
+} from './data/index';

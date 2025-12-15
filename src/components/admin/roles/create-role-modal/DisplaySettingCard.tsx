@@ -1,6 +1,6 @@
 import { Switch } from '../../../ui/switch';
 import { Label } from '../../../ui/label';
-import { getDisplaySettingCardClasses } from './utils';
+import { getDisplaySettingCardClasses } from './utils/styleHelpers';
 import type { DisplaySettingCardProps } from './types';
 
 export default function DisplaySettingCard({

@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
-import {
-  LogsHeader,
-  LogStats,
-  LogFilters,
-  LogsTable,
-  LogDetailsModal,
-  filterLogs,
-  calculateLogStats,
-  calculatePagination,
-} from './logs';
-import type { LogEntry } from './logs';
-import { mockLogs } from '@/mockData/admin/logs';
+import { mockLogs, type LogEntry } from '@/mockData/admin/logs';
 import { mockApiCall } from '../../utils/mockApi';
 import { SkeletonCardGrid, SkeletonTable } from '../ui/skeletons';
+import { filterLogs, calculateLogStats, calculatePagination } from './logs/utils';
+import { LogsHeader, LogStats, LogFilters, LogsTable, LogDetailsModal } from './logs';
+import type { LogStats as LogStatsType } from './logs/types';
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +18,7 @@ export default function Logs() {
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<LogStatsType | null>(null);
 
   useEffect(() => {
     // Load statistics
@@ -64,9 +56,9 @@ export default function Logs() {
 
       {isLoadingStats ? (
         <SkeletonCardGrid count={4} columns={4} cardType="stat" />
-      ) : (
+      ) : stats ? (
         <LogStats stats={stats} />
-      )}
+      ) : null}
 
       <LogFilters
         searchTerm={searchTerm}

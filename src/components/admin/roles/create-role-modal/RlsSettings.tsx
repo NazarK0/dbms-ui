@@ -1,7 +1,7 @@
 import { ShieldCheck, AlertTriangle } from 'lucide-react';
 import RlsTableCard from './RlsTableCard';
 import { sectionTitles, hints, alertStyles } from './data';
-import { getRlsDescription } from './utils';
+import { getRlsDescription } from './utils/textHelpers';
 import type { RlsSettingsProps } from './types';
 
 export default function RlsSettings({

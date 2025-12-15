@@ -11,6 +11,15 @@ export interface Role {
   type: RoleType;
 }
 
+export interface RoleHistoryEvent {
+  id: number;
+  action: 'created' | 'updated' | 'deleted';
+  role: string;
+  user: string;
+  timestamp: string;
+  details?: string;
+}
+
 export const roles: Role[] = [
   { 
     name: 'Superadmin', 
@@ -93,3 +102,47 @@ export const userRoles = roles.filter(role => role.type === 'user');
 // Calculate totals
 export const totalAdmins = adminRoles.reduce((sum, role) => sum + role.users, 0);
 export const totalUsers = userRoles.reduce((sum, role) => sum + role.users, 0);
+
+// Role history events
+export const roleHistory: RoleHistoryEvent[] = [
+  {
+    id: 1,
+    action: 'created',
+    role: 'Data Analyst',
+    user: 'admin',
+    timestamp: '2024-12-12 10:30',
+    details: 'Створено нову роль з правами читання'
+  },
+  {
+    id: 2,
+    action: 'updated',
+    role: 'Developer',
+    user: 'superadmin',
+    timestamp: '2024-12-11 15:45',
+    details: 'Оновлено права доступу до БД'
+  },
+  {
+    id: 3,
+    action: 'deleted',
+    role: 'Temporary Access',
+    user: 'admin',
+    timestamp: '2024-12-10 09:15',
+    details: 'Видалено тимчасову роль'
+  },
+  {
+    id: 4,
+    action: 'updated',
+    role: 'Content Manager',
+    user: 'admin',
+    timestamp: '2024-12-09 14:20',
+    details: 'Додано права на редагування таблиць'
+  },
+  {
+    id: 5,
+    action: 'created',
+    role: 'Report Viewer',
+    user: 'superadmin',
+    timestamp: '2024-12-08 11:00',
+    details: 'Створено роль тільки для перегляду звітів'
+  },
+];

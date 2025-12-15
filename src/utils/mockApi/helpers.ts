@@ -1,0 +1,6 @@
+/**
+ * Отримати випадкову затримку в межах діапазону
+ */
+export function getRandomDelay(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

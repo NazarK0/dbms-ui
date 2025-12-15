@@ -1,36 +1,20 @@
 import { Cpu, Database, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../ui/card';
 import { Button } from '../../../ui/button';
+import { quickPresets } from '../../../../mockData/admin/postgresConfig';
 
 interface QuickPresetsProps {
   onApplyPreset?: (presetType: 'development' | 'production' | 'highload') => void;
 }
 
-export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
-  const presets = [
-    {
-      id: 'development',
-      name: 'Розробка',
-      description: 'Мінімальне споживання ресурсів, детальне логування',
-      icon: Cpu,
-      color: 'from-green-500 to-lime-600',
-    },
-    {
-      id: 'production',
-      name: 'Продакшн',
-      description: 'Оптимізація для продуктивності та стабільності',
-      icon: Database,
-      color: 'from-yellow-500 to-lime-600',
-    },
-    {
-      id: 'highload',
-      name: 'Висока навантаження',
-      description: 'Максимальна продуктивність для великих навантажень',
-      icon: Zap,
-      color: 'from-lime-500 to-green-600',
-    },
-  ];
+// Map icon names to actual icon components
+const iconMap = {
+  Cpu,
+  Database,
+  Zap,
+} as const;
 
+export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader>
@@ -39,8 +23,8 @@ export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {presets.map((preset) => {
-            const Icon = preset.icon;
+          {quickPresets.map((preset) => {
+            const Icon = iconMap[preset.icon as keyof typeof iconMap];
             return (
               <div key={preset.id} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
                 <div className="flex items-center gap-3 mb-3">
@@ -54,7 +38,7 @@ export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
                   variant="outline" 
                   size="sm" 
                   className="w-full"
-                  onClick={() => onApplyPreset?.(preset.id as 'development' | 'production' | 'highload')}
+                  onClick={() => onApplyPreset?.(preset.id)}
                 >
                   Застосувати
                 </Button>

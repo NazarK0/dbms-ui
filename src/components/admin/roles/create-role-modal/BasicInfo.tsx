@@ -1,7 +1,7 @@
 import { Input } from '../../../ui/input';
 import { Textarea } from '../../../ui/textarea';
 import { Label } from '../../../ui/label';
-import { getRoleNamePlaceholder } from './utils';
+import { getRoleNamePlaceholder } from './utils/textHelpers';
 import {
   labels,
   placeholders,

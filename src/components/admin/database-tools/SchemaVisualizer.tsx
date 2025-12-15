@@ -4,49 +4,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
+import { 
+  schemaVisualizerTables, 
+  schemaStatistics, 
+  schemaConnections,
+  type TableDefinition,
+  type TableStatistic,
+  type Connection
+} from '@/mockData/admin/schemaVisualizer';
 
-export default function SchemaVisualizer({ selectedDatabase }: { selectedDatabase?: string }) {
+interface SchemaVisualizerProps {
+  selectedDatabase?: string;
+}
+
+export default function SchemaVisualizer({ selectedDatabase }: SchemaVisualizerProps) {
   const [zoom, setZoom] = useState(100);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const tables = [
-    {
-      name: 'users',
-      columns: [
-        { name: 'id', type: 'integer', pk: true },
-        { name: 'username', type: 'varchar(255)' },
-        { name: 'email', type: 'varchar(255)' },
-        { name: 'created_at', type: 'timestamp' },
-      ],
-      position: { x: 50, y: 50 },
-    },
-    {
-      name: 'orders',
-      columns: [
-        { name: 'id', type: 'integer', pk: true },
-        { name: 'user_id', type: 'integer', fk: true },
-        { name: 'total_amount', type: 'decimal' },
-        { name: 'status', type: 'varchar(50)' },
-      ],
-      position: { x: 450, y: 50 },
-    },
-    {
-      name: 'products',
-      columns: [
-        { name: 'id', type: 'integer', pk: true },
-        { name: 'name', type: 'varchar(255)' },
-        { name: 'price', type: 'decimal' },
-      ],
-      position: { x: 250, y: 300 },
-    },
-  ];
+  const tables: TableDefinition[] = schemaVisualizerTables;
+  const statistics: TableStatistic[] = schemaStatistics;
 
-  const statistics = [
-    { table: 'users', rows: 15234, size: '2.4 МБ', indexes: 3 },
-    { table: 'orders', rows: 45621, size: '8.7 МБ', indexes: 4 },
-    { table: 'order_items', rows: 128453, size: '15.2 МБ', indexes: 5 },
-    { table: 'products', rows: 3421, size: '1.8 МБ', indexes: 2 },
-  ];
+  // Filter tables based on search term
+  const filteredTables = tables.filter(table => 
+    table.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filter statistics to match visible tables
+  const filteredStatistics = statistics.filter(stat =>
+    filteredTables.some(table => table.name === stat.table)
+  );
 
   return (
     <div className="space-y-6">
@@ -100,12 +86,21 @@ export default function SchemaVisualizer({ selectedDatabase }: { selectedDatabas
               <div className="relative">
                 {/* Connection Lines */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-                  <line x1="200" y1="150" x2="450" y2="150" stroke="#94a3b8" strokeWidth="2" />
-                  <line x1="550" y1="200" x2="350" y2="350" stroke="#94a3b8" strokeWidth="2" />
+                  {schemaConnections.map((conn, idx) => (
+                    <line
+                      key={idx}
+                      x1={conn.fromX}
+                      y1={conn.fromY}
+                      x2={conn.toX}
+                      y2={conn.toY}
+                      stroke="#94a3b8"
+                      strokeWidth="2"
+                    />
+                  ))}
                 </svg>
 
                 {/* Tables */}
-                {tables.map((table) => (
+                {filteredTables.map((table) => (
                   <div
                     key={table.name}
                     className="absolute bg-white rounded-lg border-2 border-slate-300 shadow-lg"
@@ -140,7 +135,7 @@ export default function SchemaVisualizer({ selectedDatabase }: { selectedDatabas
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {statistics.map((stat) => (
+            {filteredStatistics.map((stat) => (
               <div key={stat.table} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
                 <h4 className="text-slate-900 font-medium mb-3">{stat.table}</h4>
                 <div className="space-y-2 text-sm">

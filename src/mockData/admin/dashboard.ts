@@ -2,6 +2,26 @@
 
 import { Database, Users, Table2, HardDrive, UserCog } from 'lucide-react';
 
+// Dashboard Card Configuration
+export interface DashboardCard {
+  id: string;
+  name: string;
+  description: string;
+  visible: boolean;
+  category: 'stats' | 'performance' | 'activity';
+}
+
+export const defaultDashboardCards: DashboardCard[] = [
+  { id: 'databases', name: 'Всього баз даних', description: 'Кількість баз даних у системі', visible: true, category: 'stats' },
+  { id: 'admins', name: 'Адміністраторів', description: 'Кількість адміністраторів системи', visible: true, category: 'stats' },
+  { id: 'users', name: 'Користувачів', description: 'Кількість звичайних користувачів', visible: true, category: 'stats' },
+  { id: 'tables', name: 'Всього таблиць', description: 'Загальна кількість таблиць', visible: true, category: 'stats' },
+  { id: 'storage', name: 'Використано сховища', description: 'Використаний дисковий простір', visible: true, category: 'stats' },
+  { id: 'performance', name: 'Огляд продуктивності', description: 'Ключові метрики продуктивності', visible: true, category: 'performance' },
+  { id: 'activity', name: 'Остання активність', description: 'Нещодавні події системи', visible: true, category: 'activity' },
+  { id: 'connections', name: 'Активні з\'єднання', description: 'Поточні підключення', visible: true, category: 'activity' },
+];
+
 export const statsData = [
   { id: 'databases', label: 'Всього баз даних', value: '12', icon: Database, color: 'from-lime-500 to-green-600', change: '+2', trend: 'up' as const },
   { id: 'admins', label: 'Адміністраторів', value: '8', icon: UserCog, color: 'from-lime-600 to-green-500', change: '+1', trend: 'up' as const },

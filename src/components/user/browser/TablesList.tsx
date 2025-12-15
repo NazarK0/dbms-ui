@@ -51,18 +51,32 @@ export default function TablesList({
       <CardContent className="p-0">
         {database ? (
           <ScrollArea className="h-[600px]">
-            <div className="divide-y divide-slate-200">
-              {filteredTables.map((table) => (
-                <TableListItem
-                  key={table.name}
-                  table={table}
-                  database={database}
-                  copied={copied}
-                  onTableClick={() => onTableSelect(table.name, table.permissions)}
-                  onCopy={onCopy}
-                />
-              ))}
-            </div>
+            {filteredTables.length === 0 ? (
+              <div className="h-[600px] flex items-center justify-center text-slate-500">
+                <div className="text-center">
+                  <TableIcon className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+                  <p className="text-lg mb-2">Таблиці не знайдено</p>
+                  <p className="text-sm">
+                    {searchTerm
+                      ? 'Спробуйте змінити критерії пошуку'
+                      : 'В цій базі даних немає доступних таблиць'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-200">
+                {filteredTables.map((table) => (
+                  <TableListItem
+                    key={table.name}
+                    table={table}
+                    database={database}
+                    copied={copied}
+                    onTableClick={() => onTableSelect(table.name, table.permissions)}
+                    onCopy={onCopy}
+                  />
+                ))}
+              </div>
+            )}
           </ScrollArea>
         ) : (
           <div className="h-[600px] flex items-center justify-center text-slate-500">

@@ -2,7 +2,8 @@ import { FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../ui/card';
 import { Button } from '../../../ui/button';
 import type { ConfigParam } from './types';
-import { generateConfigFile, exportConfigAsFile } from './utils';
+import { generateConfigFile } from './utils/generators';
+import { exportConfigAsFile } from './utils/exporters';
 
 interface ConfigPreviewProps {
   params: ConfigParam[];

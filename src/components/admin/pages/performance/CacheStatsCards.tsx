@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent } from '../../../ui/card';
 import { Progress } from '../../../ui/progress';
 import type { CacheStat } from '../../../../mockData/admin';
+import { getTrendColor } from './utils/getTrendColor';
 
 interface CacheStatsCardsProps {
   stats: CacheStat[];
@@ -17,11 +18,7 @@ export default function CacheStatsCards({ stats }: CacheStatsCardsProps) {
           ? TrendingDown 
           : TrendingUp;
         
-        const trendColor = stat.trend === 'up' 
-          ? 'text-green-600' 
-          : stat.trend === 'down' 
-          ? 'text-red-600' 
-          : 'text-slate-600';
+        const trendColor = getTrendColor(stat.trend);
 
         return (
           <Card key={stat.metric} className="border-slate-200 shadow-sm">

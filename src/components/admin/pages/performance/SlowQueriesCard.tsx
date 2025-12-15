@@ -1,9 +1,9 @@
-import { Clock, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../ui/card';
 import { Badge } from '../../../ui/badge';
 import { Alert, AlertDescription } from '../../../ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../ui/card';
+import { Clock, TrendingUp } from 'lucide-react';
 import type { SlowQueryDetail } from '../../../../mockData/admin';
-import { getImpactVariant } from './utils';
+import { getImpactVariant } from './utils/getImpactVariant';
 
 interface SlowQueriesCardProps {
   queries: SlowQueryDetail[];

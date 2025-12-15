@@ -23,18 +23,23 @@ interface AccessedTable {
 }
 
 interface ActivitySectionProps {
-  lastModifiedRecords: ActivityRecord[];
-  lastAccessedTables: AccessedTable[];
+  lastModifiedRecords?: ActivityRecord[];
+  lastAccessedTables?: AccessedTable[];
   onRecordClick?: (database: string, table: string, permissions: string[], recordId: string) => void;
   onTableClick?: (database: string, table: string, permissions: string[]) => void;
 }
 
 export default function ActivitySection({
-  lastModifiedRecords,
-  lastAccessedTables,
+  lastModifiedRecords = [],
+  lastAccessedTables = [],
   onRecordClick,
   onTableClick,
 }: ActivitySectionProps) {
+  // Safety check
+  if (!lastModifiedRecords || !lastAccessedTables) {
+    return null;
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Last Modified Records */}

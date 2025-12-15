@@ -3,12 +3,12 @@
  */
 
 import { XCircle, AlertTriangle, Info, AlertCircle } from 'lucide-react';
-import type { LogEntry, LogLevelConfig, LogStats } from './types';
+import type { LogLevel, LogEntry, LogLevelConfig, LogStats } from './types';
 
 /**
  * Get badge configuration for log level
  */
-export function getLevelBadge(level: string): LogLevelConfig {
+export function getLevelBadge(level: LogLevel | string): LogLevelConfig {
   switch (level) {
     case 'ERROR':
       return {

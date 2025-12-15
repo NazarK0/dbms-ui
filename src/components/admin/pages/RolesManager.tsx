@@ -12,8 +12,9 @@ import EditUserRoleModal from '../roles/EditUserRoleModal';
 import RBACMatrix from '../roles/RBACMatrix';
 import AdminRolesPanel from '../roles/AdminRolesPanel';
 import UserRolesPanel from '../roles/UserRolesPanel';
-import StatsCards from '../roles/StatsCards';
-import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type Role, type RoleType } from '../../../mockData/admin';
+import StatsCards from '../roles/stats-cards';
+import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type RoleType } from '../../../mockData/admin';
+import type { Role } from '../roles/RoleCard';
 import { mockApiCall } from '../../../utils/mockApi';
 import { SkeletonCardGrid } from '../../ui/skeletons';
 
@@ -65,6 +66,11 @@ export default function RolesManager() {
   const handleDeleteRole = (role: Role) => {
     console.log('Delete role:', role);
     // TODO: Implement delete functionality
+  };
+
+  const handleSelectRole = (name: string) => {
+    console.log('Select role:', name);
+    // TODO: Implement role selection functionality (e.g., show details, navigate to users)
   };
 
   const handleCreateRole = () => {
@@ -124,6 +130,7 @@ export default function RolesManager() {
           roles={adminRolesData}
           onEdit={handleEditRole}
           onDelete={handleDeleteRole}
+          onSelect={handleSelectRole}
         />
       )}
 
@@ -135,6 +142,7 @@ export default function RolesManager() {
           roles={userRolesData}
           onEdit={handleEditRole}
           onDelete={handleDeleteRole}
+          onSelect={handleSelectRole}
         />
       )}
 

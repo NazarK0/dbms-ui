@@ -13,11 +13,16 @@ interface Database {
 }
 
 interface DatabaseGridProps {
-  databases: Database[];
+  databases?: Database[];
   onDatabaseSelect?: (database: string) => void;
 }
 
 export default function DatabaseGrid({ databases, onDatabaseSelect }: DatabaseGridProps) {
+  // Safety check for undefined databases
+  if (!databases || !Array.isArray(databases)) {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">

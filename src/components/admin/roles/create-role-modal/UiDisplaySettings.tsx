@@ -7,7 +7,7 @@ import {
   displaySettingItems,
   gridLayouts,
 } from './data';
-import { getDisplaySettingContainerClasses, getHintBoxClasses, getIconColor } from './utils';
+import { getDisplaySettingContainerClasses, getHintBoxClasses, getIconColor } from './utils/styleHelpers';
 import type { UiDisplaySettingsProps } from './types';
 
 export default function UiDisplaySettings({

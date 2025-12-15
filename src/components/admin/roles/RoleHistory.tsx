@@ -1,61 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Badge } from '../../ui/badge';
 import { Clock, User, Edit, Trash2, Plus } from 'lucide-react';
-
-interface HistoryEvent {
-  id: number;
-  action: 'created' | 'updated' | 'deleted';
-  role: string;
-  user: string;
-  timestamp: string;
-  details?: string;
-}
+import { roleHistory, type RoleHistoryEvent } from '../../../mockData/admin/roles';
 
 export default function RoleHistory() {
-  const history: HistoryEvent[] = [
-    {
-      id: 1,
-      action: 'created',
-      role: 'Data Analyst',
-      user: 'admin',
-      timestamp: '2024-12-12 10:30',
-      details: 'Створено нову роль з правами читання'
-    },
-    {
-      id: 2,
-      action: 'updated',
-      role: 'Developer',
-      user: 'superadmin',
-      timestamp: '2024-12-11 15:45',
-      details: 'Оновлено права доступу до БД'
-    },
-    {
-      id: 3,
-      action: 'deleted',
-      role: 'Temporary Access',
-      user: 'admin',
-      timestamp: '2024-12-10 09:15',
-      details: 'Видалено тимчасову роль'
-    },
-    {
-      id: 4,
-      action: 'updated',
-      role: 'Content Manager',
-      user: 'admin',
-      timestamp: '2024-12-09 14:20',
-      details: 'Додано права на редагування таблиць'
-    },
-    {
-      id: 5,
-      action: 'created',
-      role: 'Report Viewer',
-      user: 'superadmin',
-      timestamp: '2024-12-08 11:00',
-      details: 'Створено роль тільки для перегляду звітів'
-    },
-  ];
-
-  const getActionIcon = (action: HistoryEvent['action']) => {
+  const getActionIcon = (action: RoleHistoryEvent['action']) => {
     switch (action) {
       case 'created':
         return <Plus className="size-4" />;
@@ -66,7 +15,7 @@ export default function RoleHistory() {
     }
   };
 
-  const getActionBadge = (action: HistoryEvent['action']) => {
+  const getActionBadge = (action: RoleHistoryEvent['action']) => {
     switch (action) {
       case 'created':
         return <Badge className="bg-green-100 text-green-700 border-green-200">Створено</Badge>;
@@ -85,7 +34,7 @@ export default function RoleHistory() {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {history.map((event) => (
+          {roleHistory.map((event) => (
             <div
               key={event.id}
               className="flex items-start gap-3 p-4 rounded-lg border border-lime-100 hover:bg-lime-50/50 transition-colors"

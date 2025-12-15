@@ -4,18 +4,8 @@
 
 import { LucideIcon } from 'lucide-react';
 
-export type LogLevel = 'ERROR' | 'WARNING' | 'INFO';
-
-export interface LogEntry {
-  id: number;
-  timestamp: string;
-  level: LogLevel;
-  source: string;
-  database: string;
-  user: string;
-  message: string;
-  details: string;
-}
+// Re-export types from mockData to avoid duplication
+export type { LogLevel, LogSource, LogEntry } from '@/mockData/admin/logs';
 
 export interface LogLevelConfig {
   variant: 'destructive' | 'default' | 'secondary' | 'outline';

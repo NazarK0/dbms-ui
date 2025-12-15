@@ -1,17 +1,9 @@
 import { useState } from 'react';
-import { Terminal, Layers, Network, Puzzle, Code, Zap, Archive, ChevronDown, ChevronUp, Server } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../ui/collapsible';
-import QueryExecutor from '../database-tools/QueryExecutor';
-import SchemasManager from '../database-tools/SchemasManager';
-import SchemaVisualizer from '../database-tools/SchemaVisualizer';
-import ExtensionManager from '../database-tools/ExtensionManager';
-import FunctionsManager from '../database-tools/FunctionsManager';
-import TriggersRules from '../database-tools/TriggersRules';
-import BackupRestore from '../database-tools/BackupRestore';
-import ForeignServersManager from '../database-tools/ForeignServersManager';
-import { installedExtensions, hasFDWExtension } from '../../../mockData';
+import { getDatabaseToolsSections, defaultOpenSections } from './databaseToolsSections';
 
 interface DatabaseToolsViewProps {
   selectedDatabase: string;
@@ -19,29 +11,11 @@ interface DatabaseToolsViewProps {
   onSubTabChange?: (tab: string) => void;
 }
 
-interface Section {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  component: React.ReactNode;
-  defaultOpen?: boolean;
-}
-
 export default function DatabaseToolsView({
   selectedDatabase,
 }: DatabaseToolsViewProps) {
   // Track which sections are open
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    schemas: true,
-    query: false,
-    schema: false,
-    extensions: false,
-    functions: false,
-    triggers: false,
-    backup: false,
-    foreign_servers: false,
-  });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(defaultOpenSections);
 
   const toggleSection = (sectionId: string) => {
     setOpenSections(prev => ({
@@ -50,65 +24,7 @@ export default function DatabaseToolsView({
     }));
   };
 
-  const sections: Section[] = [
-    {
-      id: 'schemas',
-      title: 'Схеми',
-      description: 'Управління схемами та таблицями бази даних',
-      icon: Layers,
-      component: <SchemasManager selectedDatabase={selectedDatabase} />,
-      defaultOpen: true,
-    },
-    {
-      id: 'query',
-      title: 'SQL Запити',
-      description: 'Виконання SQL запитів до бази даних',
-      icon: Terminal,
-      component: <QueryExecutor selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'schema',
-      title: 'Граф бази даних',
-      description: 'Візуалізація структури та зв\'язків таблиць',
-      icon: Network,
-      component: <SchemaVisualizer selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'extensions',
-      title: 'Розширення',
-      description: 'Керування розширеннями PostgreSQL',
-      icon: Puzzle,
-      component: <ExtensionManager selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'foreign_servers',
-      title: 'Зовнішні сервери',
-      description: 'Керування зовнішніми серверами (FDW)',
-      icon: Server,
-      component: <ForeignServersManager selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'functions',
-      title: 'Функції',
-      description: 'Управління функціями та процедурами',
-      icon: Code,
-      component: <FunctionsManager selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'triggers',
-      title: 'Тригери',
-      description: 'Управління тригерами та правилами',
-      icon: Zap,
-      component: <TriggersRules selectedDatabase={selectedDatabase} />,
-    },
-    {
-      id: 'backup',
-      title: 'Резервні копії',
-      description: 'Створення та відновлення резервних копій',
-      icon: Archive,
-      component: <BackupRestore selectedDatabase={selectedDatabase} />,
-    },
-  ];
+  const sections = getDatabaseToolsSections(selectedDatabase);
 
   return (
     <div className="space-y-4">

@@ -1,5 +1,18 @@
 /**
  * Mock data for Replica Clusters
+ * 
+ * BACKEND INTEGRATION:
+ * This data should be fetched from backend API endpoints:
+ * 
+ * - GET /api/replicas/clusters - Get all cluster servers (primary + replicas)
+ * - GET /api/replicas/activity - Get replication activity and lag information
+ * - GET /api/replicas/stats - Get replication statistics
+ * - GET /api/replicas/topology - Get topology configuration for diagram
+ * 
+ * Database queries:
+ * - pg_stat_replication - Active replication connections and lag
+ * - pg_replication_slots - Replication slot status
+ * - pg_stat_wal_receiver - WAL receiver status (on replicas)
  */
 
 export interface ClusterServer {

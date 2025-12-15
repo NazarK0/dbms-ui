@@ -1,8 +1,8 @@
-import { Plus, Save } from 'lucide-react';
 import { DialogFooter } from '../../../ui/dialog';
 import { Button } from '../../../ui/button';
-import { buttonLabels } from './data';
-import { getButtonStyleClass } from './utils';
+import { Save, Plus } from 'lucide-react';
+import { buttonLabels } from './data/textConstants';
+import { getButtonStyleClass } from './utils/styleHelpers';
 import type { ModalFooterProps } from './types';
 
 export default function ModalFooter({

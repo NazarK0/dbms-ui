@@ -2,7 +2,7 @@ import {
   getRoleTypeColorClasses,
   getRadioButtonColorClasses,
   getRadioButtonFillColor,
-} from './utils';
+} from './utils/styleHelpers';
 import { roleTypeData } from './data';
 import type { RoleTypeOptionProps } from './types';
 

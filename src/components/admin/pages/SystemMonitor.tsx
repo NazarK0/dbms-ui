@@ -11,7 +11,7 @@ import {
   connections,
   slowQueries,
   databaseStats,
-} from '../../../mockData/admin/monitoring';
+} from '../../../mockData/admin';
 import { mockApiCall } from '../../../utils/mockApi';
 import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../ui/skeletons';
 

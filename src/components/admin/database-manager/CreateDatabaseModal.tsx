@@ -1,85 +1,172 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
-import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent } from '../../ui/dialog';
+import { databaseDefaults } from '../../../mockData/admin';
+import {
+  ModalHeader,
+  DatabaseNameInput,
+  DatabaseOwnerSelect,
+  DatabaseEncodingSelect,
+  TemplateSelect,
+  CollationSelect,
+  AdvancedSettings,
+  ModalFooter,
+  validateDatabaseName,
+  isFormValid,
+} from './create-database-modal';
 
 interface CreateDatabaseModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  dbName: string;
-  onDbNameChange: (name: string) => void;
-  dbOwner: string;
-  onDbOwnerChange: (owner: string) => void;
-  onCreate: () => void;
+  onCreate?: (params: DatabaseCreationParams) => void;
+}
+
+export interface DatabaseCreationParams {
+  name: string;
+  owner: string;
+  encoding: string;
+  template: string;
+  collation: string;
+  tablespace: string;
+  connectionLimit: number;
 }
 
 export default function CreateDatabaseModal({
   open,
   onOpenChange,
-  dbName,
-  onDbNameChange,
-  dbOwner,
-  onDbOwnerChange,
   onCreate,
 }: CreateDatabaseModalProps) {
+  // Form state
+  const [dbName, setDbName] = useState('');
+  const [dbOwner, setDbOwner] = useState(databaseDefaults.owner);
+  const [encoding, setEncoding] = useState(databaseDefaults.encoding);
+  const [template, setTemplate] = useState(databaseDefaults.template);
+  const [collation, setCollation] = useState(databaseDefaults.collation);
+  const [tablespace, setTablespace] = useState(databaseDefaults.tablespace);
+  const [connectionLimit, setConnectionLimit] = useState(databaseDefaults.connectionLimit);
+
+  // Validation state
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Validate database name on change
+  useEffect(() => {
+    if (dbName) {
+      const error = validateDatabaseName(dbName);
+      setNameError(error);
+    } else {
+      setNameError(null);
+    }
+  }, [dbName]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!open) {
+      setDbName('');
+      setDbOwner(databaseDefaults.owner);
+      setEncoding(databaseDefaults.encoding);
+      setTemplate(databaseDefaults.template);
+      setCollation(databaseDefaults.collation);
+      setTablespace(databaseDefaults.tablespace);
+      setConnectionLimit(databaseDefaults.connectionLimit);
+      setNameError(null);
+      setIsCreating(false);
+    }
+  }, [open]);
+
+  const handleCreate = () => {
+    const error = validateDatabaseName(dbName);
+    if (error) {
+      setNameError(error);
+      return;
+    }
+
+    setIsCreating(true);
+
+    const params: DatabaseCreationParams = {
+      name: dbName,
+      owner: dbOwner,
+      encoding,
+      template,
+      collation,
+      tablespace,
+      connectionLimit,
+    };
+
+    // Call onCreate callback if provided
+    if (onCreate) {
+      onCreate(params);
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsCreating(false);
+      onOpenChange(false);
+    }, 1500);
+  };
+
+  const formValid = isFormValid(dbName, dbOwner, nameError);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Створити нову базу даних</DialogTitle>
-          <DialogDescription>
-            Введіть параметри для створення нової бази даних PostgreSQL
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <ModalHeader />
+
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="db-name">Назва бази даних</Label>
-            <Input
-              id="db-name"
+          {/* Basic Settings */}
+          <div className="space-y-4">
+            <DatabaseNameInput
               value={dbName}
-              onChange={(e) => onDbNameChange(e.target.value)}
-              placeholder="my_database"
+              onChange={setDbName}
+              error={nameError || undefined}
+            />
+
+            <DatabaseOwnerSelect
+              value={dbOwner}
+              onChange={setDbOwner}
+            />
+
+            <TemplateSelect
+              value={template}
+              onChange={setTemplate}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="db-owner">Власник</Label>
-            <Select value={dbOwner} onValueChange={onDbOwnerChange}>
-              <SelectTrigger id="db-owner">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">admin</SelectItem>
-                <SelectItem value="developer">developer</SelectItem>
-                <SelectItem value="analyst">analyst</SelectItem>
-              </SelectContent>
-            </Select>
+
+          {/* Encoding & Localization */}
+          <div className="pt-4 border-t border-slate-200">
+            <h3 className="text-sm font-medium text-slate-900 mb-3">
+              Кодування та локалізація
+            </h3>
+            <div className="space-y-4">
+              <DatabaseEncodingSelect
+                value={encoding}
+                onChange={setEncoding}
+              />
+
+              <CollationSelect
+                value={collation}
+                onChange={setCollation}
+                encoding={encoding}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="db-encoding">Кодування</Label>
-            <Select defaultValue="UTF8">
-              <SelectTrigger id="db-encoding">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UTF8">UTF8</SelectItem>
-                <SelectItem value="LATIN1">LATIN1</SelectItem>
-                <SelectItem value="SQL_ASCII">SQL_ASCII</SelectItem>
-              </SelectContent>
-            </Select>
+
+          {/* Advanced Settings */}
+          <div className="pt-4 border-t border-slate-200">
+            <AdvancedSettings
+              tablespace={tablespace}
+              onTablespaceChange={setTablespace}
+              connectionLimit={connectionLimit}
+              onConnectionLimitChange={setConnectionLimit}
+            />
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Скасувати
-          </Button>
-          <Button
-            onClick={onCreate}
-            className="bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700"
-          >
-            Створити
-          </Button>
-        </DialogFooter>
+
+        <ModalFooter
+          onCancel={() => onOpenChange(false)}
+          onCreate={handleCreate}
+          isCreating={isCreating}
+          isValid={formValid}
+        />
       </DialogContent>
     </Dialog>
   );
