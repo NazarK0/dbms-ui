@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import RolesGrid from './RolesGrid';
-import { Role } from './RoleCard';
+import type { Role } from './role-card/types';
 
 interface UserRolesPanelProps {
   roles: Role[];

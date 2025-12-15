@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { Button } from '../../ui/button';
 import { Dialog, DialogContent } from '../../ui/dialog';
 import { ScrollArea } from '../../ui/scroll-area';
 import { Separator } from '../../ui/separator';
-import { Role } from './RoleCard';
+import type { Role } from './role-card/types';
 import { EditableBasicInfo, EditModalHeader, EditModalFooter } from './shared';
 import {
   UiDisplaySettings,

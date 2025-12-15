@@ -11,4 +11,4 @@ export { default as RBACMatrix } from './RBACMatrix';
 export { default as RoleHistory } from './RoleHistory';
 
 // Types
-export type { Role } from './role-card';
+export type { Role, RoleType } from './role-card/types';

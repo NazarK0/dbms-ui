@@ -1,4 +1,5 @@
-import RoleCard, { Role } from './RoleCard';
+import { default as RoleCard } from './role-card/RoleCard';
+import type { Role } from './role-card/types';
 
 interface RolesGridProps {
   roles: Role[];
