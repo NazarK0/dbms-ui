@@ -31,11 +31,10 @@ export interface RolePermissions {
 }
 
 export interface PreviewHeaderProps {
-  selectedRole: string;
-  roles: UserRole[];
-  deviceType: DeviceType;
-  onRoleChange: (roleId: string) => void;
-  onDeviceChange: (device: DeviceType) => void;
+  username?: string;
+  userId?: string;
+  onUsernameChange?: (username: string) => void;
+  onUserIdChange?: (userId: string) => void;
 }
 
 export interface RoleSelectorProps {
@@ -55,6 +54,8 @@ export interface PreviewWindowProps {
   selectedRole: string;
   roleName: string;
   permissions: UserPermissions;
+  username?: string;
+  userId?: string;
 }
 
 export interface MockUserInterfaceProps {

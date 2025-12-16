@@ -1,21 +1,15 @@
 /**
- * Skeleton компонент для графіків та візуалізацій
- * Використовується під час завантаження даних для recharts
+ * Skeleton графіків та візуалізацій - використовується під час завантаження
  */
 
 import { Card, CardHeader, CardContent } from './card';
 import { Skeleton } from './skeleton';
 
 interface SkeletonChartProps {
-  /** Тип графіка */
   type?: 'line' | 'bar' | 'pie' | 'area';
-  /** Висота графіка */
   height?: number;
-  /** Чи показувати заголовок */
   showHeader?: boolean;
-  /** Чи показувати легенду */
   showLegend?: boolean;
-  /** Додаткові CSS класи */
   className?: string;
 }
 

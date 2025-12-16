@@ -16,6 +16,7 @@ import PerformanceAnalyzer from './components/admin/pages/PerformanceAnalyzer';
 import Logs from './components/admin/Logs';
 import AdminHeader from './components/admin/AdminHeader';
 import AdminTabsList from './components/admin/AdminTabsList';
+import { AdminUserProvider } from './contexts/AdminUserContext';
 
 type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'userui' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
 
@@ -27,7 +28,8 @@ export default function Admin({ onBack }: AdminProps) {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-yellow-50">
+    <AdminUserProvider>
+      <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-yellow-50">
       {/* Mobile Warning */}
       <div className="md:hidden flex items-center justify-center min-h-screen p-6 bg-lime-600">
         <Card className="border-lime-200 shadow-xl max-w-md">
@@ -93,5 +95,6 @@ export default function Admin({ onBack }: AdminProps) {
         </main>
       </div>
     </div>
+    </AdminUserProvider>
   );
 }

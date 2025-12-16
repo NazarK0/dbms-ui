@@ -234,10 +234,10 @@ export const defaultRole = 'data-analyst';
 
 export const headerTitle = 'Перегляд користувацького інтерфейсу';
 export const headerDescription =
-  'Попередній перегляд інтерфейсу для різних ролей користувачів';
+  'Попередній перегляд реального User UI для різних ролей користувачів';
 
 export const roleSelectorLabel = 'Роль користувача:';
-export const previewWindowTitle = 'Попередній перегляд інтерфейсу';
+export const previewWindowTitle = 'Попередній перегляд User Interface';
 export const permissionsPanelTitle = 'Доступні можливості';
 
 export const mockAppName = 'Мій застосунок';

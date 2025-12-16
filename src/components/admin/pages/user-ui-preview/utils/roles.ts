@@ -7,7 +7,22 @@
  */
 
 import type { UserRole, UserPermissions } from '../types';
-import { rolePermissions, userRoles } from '../data';
+import { rolePermissions, userRoles as staticUserRoles } from '../data';
+import { userRoles as systemUserRoles } from '../../../../../mockData/admin/roles';
+import type { Role } from '../../../../../mockData/admin/roles';
+
+/**
+ * Convert system role name to ID format
+ * 
+ * @param roleName - Role name from system
+ * @returns Normalized role ID
+ */
+export const getRoleIdFromName = (roleName: string): string => {
+  return roleName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
 
 /**
  * Get permissions for a specific role
@@ -45,7 +60,7 @@ export const getPermissionsForRole = (roleId: string): UserPermissions => {
 };
 
 /**
- * Get role by ID
+ * Get role by ID (from system roles)
  * 
  * Finds and returns a role object by its ID.
  * 
@@ -54,12 +69,12 @@ export const getPermissionsForRole = (roleId: string): UserPermissions => {
  * 
  * @example
  * ```tsx
- * const role = getRoleById('developer');
- * // { id: 'developer', name: 'Developer', color: '...' }
+ * const role = getRoleById('data-analyst');
+ * // { name: 'Data Analyst', color: '...', ... }
  * ```
  */
-export const getRoleById = (roleId: string): UserRole | undefined => {
-  return userRoles.find((role) => role.id === roleId);
+export const getRoleById = (roleId: string): Role | undefined => {
+  return systemUserRoles.find((role: Role) => getRoleIdFromName(role.name) === roleId);
 };
 
 /**
@@ -73,8 +88,8 @@ export const getRoleById = (roleId: string): UserRole | undefined => {
  * 
  * @example
  * ```tsx
- * getRoleName('developer');  // "Developer"
- * getRoleName('invalid');    // "Unknown Role"
+ * getRoleName('data-analyst');  // "Data Analyst"
+ * getRoleName('invalid');       // "Unknown Role"
  * ```
  */
 export const getRoleName = (roleId: string): string => {
@@ -93,8 +108,8 @@ export const getRoleName = (roleId: string): string => {
  * 
  * @example
  * ```tsx
- * getRoleColor('developer');  // "from-violet-400 to-violet-500"
- * getRoleColor('invalid');    // "from-slate-400 to-slate-500"
+ * getRoleColor('data-analyst');  // "from-violet-500 to-purple-600"
+ * getRoleColor('invalid');       // "from-slate-400 to-slate-500"
  * ```
  */
 export const getRoleColor = (roleId: string): string => {
@@ -103,9 +118,9 @@ export const getRoleColor = (roleId: string): string => {
 };
 
 /**
- * Get all available roles
+ * Get all available roles (from system)
  * 
- * Returns the complete list of all roles in the system.
+ * Returns the complete list of all user roles in the system.
  * 
  * @returns Array of all user roles
  * 
@@ -113,12 +128,12 @@ export const getRoleColor = (roleId: string): string => {
  * ```tsx
  * const allRoles = getAllRoles();
  * // [
- * //   { id: 'developer', name: 'Developer', ... },
- * //   { id: 'data-analyst', name: 'Data Analyst', ... },
+ * //   { name: 'Data Analyst', color: '...', ... },
+ * //   { name: 'Content Manager', color: '...', ... },
  * //   ...
  * // ]
  * ```
  */
-export const getAllRoles = (): UserRole[] => {
-  return userRoles;
+export const getAllRoles = (): Role[] => {
+  return systemUserRoles;
 };

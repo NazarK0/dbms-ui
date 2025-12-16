@@ -6,17 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../ui/card';
-import RoleSelector from './RoleSelector';
-import DeviceSelector from './DeviceSelector';
+import UserSelector from './UserSelector';
 import { headerTitle, headerDescription } from './data';
 import type { PreviewHeaderProps } from './types';
 
 export default function PreviewHeader({
-  selectedRole,
-  roles,
-  deviceType,
-  onRoleChange,
-  onDeviceChange,
+  username,
+  userId,
+  onUsernameChange,
+  onUserIdChange,
 }: PreviewHeaderProps) {
   return (
     <Card className="border-slate-200 shadow-sm">
@@ -32,20 +30,13 @@ export default function PreviewHeader({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between">
-          {/* Role Selector */}
-          <RoleSelector
-            selectedRole={selectedRole}
-            roles={roles}
-            onRoleChange={onRoleChange}
-          />
-
-          {/* Device Selector */}
-          <DeviceSelector
-            deviceType={deviceType}
-            onDeviceChange={onDeviceChange}
-          />
-        </div>
+        {/* User Selector */}
+        <UserSelector
+          username={username}
+          userId={userId}
+          onUsernameChange={onUsernameChange}
+          onUserIdChange={onUserIdChange}
+        />
       </CardContent>
     </Card>
   );

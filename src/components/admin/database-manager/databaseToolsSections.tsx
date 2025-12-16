@@ -13,7 +13,7 @@
  */
 
 import { Terminal, Layers, Network, Puzzle, Code, Zap, Archive, Server } from 'lucide-react';
-import QueryExecutor from '../database-tools/QueryExecutor';
+import QueryExecutor from '../database-tools/query-executor';
 import SchemasManager from '../database-tools/SchemasManager';
 import SchemaVisualizer from '../database-tools/SchemaVisualizer';
 import ExtensionManager from '../database-tools/ExtensionManager';

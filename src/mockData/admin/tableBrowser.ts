@@ -1,5 +1,10 @@
 // Table Browser Mock Data
 
+export interface TableInfo {
+  name: string;
+  owner?: string;
+}
+
 export interface TableColumn {
   column: string;
   type: string;
@@ -16,7 +21,15 @@ export interface TableData {
   [tableName: string]: any[];
 }
 
-export const tables = ['users', 'orders', 'products', 'customers', 'payments', 'invoices', 'shipping'];
+export const tables: TableInfo[] = [
+  { name: 'users', owner: 'admin' },
+  { name: 'orders', owner: 'admin' },
+  { name: 'products' },
+  { name: 'customers' },
+  { name: 'payments' },
+  { name: 'invoices' },
+  { name: 'shipping' },
+];
 
 export const tableSchema: TableSchema = {
   users: [

@@ -1,18 +1,14 @@
 /**
- * Skeleton компонент для списків
- * Використовується під час завантаження списків даних
+ * Skeleton списків - використовується під час завантаження
  */
 
+import { Card, CardContent } from './card';
 import { Skeleton } from './skeleton';
 
 interface SkeletonListProps {
-  /** Кількість елементів */
   items?: number;
-  /** Чи показувати аватар/іконку */
   showAvatar?: boolean;
-  /** Чи показувати додаткову інформацію */
   showMeta?: boolean;
-  /** Додаткові CSS класи */
   className?: string;
 }
 
@@ -23,19 +19,21 @@ export function SkeletonList({
   className = '',
 }: SkeletonListProps) {
   return (
-    <div className={`space-y-3 ${className}`}>
-      {Array.from({ length: items }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 p-3">
-          {showAvatar && (
-            <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
-          )}
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            {showMeta && <Skeleton className="h-3 w-1/2" />}
+    <Card className={`space-y-3 ${className}`}>
+      <CardContent>
+        {Array.from({ length: items }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 p-3">
+            {showAvatar && (
+              <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+            )}
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-3/4" />
+              {showMeta && <Skeleton className="h-3 w-1/2" />}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 

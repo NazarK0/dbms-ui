@@ -7,6 +7,7 @@ import type { AdminDatabase } from './types';
 export const adminDatabases: AdminDatabase[] = [
   {
     name: 'postgres',
+    owner: 'admin',
     description: 'Системна БД для підключень та управління',
     size: '8.2 МБ',
     tables: 5,

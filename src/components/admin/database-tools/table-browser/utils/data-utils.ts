@@ -4,26 +4,26 @@
  * Функції для роботи з даними таблиць та фільтрації
  */
 
-import type { TableDataRow } from '../types';
+import type { TableDataRow, TableInfo } from '../types';
 
 /**
  * Filter tables by search term
  * 
- * @param tables - Array of table names
+ * @param tables - Array of table info objects
  * @param searchTerm - Search string to filter by
- * @returns Filtered array of table names
+ * @returns Filtered array of table info objects
  * 
  * @example
  * ```typescript
- * const tables = ['users', 'user_profiles', 'posts'];
+ * const tables = [{ name: 'users' }, { name: 'user_profiles' }, { name: 'posts' }];
  * filterTables(tables, 'user');
- * // ['users', 'user_profiles']
+ * // [{ name: 'users' }, { name: 'user_profiles' }]
  * ```
  */
-export const filterTables = (tables: string[], searchTerm: string): string[] => {
+export const filterTables = (tables: TableInfo[], searchTerm: string): TableInfo[] => {
   if (!searchTerm) return tables;
   return tables.filter((table) =>
-    table.toLowerCase().includes(searchTerm.toLowerCase())
+    table.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 };
 

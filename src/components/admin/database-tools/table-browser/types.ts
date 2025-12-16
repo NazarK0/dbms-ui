@@ -4,6 +4,7 @@
 
 export interface TableInfo {
   name: string;
+  owner?: string;
   rowCount?: number;
   size?: string;
   lastModified?: string;
@@ -36,7 +37,7 @@ export interface TableBrowserProps {
 }
 
 export interface TableListSidebarProps {
-  tables: string[];
+  tables: TableInfo[];
   selectedTable: string | null;
   selectedDatabase?: string;
   searchTerm: string;
@@ -48,6 +49,7 @@ export interface TableHeaderCardProps {
   tableName: string;
   databaseName?: string;
   columnCount: number;
+  owner?: string;
 }
 
 export interface TableSchemaViewProps {
@@ -57,6 +59,7 @@ export interface TableSchemaViewProps {
 export interface TableDataPreviewProps {
   data: TableDataRow[];
   limit?: number;
+  canViewData?: boolean;
 }
 
 export interface EmptyTableStateProps {

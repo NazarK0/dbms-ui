@@ -1,19 +1,14 @@
 /**
- * Skeleton компонент для карток
- * Використовується під час завантаження даних
+ * Skeleton карток - використовується під час завантаження
  */
 
 import { Card, CardHeader, CardContent } from './card';
 import { Skeleton } from './skeleton';
 
 interface SkeletonCardProps {
-  /** Чи показувати заголовок */
   showHeader?: boolean;
-  /** Кількість рядків контенту */
   contentLines?: number;
-  /** Чи показувати footer */
   showFooter?: boolean;
-  /** Додаткові CSS класи */
   className?: string;
 }
 

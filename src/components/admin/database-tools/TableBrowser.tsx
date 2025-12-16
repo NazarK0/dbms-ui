@@ -10,8 +10,10 @@ import { tables as allTables, tableSchema, tableData } from '@/mockData/admin/ta
 import type { TableBrowserProps } from './table-browser/types';
 import { mockApiCall } from '../../../utils/mockApi';
 import { SkeletonList, SkeletonTable } from '../../ui/skeletons';
+import { useAdminUser } from '../../../contexts/AdminUserContext';
 
 export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
+  const { hasPermission, canAccessDatabase } = useAdminUser();
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoadingTables, setIsLoadingTables] = useState(true);
@@ -37,6 +39,12 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
 
   const currentSchema = selectedTable ? (tableSchema[selectedTable as keyof typeof tableSchema] || []) : [];
   const currentData = selectedTable ? (tableData[selectedTable as keyof typeof tableData] || []) : [];
+  
+  // Get owner info for selected table
+  const currentTableOwner = tables.find(t => t.name === selectedTable)?.owner;
+
+  // Перевірка чи користувач має доступ до перегляду даних
+  const canViewData = hasPermission('canViewTableData') && canAccessDatabase(selectedDatabase || '');
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -64,6 +72,7 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
               tableName={selectedTable}
               databaseName={selectedDatabase}
               columnCount={currentSchema.length}
+              owner={currentTableOwner}
             />
 
             {isLoadingTableData ? (
@@ -74,7 +83,7 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
             ) : (
               <>
                 <TableSchemaView schema={currentSchema} />
-                <TableDataPreview data={currentData} limit={100} />
+                <TableDataPreview data={currentData} limit={100} canViewData={canViewData} />
               </>
             )}
           </>

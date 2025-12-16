@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Network, Download, ZoomIn, ZoomOut, Maximize2, Database, Key, Link2, Search } from 'lucide-react';
+import { Network, Download, ZoomIn, ZoomOut, Maximize2, Database, Key, Link2, Search, Crown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
+import { useAdminUser } from '../../../contexts/AdminUserContext';
 import { 
   schemaVisualizerTables, 
   schemaStatistics, 
@@ -18,6 +19,7 @@ interface SchemaVisualizerProps {
 }
 
 export default function SchemaVisualizer({ selectedDatabase }: SchemaVisualizerProps) {
+  const { user } = useAdminUser();
   const [zoom, setZoom] = useState(100);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -33,6 +35,12 @@ export default function SchemaVisualizer({ selectedDatabase }: SchemaVisualizerP
   const filteredStatistics = statistics.filter(stat =>
     filteredTables.some(table => table.name === stat.table)
   );
+  
+  // Check if admin is owner of a table
+  const isOwner = (owner?: string) => {
+    return owner === 'admin' || 
+           (user.permissions.ownedDatabases.includes('*'));
+  };
 
   return (
     <div className="space-y-6">
@@ -107,7 +115,12 @@ export default function SchemaVisualizer({ selectedDatabase }: SchemaVisualizerP
                     style={{ left: `${table.position.x}px`, top: `${table.position.y}px`, width: '250px', zIndex: 1 }}
                   >
                     <div className="bg-gradient-to-r from-lime-600 to-green-600 text-white px-4 py-3 rounded-t-lg">
-                      <h4 className="font-medium">{table.name}</h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">{table.name}</h4>
+                        {isOwner(table.owner) && (
+                          <Crown className="w-4 h-4 text-yellow-300" title="Ви власник цієї таблиці" />
+                        )}
+                      </div>
                     </div>
                     <div className="p-3 space-y-1">
                       {table.columns.map((col, idx) => (
@@ -137,7 +150,12 @@ export default function SchemaVisualizer({ selectedDatabase }: SchemaVisualizerP
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredStatistics.map((stat) => (
               <div key={stat.table} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                <h4 className="text-slate-900 font-medium mb-3">{stat.table}</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-slate-900 font-medium">{stat.table}</h4>
+                  {isOwner(stat.owner) && (
+                    <Crown className="w-4 h-4 text-olive-600" title="Ви власник цієї таблиці" />
+                  )}
+                </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-slate-600">Рядків:</span>

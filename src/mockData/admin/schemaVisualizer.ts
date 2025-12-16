@@ -9,12 +9,14 @@ export interface TableColumn {
 
 export interface TableDefinition {
   name: string;
+  owner?: string;
   columns: TableColumn[];
   position: { x: number; y: number };
 }
 
 export interface TableStatistic {
   table: string;
+  owner?: string;
   rows: number;
   size: string;
   indexes: number;
@@ -23,6 +25,7 @@ export interface TableStatistic {
 export const schemaVisualizerTables: TableDefinition[] = [
   {
     name: 'users',
+    owner: 'admin',
     columns: [
       { name: 'id', type: 'integer', pk: true },
       { name: 'username', type: 'varchar(255)' },
@@ -33,6 +36,7 @@ export const schemaVisualizerTables: TableDefinition[] = [
   },
   {
     name: 'orders',
+    owner: 'admin',
     columns: [
       { name: 'id', type: 'integer', pk: true },
       { name: 'user_id', type: 'integer', fk: true },
@@ -64,8 +68,8 @@ export const schemaVisualizerTables: TableDefinition[] = [
 ];
 
 export const schemaStatistics: TableStatistic[] = [
-  { table: 'users', rows: 15234, size: '2.4 МБ', indexes: 3 },
-  { table: 'orders', rows: 45621, size: '8.7 МБ', indexes: 4 },
+  { table: 'users', owner: 'admin', rows: 15234, size: '2.4 МБ', indexes: 3 },
+  { table: 'orders', owner: 'admin', rows: 45621, size: '8.7 МБ', indexes: 4 },
   { table: 'order_items', rows: 128453, size: '15.2 МБ', indexes: 5 },
   { table: 'products', rows: 3421, size: '1.8 МБ', indexes: 2 },
 ];

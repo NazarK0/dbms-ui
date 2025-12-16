@@ -1,8 +1,5 @@
 /**
- * Table Browser Utils - Centralized Exports
- * 
- * Цей файл експортує всі utility функції з модульної структури.
- * Забезпечує зворотну сумісність з попереднім монолітним utils.ts
+ * Table Browser Utils - Centralized exports
  */
 
 // UI Formatters (4 functions)

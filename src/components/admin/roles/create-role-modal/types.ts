@@ -1,5 +1,5 @@
 /**
- * TypeScript type definitions for CreateRoleModal components
+ * Type definitions for CreateRoleModal components
  */
 
 import type { Role } from '../RoleCard';

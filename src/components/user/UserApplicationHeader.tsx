@@ -1,6 +1,7 @@
-import { ArrowLeft, Bell, Settings, Users } from 'lucide-react';
+import { ArrowLeft, Bell, Settings, Users, Eye } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { useUserPreview } from '../../contexts/UserPreviewContext';
 
 interface UserRole {
   id: number;
@@ -21,9 +22,24 @@ export default function UserApplicationHeader({
   onBack, 
   onProfileToggle 
 }: UserApplicationHeaderProps) {
+  const { config } = useUserPreview();
+
   return (
     <div className="border-b border-violet-200/50">
       <div className="container mx-auto px-6 py-4">
+        {/* Preview Mode Badge */}
+        {config.isPreviewMode && (
+          <div className="mb-3 flex items-center gap-2 text-xs bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <Eye className="w-3.5 h-3.5 text-amber-600" />
+            <span className="text-amber-800 font-medium">Режим попереднього перегляду Admin UI</span>
+            {(config.username || config.userId) && (
+              <span className="text-amber-700">
+                • {config.username || config.userId}
+              </span>
+            )}
+          </div>
+        )}
+        
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" onClick={onBack} className="gap-2">

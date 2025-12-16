@@ -26,6 +26,7 @@ export interface TemplateDatabase {
 
 export interface AdminDatabase {
   name: string;
+  owner?: string;
   description: string;
   size: string;
   tables: number;

@@ -1,21 +1,22 @@
 /**
- * Skeleton компонент для таблиць
- * Використовується під час завантаження табличних даних
+ * Skeleton таблиць - використовується під час завантаження табличних даних
  */
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './table';
 import { Skeleton } from './skeleton';
 
 interface SkeletonTableProps {
-  /** Кількість рядків */
   rows?: number;
-  /** Кількість колонок */
   columns?: number;
-  /** Чи показувати checkbox колонку */
   showCheckbox?: boolean;
-  /** Чи показувати колонку дій */
   showActions?: boolean;
-  /** Додаткові CSS класи */
   className?: string;
 }
 
