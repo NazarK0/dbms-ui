@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../ui/collapsible';
 import { getDatabaseToolsSections, defaultOpenSections } from './databaseToolsSections';
+import { SkeletonTable } from '../../ui/skeletons';
 
 interface DatabaseToolsViewProps {
   selectedDatabase: string;
   activeSubTab?: string;
   onSubTabChange?: (tab: string) => void;
+}
+
+// Loading fallback for sections
+function SectionLoading() {
+  return <SkeletonTable rows={5} columns={4} />;
 }
 
 export default function DatabaseToolsView({
@@ -64,7 +70,9 @@ export default function DatabaseToolsView({
 
               <CollapsibleContent>
                 <CardContent className="pt-0">
-                  {section.component}
+                  <Suspense fallback={<SectionLoading />}>
+                    {section.component}
+                  </Suspense>
                 </CardContent>
               </CollapsibleContent>
             </Card>

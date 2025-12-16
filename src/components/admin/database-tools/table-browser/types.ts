@@ -60,6 +60,7 @@ export interface TableDataPreviewProps {
   data: TableDataRow[];
   limit?: number;
   canViewData?: boolean;
+  onAddRecord?: () => void;
 }
 
 export interface EmptyTableStateProps {

@@ -4,5 +4,6 @@ export { default as TableHeaderCard } from './TableHeaderCard';
 export { default as TableSchemaView } from './TableSchemaView';
 export { default as TableDataPreview } from './TableDataPreview';
 export { default as EmptyTableState } from './EmptyTableState';
+export { default as AddRecordModal } from './AddRecordModal';
 export * from './types';
 export * from './utils';

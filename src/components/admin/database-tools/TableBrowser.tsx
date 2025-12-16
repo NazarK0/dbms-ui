@@ -5,12 +5,14 @@ import {
   TableSchemaView,
   TableDataPreview,
   EmptyTableState,
+  AddRecordModal,
 } from './table-browser';
 import { tables as allTables, tableSchema, tableData } from '@/mockData/admin/tableBrowser';
 import type { TableBrowserProps } from './table-browser/types';
 import { mockApiCall } from '../../../utils/mockApi';
 import { SkeletonList, SkeletonTable } from '../../ui/skeletons';
 import { useAdminUser } from '../../../contexts/AdminUserContext';
+import { toast } from 'sonner@2.0.3';
 
 export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
   const { hasPermission, canAccessDatabase } = useAdminUser();
@@ -19,6 +21,7 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
   const [isLoadingTables, setIsLoadingTables] = useState(true);
   const [isLoadingTableData, setIsLoadingTableData] = useState(false);
   const [tables, setTables] = useState<any[]>([]);
+  const [showAddRecordModal, setShowAddRecordModal] = useState(false);
 
   useEffect(() => {
     // Load tables list
@@ -45,6 +48,27 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
 
   // Перевірка чи користувач має доступ до перегляду даних
   const canViewData = hasPermission('canViewTableData') && canAccessDatabase(selectedDatabase || '');
+
+  // Handle adding a new record
+  const handleAddRecord = async (data: Record<string, any>) => {
+    try {
+      // Simulate API call
+      await mockApiCall('tables/insert', {
+        database: selectedDatabase,
+        table: selectedTable,
+        data,
+      }, 500);
+
+      toast.success('Запис успішно додано', {
+        description: `Новий запис додано до таблиці ${selectedTable}`,
+      });
+
+      // In a real app, you would refresh the table data here
+      // For now, we'll just show the success message
+    } catch (error) {
+      throw new Error('Не вдалося додати запис. Спробуйте ще раз.');
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -83,7 +107,12 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
             ) : (
               <>
                 <TableSchemaView schema={currentSchema} />
-                <TableDataPreview data={currentData} limit={100} canViewData={canViewData} />
+                <TableDataPreview 
+                  data={currentData} 
+                  limit={100} 
+                  canViewData={canViewData}
+                  onAddRecord={() => setShowAddRecordModal(true)}
+                />
               </>
             )}
           </>
@@ -91,6 +120,17 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
           <EmptyTableState />
         )}
       </div>
+
+      {/* Add Record Modal */}
+      {selectedTable && (
+        <AddRecordModal
+          open={showAddRecordModal}
+          onOpenChange={setShowAddRecordModal}
+          tableName={selectedTable}
+          schema={currentSchema}
+          onAddRecord={handleAddRecord}
+        />
+      )}
     </div>
   );
 }

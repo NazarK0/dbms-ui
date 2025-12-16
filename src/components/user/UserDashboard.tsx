@@ -7,7 +7,7 @@ import { dashboardDatabases, activityRecords, tableAccess } from '../../mockData
 interface UserDashboardProps {
   userRoles: string[];
   onDatabaseSelect: (database: string) => void;
-  onTableSelect: (database: string, table: string) => void;
+  onTableSelect: (database: string, table: string, permissions: string[], highlightRecordId?: string) => void;
 }
 
 export default function UserDashboard({
@@ -73,11 +73,11 @@ export default function UserDashboard({
         lastAccessedTables={tableAccess}
         onRecordClick={(database, table, permissions, recordId) => {
           // Користувач клікнув на запис - відкриваємо таблицю
-          onTableSelect(database, table);
+          onTableSelect(database, table, permissions, recordId);
         }}
         onTableClick={(database, table, permissions) => {
           // Користувач клікнув на таблицю - відкриваємо її
-          onTableSelect(database, table);
+          onTableSelect(database, table, permissions);
         }}
       />
     </div>

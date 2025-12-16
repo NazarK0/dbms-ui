@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { userDatabases } from '../../../mockData/admin';
 import {
   DatabaseToolsView,
   DatabaseManagerHeader,
   SelectedDatabaseAlert,
   DatabaseListView,
-  CreateDatabaseModal,
-  CopyDatabaseModal,
-  ExportDatabaseModal,
-  ImportDatabaseModal,
 } from '../database-manager';
 import { mockApiCall } from '../../../utils/mockApi';
 import { SkeletonCardGrid } from '../../ui/skeletons';
+
+// Lazy load modals (only needed when opened)
+const CreateDatabaseModal = lazy(() => import('../database-manager/CreateDatabaseModal'));
+const CopyDatabaseModal = lazy(() => import('../database-manager/CopyDatabaseModal'));
+const ExportDatabaseModal = lazy(() => import('../database-manager/ExportDatabaseModal'));
+const ImportDatabaseModal = lazy(() => import('../database-manager/ImportDatabaseModal'));
 
 export default function DatabaseManager() {
   const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
@@ -133,38 +135,40 @@ export default function DatabaseManager() {
         )
       )}
 
-      <CreateDatabaseModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-        dbName={newDbName}
-        onDbNameChange={setNewDbName}
-        dbOwner={newDbOwner}
-        onDbOwnerChange={setNewDbOwner}
-        onCreate={handleCreateDatabase}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <CreateDatabaseModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          dbName={newDbName}
+          onDbNameChange={setNewDbName}
+          dbOwner={newDbOwner}
+          onDbOwnerChange={setNewDbOwner}
+          onCreate={handleCreateDatabase}
+        />
 
-      <CopyDatabaseModal
-        open={showCopyModal}
-        onOpenChange={setShowCopyModal}
-        sourceDatabaseName={selectedDb}
-        onCopy={handleCopyComplete}
-        onClose={handleCloseCopyModal}
-      />
+        <CopyDatabaseModal
+          open={showCopyModal}
+          onOpenChange={setShowCopyModal}
+          sourceDatabaseName={selectedDb}
+          onCopy={handleCopyComplete}
+          onClose={handleCloseCopyModal}
+        />
 
-      <ExportDatabaseModal
-        open={showExportModal}
-        onOpenChange={setShowExportModal}
-        databaseName={selectedDb}
-        onExport={handleExportComplete}
-        onClose={handleCloseExportModal}
-      />
+        <ExportDatabaseModal
+          open={showExportModal}
+          onOpenChange={setShowExportModal}
+          databaseName={selectedDb}
+          onExport={handleExportComplete}
+          onClose={handleCloseExportModal}
+        />
 
-      <ImportDatabaseModal
-        open={showImportModal}
-        onOpenChange={setShowImportModal}
-        databases={databases}
-        onImport={handleImportComplete}
-      />
+        <ImportDatabaseModal
+          open={showImportModal}
+          onOpenChange={setShowImportModal}
+          databases={databases}
+          onImport={handleImportComplete}
+        />
+      </Suspense>
     </div>
   );
 }

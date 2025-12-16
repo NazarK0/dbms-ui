@@ -97,8 +97,6 @@ export default function PostgresConfig() {
         onRestart={handleRestart}
       />
 
-      <RestartDialog open={restartDialogOpen} onClose={setRestartDialogOpen} />
-
       {isLoadingConfig ? (
         <>
           <SkeletonCard />
