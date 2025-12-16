@@ -36,13 +36,13 @@ export default function SchemasTable({
           <TableRow 
             key={schema.name} 
             onClick={() => onSelectSchema(schema.name)}
-            className={`cursor-pointer hover:bg-blue-50/50 transition-colors ${
-              schema.name === 'public' ? 'bg-blue-50/30' : ''
+            className={`cursor-pointer hover:bg-olive-50/50 transition-colors ${
+              schema.name === 'public' ? 'bg-olive-50/30' : ''
             }`}
           >
             <TableCell>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-olive-500 to-olive-600 rounded-lg flex items-center justify-center">
                   <Layers className="w-4 h-4 text-white" />
                 </div>
                 <code className="text-slate-900">{schema.name}</code>
