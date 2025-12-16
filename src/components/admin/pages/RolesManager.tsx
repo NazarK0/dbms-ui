@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Plus, Shield, Users, UserCog } from 'lucide-react';
 import { Badge } from '../../ui/badge';
@@ -10,8 +10,8 @@ import EditAdminRoleModal from '../roles/EditAdminRoleModal';
 import EditUserRoleModal from '../roles/EditUserRoleModal';
 import RBACMatrix from '../roles/RBACMatrix';
 import RoleHistory from '../roles/RoleHistory';
-import StatsCards from '../roles/StatsCards';
-import { toast } from 'sonner';
+import StatsCards from '../roles/stats-cards/StatsCards';
+import { toast } from 'sonner@2.0.3';
 import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type RoleType } from '../../../mockData/admin';
 import type { Role } from '../roles/role-card/types';
 import { mockApiCall } from '../../../utils/mockApi';
