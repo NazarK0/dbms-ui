@@ -24,15 +24,38 @@ export function useTabScroll(tabs: Tab[]) {
     updateScrollButtons();
     const handleResize = () => updateScrollButtons();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    // Add native wheel event listener with passive: false to allow preventDefault
+    const tabsElement = tabsRef.current;
+    const handleNativeWheel = (e: WheelEvent) => {
+      if (tabsElement) {
+        const { scrollWidth, clientWidth } = tabsElement;
+        const hasHorizontalScroll = scrollWidth > clientWidth;
+        
+        if (hasHorizontalScroll) {
+          e.preventDefault();
+          e.stopPropagation();
+          tabsElement.scrollLeft += e.deltaY;
+          updateScrollButtons();
+        }
+      }
+    };
+    
+    if (tabsElement) {
+      tabsElement.addEventListener('wheel', handleNativeWheel, { passive: false });
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (tabsElement) {
+        tabsElement.removeEventListener('wheel', handleNativeWheel);
+      }
+    };
   }, [tabs]);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (tabsRef.current) {
-      e.preventDefault();
-      tabsRef.current.scrollLeft += e.deltaY;
-      updateScrollButtons();
-    }
+    // This is now handled by native event listener above
+    // Keeping this function for backward compatibility
   };
 
   const scrollTabs = (direction: 'left' | 'right') => {

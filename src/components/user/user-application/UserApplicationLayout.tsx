@@ -19,9 +19,9 @@ export default function UserApplicationLayout({
   onNewTab,
 }: UserApplicationLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-sm flex-shrink-0">
         <UserApplicationHeader
           userRoles={userRoles}
           currentView={currentView}
@@ -42,7 +42,7 @@ export default function UserApplicationLayout({
       </header>
 
       {/* Main Content */}
-      <main className="p-6">{children}</main>
+      <main className="flex-1 p-6 overflow-y-auto">{children}</main>
     </div>
   );
 }
