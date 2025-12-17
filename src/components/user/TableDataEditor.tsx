@@ -8,7 +8,7 @@ import {
   useTableDataEditor,
 } from './table-data-editor';
 import type { TableDataEditorProps } from './table-data-editor';
-import { mockApiCall } from '../../utils/mockApi';
+import { API, api } from '../../utils/api';
 import { SkeletonTable, SkeletonCard } from '../ui/skeletons';
 
 export default function TableDataEditor({
@@ -57,9 +57,14 @@ export default function TableDataEditor({
 
   useEffect(() => {
     // Load table data
-    mockApiCall('table/records', { database, table }, 900).then((data) => {
-      setIsLoadingData(false);
-    });
+    api.get(API.user.tables.records({ database, table }))
+      .then((data) => {
+        setIsLoadingData(false);
+      })
+      .catch((error) => {
+        console.error('Error loading table records:', error);
+        setIsLoadingData(false);
+      });
   }, [database, table]);
 
   return (

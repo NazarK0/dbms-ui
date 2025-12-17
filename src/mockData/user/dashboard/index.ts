@@ -9,7 +9,11 @@ export type {
   UserDatabase,
   DatabaseWithTables,
   DashboardDatabase,
+  DashboardOverviewStats,
 } from './types';
+
+// Overview Stats
+export { overviewStats } from './overviewStats';
 
 // Modified Records
 export { lastModifiedRecords } from './modifiedRecords';

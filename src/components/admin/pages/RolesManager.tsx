@@ -14,7 +14,7 @@ import StatsCards from '../roles/stats-cards/StatsCards';
 import { toast } from 'sonner@2.0.3';
 import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type RoleType } from '../../../mockData/admin';
 import type { Role } from '../roles/role-card/types';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid } from '../../ui/skeletons';
 
 export default function RolesManager() {
@@ -35,19 +35,27 @@ export default function RolesManager() {
   const [statsData, setStatsData] = useState({ totalRoles: roles.length, totalAdmins, totalUsers });
 
   useEffect(() => {
-    // Імітація завантаження статистики
-    mockApiCall({ totalRoles: roles.length, totalAdmins, totalUsers }, 'fast').then((data) => {
-      setStatsData(data);
-      setIsLoadingStats(false);
-    });
+    // Load statistics
+    api.get(API.admin.rolesManager.permissions.categories())
+      .then((data) => {
+        setStatsData(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading role stats:', error);
+        setIsLoadingStats(false);
+      });
 
-    // Імітація завантаження ролей
+    // Load roles
     Promise.all([
-      mockApiCall(adminRoles, 'normal'),
-      mockApiCall(userRoles, 'normal'),
+      api.get(API.admin.rolesManager.adminRoles.list()),
+      api.get(API.admin.rolesManager.userRoles.list()),
     ]).then(([admin, user]) => {
       setAdminRolesData(admin);
       setUserRolesData(user);
+      setIsLoadingRoles(false);
+    }).catch((error) => {
+      console.error('Error loading roles:', error);
       setIsLoadingRoles(false);
     });
   }, []);

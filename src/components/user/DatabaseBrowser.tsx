@@ -6,7 +6,7 @@ import {
   DatabaseBrowserGridView,
   useDatabaseBrowser,
 } from './database-browser';
-import { mockApiCall } from '../../utils/mockApi';
+import { API, api } from '../../utils/api';
 import { SkeletonCardGrid, SkeletonList } from '../ui/skeletons';
 
 export interface DatabaseBrowserProps {
@@ -35,10 +35,15 @@ export default function DatabaseBrowser({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Імітація завантаження баз даних
-    mockApiCall(filteredDatabases, 'normal').then(() => {
-      setIsLoading(false);
-    });
+    // Load databases
+    api.get(API.user.databases.list())
+      .then((data) => {
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error loading databases:', error);
+        setIsLoading(false);
+      });
   }, []);
 
   return (

@@ -7,7 +7,7 @@ import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { installedExtensionsDetailed, availableExtensions } from '../../../mockData/admin';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonTable, SkeletonCardGrid } from '../../ui/skeletons';
 
 export default function ExtensionManager({ selectedDatabase }: { selectedDatabase?: string }) {
@@ -19,16 +19,26 @@ export default function ExtensionManager({ selectedDatabase }: { selectedDatabas
 
   useEffect(() => {
     // Load installed extensions
-    mockApiCall('extensions/installed', { database: selectedDatabase }, 700).then((data) => {
-      setInstalledExtensions(installedExtensionsDetailed);
-      setIsLoadingInstalled(false);
-    });
+    api.get(API.admin.databaseTools.extensions.list(), { database: selectedDatabase })
+      .then((data) => {
+        setInstalledExtensions(data);
+        setIsLoadingInstalled(false);
+      })
+      .catch((error) => {
+        console.error('Error loading installed extensions:', error);
+        setIsLoadingInstalled(false);
+      });
 
-    // Load available extensions
-    mockApiCall('extensions/available', {}, 900).then((data) => {
-      setAvailableExts(availableExtensions);
-      setIsLoadingAvailable(false);
-    });
+    // Load available extensions (no database parameter needed)
+    api.get(API.admin.databaseTools.extensions.list(), { available: true })
+      .then((data) => {
+        setAvailableExts(data);
+        setIsLoadingAvailable(false);
+      })
+      .catch((error) => {
+        console.error('Error loading available extensions:', error);
+        setIsLoadingAvailable(false);
+      });
   }, [selectedDatabase]);
 
   return (

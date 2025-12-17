@@ -81,3 +81,13 @@ export interface DashboardDatabase {
   grantedByRoles: string[];
   color: string;
 }
+
+// Dashboard Overview Stats
+export interface DashboardOverviewStats {
+  totalDatabases: number;
+  totalTables: number;
+  totalRecords: number;
+  recentActivity: number;
+  lastLoginDate: string;
+  lastActivityDate: string;
+}

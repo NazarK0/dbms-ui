@@ -12,7 +12,7 @@ import {
   slowQueries,
   databaseStats,
 } from '../../../mockData/admin';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../ui/skeletons';
 
 export default function SystemMonitor() {
@@ -29,29 +29,49 @@ export default function SystemMonitor() {
   const [queries, setQueries] = useState(slowQueries);
 
   useEffect(() => {
-    // Імітація завантаження системних статистик
-    mockApiCall(systemStats, 'fast').then((data) => {
-      setStats(data);
-      setIsLoadingStats(false);
-    });
+    // Load system statistics
+    api.get(API.admin.systemMonitor.system.stats())
+      .then((data) => {
+        setStats(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading system stats:', error);
+        setIsLoadingStats(false);
+      });
 
-    // Імітація завантаження статистики БД
-    mockApiCall(databaseStats, 'normal').then((data) => {
-      setDatabases(data);
-      setIsLoadingDatabases(false);
-    });
+    // Load database statistics
+    api.get(API.admin.systemMonitor.databases.stats())
+      .then((data) => {
+        setDatabases(data);
+        setIsLoadingDatabases(false);
+      })
+      .catch((error) => {
+        console.error('Error loading database stats:', error);
+        setIsLoadingDatabases(false);
+      });
 
-    // Імітація завантаження з'єднань
-    mockApiCall(connections, 'normal').then((data) => {
-      setActiveConnections(data);
-      setIsLoadingConnections(false);
-    });
+    // Load connections
+    api.get(API.admin.systemMonitor.connections.active())
+      .then((data) => {
+        setActiveConnections(data);
+        setIsLoadingConnections(false);
+      })
+      .catch((error) => {
+        console.error('Error loading connections:', error);
+        setIsLoadingConnections(false);
+      });
 
-    // Імітація завантаження повільних запитів
-    mockApiCall(slowQueries, 'slow').then((data) => {
-      setQueries(data);
-      setIsLoadingQueries(false);
-    });
+    // Load slow queries
+    api.get(API.admin.systemMonitor.queries.slow())
+      .then((data) => {
+        setQueries(data);
+        setIsLoadingQueries(false);
+      })
+      .catch((error) => {
+        console.error('Error loading slow queries:', error);
+        setIsLoadingQueries(false);
+      });
   }, []);
 
   return (

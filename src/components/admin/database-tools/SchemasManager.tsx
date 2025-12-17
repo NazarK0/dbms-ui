@@ -12,7 +12,7 @@ import {
   type SchemaFormData,
   type SchemaTab,
 } from './schemas';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonTable } from '../../ui/skeletons';
 
 interface SchemasManagerProps {
@@ -29,10 +29,15 @@ export default function SchemasManager({ selectedDatabase }: SchemasManagerProps
   useEffect(() => {
     // Load schemas
     setIsLoadingSchemas(true);
-    mockApiCall('schemas/list', { database: selectedDatabase }, 700).then((data) => {
-      setSchemas(getSchemasByDatabase(selectedDatabase));
-      setIsLoadingSchemas(false);
-    });
+    api.get(API.admin.databaseTools.schemas.list(), { database: selectedDatabase })
+      .then((data) => {
+        setSchemas(data);
+        setIsLoadingSchemas(false);
+      })
+      .catch((error) => {
+        console.error('Error loading schemas:', error);
+        setIsLoadingSchemas(false);
+      });
   }, [selectedDatabase]);
 
   const handleCreateSchema = (data: SchemaFormData) => {

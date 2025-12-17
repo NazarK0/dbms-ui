@@ -9,7 +9,7 @@ import {
 } from './table-browser';
 import { tables as allTables, tableSchema, tableData } from '@/mockData/admin/tableBrowser';
 import type { TableBrowserProps } from './table-browser/types';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonList, SkeletonTable } from '../../ui/skeletons';
 import { useAdminUser } from '../../../contexts/AdminUserContext';
 import { toast } from 'sonner@2.0.3';
@@ -25,18 +25,28 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
 
   useEffect(() => {
     // Load tables list
-    mockApiCall('tables/list', { database: selectedDatabase }, 800).then((data) => {
-      setTables(allTables);
-      setIsLoadingTables(false);
-    });
+    api.get(API.admin.databaseTools.tables.list(), { database: selectedDatabase })
+      .then((data) => {
+        setTables(data);
+        setIsLoadingTables(false);
+      })
+      .catch((error) => {
+        console.error('Error loading tables:', error);
+        setIsLoadingTables(false);
+      });
   }, [selectedDatabase]);
 
   useEffect(() => {
     if (selectedTable) {
       setIsLoadingTableData(true);
-      mockApiCall('tables/data', { database: selectedDatabase, table: selectedTable }, 700).then((data) => {
-        setIsLoadingTableData(false);
-      });
+      api.get(API.admin.databaseTools.tables.data(), { database: selectedDatabase, table: selectedTable })
+        .then((data) => {
+          setIsLoadingTableData(false);
+        })
+        .catch((error) => {
+          console.error('Error loading table data:', error);
+          setIsLoadingTableData(false);
+        });
     }
   }, [selectedTable, selectedDatabase]);
 
@@ -52,12 +62,12 @@ export default function TableBrowser({ selectedDatabase }: TableBrowserProps) {
   // Handle adding a new record
   const handleAddRecord = async (data: Record<string, any>) => {
     try {
-      // Simulate API call
-      await mockApiCall('tables/insert', {
+      // API call to insert record
+      await api.post(API.admin.databaseTools.tables.data(), {
         database: selectedDatabase,
         table: selectedTable,
         data,
-      }, 500);
+      });
 
       toast.success('Запис успішно додано', {
         description: `Новий запис додано до таблиці ${selectedTable}`,

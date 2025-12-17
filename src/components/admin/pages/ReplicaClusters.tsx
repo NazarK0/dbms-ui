@@ -13,7 +13,7 @@ import {
   replicationActivity 
 } from '@/mockData/admin/replicas';
 import type { AddReplicaFormData } from './replicas/types';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonTable, SkeletonDiagram } from '../../ui/skeletons';
 
 export default function ReplicaClusters() {
@@ -31,27 +31,47 @@ export default function ReplicaClusters() {
 
   useEffect(() => {
     // Load replication stats
-    mockApiCall('replicas/stats', {}, 800).then((data) => {
-      setStats(replicationStats);
-      setIsLoadingStats(false);
-    });
+    api.get(API.admin.replicaClusters.replication.stats())
+      .then((data) => {
+        setStats(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading replication stats:', error);
+        setIsLoadingStats(false);
+      });
 
     // Load topology
-    mockApiCall('replicas/topology', {}, 1100).then((data) => {
-      setIsLoadingTopology(false);
-    });
+    api.get(API.admin.replicaClusters.replicas.list())
+      .then((data) => {
+        setIsLoadingTopology(false);
+      })
+      .catch((error) => {
+        console.error('Error loading topology:', error);
+        setIsLoadingTopology(false);
+      });
 
     // Load clusters
-    mockApiCall('replicas/clusters', {}, 1000).then((data) => {
-      setClusters(initialClusters);
-      setIsLoadingClusters(false);
-    });
+    api.get(API.admin.replicaClusters.replicas.list())
+      .then((data) => {
+        setClusters(data);
+        setIsLoadingClusters(false);
+      })
+      .catch((error) => {
+        console.error('Error loading clusters:', error);
+        setIsLoadingClusters(false);
+      });
 
     // Load activity
-    mockApiCall('replicas/activity', {}, 1200).then((data) => {
-      setActivity(replicationActivity);
-      setIsLoadingActivity(false);
-    });
+    api.get(API.admin.replicaClusters.replication.activity())
+      .then((data) => {
+        setActivity(data);
+        setIsLoadingActivity(false);
+      })
+      .catch((error) => {
+        console.error('Error loading activity:', error);
+        setIsLoadingActivity(false);
+      });
   }, []);
 
   const handleAddReplica = (data: AddReplicaFormData) => {

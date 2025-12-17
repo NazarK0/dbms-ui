@@ -6,7 +6,7 @@ import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import { functions, functionCode } from '../../../mockData/admin';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonTable, SkeletonCodeEditor } from '../../ui/skeletons';
 
 export default function FunctionsManager({ selectedDatabase }: { selectedDatabase?: string }) {
@@ -16,10 +16,15 @@ export default function FunctionsManager({ selectedDatabase }: { selectedDatabas
 
   useEffect(() => {
     // Load functions
-    mockApiCall('functions/list', { database: selectedDatabase }, 750).then((data) => {
-      setFunctionsList(functions);
-      setIsLoadingFunctions(false);
-    });
+    api.get(API.admin.databaseTools.functions.list(), { database: selectedDatabase })
+      .then((data) => {
+        setFunctionsList(data);
+        setIsLoadingFunctions(false);
+      })
+      .catch((error) => {
+        console.error('Error loading functions:', error);
+        setIsLoadingFunctions(false);
+      });
   }, [selectedDatabase]);
 
   return (

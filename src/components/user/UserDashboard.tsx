@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DatabaseGrid, ActivitySection } from './dashboard';
-import { mockApiCall } from '../../utils/mockApi';
+import { API, api } from '../../utils/api';
 import { SkeletonCardGrid, SkeletonListCard } from '../ui/skeletons';
 import { dashboardDatabases, activityRecords, tableAccess } from '../../mockData/user';
 
@@ -21,7 +21,9 @@ export default function UserDashboard({
     const loadData = async () => {
       setIsLoading(true);
       try {
-        await mockApiCall('user-dashboard', {}, 850);
+        await api.get(API.user.dashboard.overview());
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
       } finally {
         setIsLoading(false);
       }

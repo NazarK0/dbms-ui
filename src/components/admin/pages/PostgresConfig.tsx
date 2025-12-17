@@ -12,7 +12,7 @@ import {
   calculateStatistics,
 } from './config';
 import { configParams, savedProfiles as initialProfiles } from '@/mockData/admin/postgresConfig';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonCard } from '../../ui/skeletons';
 
 export default function PostgresConfig() {
@@ -29,11 +29,16 @@ export default function PostgresConfig() {
 
   useEffect(() => {
     // Load configuration
-    mockApiCall('config/parameters', {}, 1000).then((data) => {
-      setConfig(configParams);
-      setStatistics(calculateStatistics(configParams));
-      setIsLoadingConfig(false);
-    });
+    api.get(API.admin.postgresConfig.parameters.all())
+      .then((data) => {
+        setConfig(data);
+        setStatistics(calculateStatistics(data));
+        setIsLoadingConfig(false);
+      })
+      .catch((error) => {
+        console.error('Error loading config:', error);
+        setIsLoadingConfig(false);
+      });
   }, []);
 
   const handleParamChange = (paramName: string, value: string) => {

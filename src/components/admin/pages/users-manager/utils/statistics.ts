@@ -47,22 +47,25 @@ export const calculateUserStats = (
 };
 
 /**
- * Format user stats value
+ * Format a number value for display in stats
  * 
- * Formats numeric statistics with Ukrainian locale and optional prefix.
+ * Formats numbers with locale-specific thousands separators and optional prefix.
  * 
- * @param value - Numeric value to format
- * @param prefix - Optional prefix (e.g., '+' for growth)
- * @returns Formatted string
+ * @param value - The numeric value to format
+ * @param prefix - Optional prefix to add (e.g., '+' for positive changes)
+ * @returns Formatted string with locale separators
  * 
  * @example
- * ```tsx
- * formatStatsValue(1234);      // "1 234"
+ * ```typescript
  * formatStatsValue(15, '+');   // "+15"
  * formatStatsValue(5000);      // "5 000"
  * ```
  */
-export const formatStatsValue = (value: number, prefix?: string): string => {
+export const formatStatsValue = (value: number | undefined, prefix?: string): string => {
+  if (value === undefined || value === null) {
+    return '0';
+  }
+  
   if (prefix === '+') {
     return `+${value.toLocaleString('uk-UA')}`;
   }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserInfoCard, DatabaseAccessCard } from './profile';
-import { mockApiCall } from '../../utils/mockApi';
+import { API, api } from '../../utils/api';
 import { SkeletonCard } from '../ui/skeletons';
 
 interface UserProfileProps {
@@ -15,7 +15,9 @@ export default function UserProfile({ userRoles, onBack }: UserProfileProps) {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        await mockApiCall('user-profile', {}, 900);
+        await api.get(API.user.profile.info());
+      } catch (error) {
+        console.error('Error loading profile:', error);
       } finally {
         setIsLoading(false);
       }

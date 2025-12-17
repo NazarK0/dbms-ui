@@ -166,3 +166,19 @@ export const mockLogs: LogEntry[] = [
     details: 'ERROR: insufficient disk space for backup operation',
   },
 ];
+
+/**
+ * Calculate log statistics
+ */
+export function calculateLogStats(logs: LogEntry[]) {
+  const errorCount = logs.filter(log => log.level === 'ERROR').length;
+  const warningCount = logs.filter(log => log.level === 'WARNING').length;
+  const infoCount = logs.filter(log => log.level === 'INFO').length;
+
+  return {
+    total: logs.length,
+    errors: errorCount,
+    warnings: warningCount,
+    info: infoCount,
+  };
+}

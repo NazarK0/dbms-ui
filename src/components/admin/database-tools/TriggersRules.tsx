@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { TriggersTable, RulesTable } from './triggers-rules';
 import { triggers as allTriggers, rules as allRules } from '@/mockData/admin/triggers';
 import type { TriggersRulesProps, Trigger, Rule } from './triggers-rules/types';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonTable } from '../../ui/skeletons';
 
 export default function TriggersRules({ selectedDatabase }: TriggersRulesProps) {
@@ -13,16 +13,27 @@ export default function TriggersRules({ selectedDatabase }: TriggersRulesProps) 
 
   useEffect(() => {
     // Load triggers
-    mockApiCall('triggers/list', { database: selectedDatabase }, 800).then((data) => {
-      setTriggers(allTriggers);
-      setIsLoadingTriggers(false);
-    });
+    api.get(API.admin.databaseTools.triggers.list(), { database: selectedDatabase })
+      .then((data) => {
+        setTriggers(data);
+        setIsLoadingTriggers(false);
+      })
+      .catch((error) => {
+        console.error('Error loading triggers:', error);
+        setIsLoadingTriggers(false);
+      });
 
-    // Load rules
-    mockApiCall('rules/list', { database: selectedDatabase }, 850).then((data) => {
-      setRules(allRules);
-      setIsLoadingRules(false);
-    });
+    // Load rules - assuming there's an endpoint for rules
+    // If not in endpoints, you may need to add it to api-endpoints.json
+    api.get(API.admin.databaseTools.triggers.list(), { database: selectedDatabase, type: 'rules' })
+      .then((data) => {
+        setRules(data);
+        setIsLoadingRules(false);
+      })
+      .catch((error) => {
+        console.error('Error loading rules:', error);
+        setIsLoadingRules(false);
+      });
   }, [selectedDatabase]);
 
   const handleCreateTrigger = () => {

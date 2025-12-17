@@ -12,7 +12,7 @@ import {
   ScheduleHeader,
   SchedulesTable,
 } from './backup-restore';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonTable } from '../../ui/skeletons';
 
 export default function BackupRestore({ selectedDatabase }: { selectedDatabase?: string }) {
@@ -24,16 +24,26 @@ export default function BackupRestore({ selectedDatabase }: { selectedDatabase?:
 
   useEffect(() => {
     // Load backups
-    mockApiCall('backups/list', { database: selectedDatabase }, 900).then((data) => {
-      setBackupsList(backups);
-      setIsLoadingBackups(false);
-    });
+    api.get(API.admin.databaseTools.backupRestore.backups(), { database: selectedDatabase })
+      .then((data) => {
+        setBackupsList(data);
+        setIsLoadingBackups(false);
+      })
+      .catch((error) => {
+        console.error('Error loading backups:', error);
+        setIsLoadingBackups(false);
+      });
 
     // Load schedules
-    mockApiCall('backups/schedules', { database: selectedDatabase }, 950).then((data) => {
-      setSchedulesList(backupSchedules);
-      setIsLoadingSchedules(false);
-    });
+    api.get(API.admin.databaseTools.backupRestore.schedules(), { database: selectedDatabase })
+      .then((data) => {
+        setSchedulesList(data);
+        setIsLoadingSchedules(false);
+      })
+      .catch((error) => {
+        console.error('Error loading schedules:', error);
+        setIsLoadingSchedules(false);
+      });
   }, [selectedDatabase]);
 
   const handleCreateBackup = () => {

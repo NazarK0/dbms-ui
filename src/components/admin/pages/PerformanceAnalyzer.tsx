@@ -9,7 +9,7 @@ import {
   IndexUsageTable,
   exportPerformanceReport,
 } from './performance';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../ui/skeletons';
 
 export default function PerformanceAnalyzer() {
@@ -39,29 +39,49 @@ export default function PerformanceAnalyzer() {
     setIsLoadingSlowQueries(true);
     setIsLoadingIndexes(true);
 
-    // Імітація завантаження даних кешу
-    mockApiCall(cacheStats, 'fast').then((data) => {
-      setCacheData(data);
-      setIsLoadingCache(false);
-    });
+    // Load cache statistics
+    api.get(API.admin.performanceAnalyzer.cache.stats(), { timeRange })
+      .then((data) => {
+        setCacheData(data);
+        setIsLoadingCache(false);
+      })
+      .catch((error) => {
+        console.error('Error loading cache stats:', error);
+        setIsLoadingCache(false);
+      });
 
-    // Імітація завантаження статистики запитів
-    mockApiCall(queryStats, 'slow').then((data) => {
-      setQueriesData(data);
-      setIsLoadingQueries(false);
-    });
+    // Load query statistics
+    api.get(API.admin.performanceAnalyzer.queries.stats(), { timeRange })
+      .then((data) => {
+        setQueriesData(data);
+        setIsLoadingQueries(false);
+      })
+      .catch((error) => {
+        console.error('Error loading query stats:', error);
+        setIsLoadingQueries(false);
+      });
 
-    // Імітація завантаження повільних запитів
-    mockApiCall(slowQueryDetails, 'slow').then((data) => {
-      setSlowQueries(data);
-      setIsLoadingSlowQueries(false);
-    });
+    // Load slow queries
+    api.get(API.admin.performanceAnalyzer.queries.slow(), { timeRange })
+      .then((data) => {
+        setSlowQueries(data);
+        setIsLoadingSlowQueries(false);
+      })
+      .catch((error) => {
+        console.error('Error loading slow queries:', error);
+        setIsLoadingSlowQueries(false);
+      });
 
-    // Імітація завантаження використання індексів
-    mockApiCall(indexUsage, 'slow').then((data) => {
-      setIndexData(data);
-      setIsLoadingIndexes(false);
-    });
+    // Load index usage
+    api.get(API.admin.performanceAnalyzer.indexes.usage(), { timeRange })
+      .then((data) => {
+        setIndexData(data);
+        setIsLoadingIndexes(false);
+      })
+      .catch((error) => {
+        console.error('Error loading index usage:', error);
+        setIsLoadingIndexes(false);
+      });
   };
 
   const handleRefresh = () => {

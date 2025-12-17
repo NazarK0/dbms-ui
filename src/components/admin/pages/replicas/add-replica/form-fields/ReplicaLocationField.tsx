@@ -8,7 +8,7 @@
 
 import { Label } from '../../../../../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../../ui/select';
-import { getAvailableLocations } from '../../../utils/getters';
+import { getAvailableLocations } from '../../utils/getters';
 
 interface ReplicaLocationFieldProps {
   /**

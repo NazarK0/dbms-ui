@@ -7,7 +7,7 @@ import {
 } from './users-manager';
 import { administrators, endUsers } from '../../../mockData/admin/users';
 import type { User, UserType } from './users-manager';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonTableWithPagination } from '../../ui/skeletons';
 
 export default function UsersManager() {
@@ -25,19 +25,27 @@ export default function UsersManager() {
   const [stats, setStats] = useState(calculateUserStats(administrators, endUsers, 156));
 
   useEffect(() => {
-    // Імітація завантаження статистики
-    mockApiCall(calculateUserStats(administrators, endUsers, 156), 'fast').then((data) => {
-      setStats(data);
-      setIsLoadingStats(false);
-    });
+    // Load statistics
+    api.get(API.admin.usersManager.stats())
+      .then((data) => {
+        setStats(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading user stats:', error);
+        setIsLoadingStats(false);
+      });
 
-    // Імітація завантаження користувачів
+    // Load users
     Promise.all([
-      mockApiCall(administrators, 'normal'),
-      mockApiCall(endUsers, 'normal'),
+      api.get(API.admin.usersManager.users.administrators()),
+      api.get(API.admin.usersManager.users.endUsers()),
     ]).then(([adminData, userData]) => {
       setAdmins(adminData);
       setUsers(userData);
+      setIsLoadingUsers(false);
+    }).catch((error) => {
+      console.error('Error loading users:', error);
       setIsLoadingUsers(false);
     });
   }, []);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { mockLogs, type LogEntry } from '@/mockData/admin/logs';
-import { mockApiCall } from '../../utils/mockApi';
+import { API, api } from '../../utils/api';
 import { SkeletonCardGrid, SkeletonTable } from '../ui/skeletons';
 import { filterLogs, calculateLogStats, calculatePagination } from './logs/utils';
 import { LogsHeader, LogStats, LogFilters, LogsTable, LogDetailsModal } from './logs';
@@ -22,16 +22,26 @@ export default function Logs() {
 
   useEffect(() => {
     // Load statistics
-    mockApiCall('logs/statistics', {}, 700).then((data) => {
-      setStats(calculateLogStats(mockLogs));
-      setIsLoadingStats(false);
-    });
+    api.get(API.admin.logs.stats())
+      .then((data) => {
+        setStats(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading log statistics:', error);
+        setIsLoadingStats(false);
+      });
 
     // Load logs
-    mockApiCall('logs/list', {}, 1000).then((data) => {
-      setLogs(mockLogs);
-      setIsLoadingLogs(false);
-    });
+    api.get(API.admin.logs.list())
+      .then((data) => {
+        setLogs(data);
+        setIsLoadingLogs(false);
+      })
+      .catch((error) => {
+        console.error('Error loading logs:', error);
+        setIsLoadingLogs(false);
+      });
   }, []);
 
   // Filter logs

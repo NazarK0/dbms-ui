@@ -15,7 +15,7 @@ import {
   filterAuditEntries,
 } from './audit-log/utils';
 import type { AuditFilters as AuditFiltersType } from './audit-log/types';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonTable, SkeletonChart } from '../../ui/skeletons';
 
 export default function AuditLog() {
@@ -36,22 +36,37 @@ export default function AuditLog() {
 
   useEffect(() => {
     // Load statistics
-    mockApiCall('audit/statistics', {}, 800).then((data) => {
-      setStatistics(calculateStatistics(auditEntries));
-      setIsLoadingStats(false);
-    });
+    api.get(API.admin.auditLog.statistics())
+      .then((data) => {
+        setStatistics(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading statistics:', error);
+        setIsLoadingStats(false);
+      });
 
     // Load action type stats
-    mockApiCall('audit/action-stats', {}, 1000).then((data) => {
-      setActionTypeStats(calculateActionTypeStats(auditEntries));
-      setIsLoadingChart(false);
-    });
+    api.get(API.admin.auditLog.actionStats())
+      .then((data) => {
+        setActionTypeStats(data);
+        setIsLoadingChart(false);
+      })
+      .catch((error) => {
+        console.error('Error loading action stats:', error);
+        setIsLoadingChart(false);
+      });
 
     // Load audit logs
-    mockApiCall('audit/logs', {}, 1200).then((data) => {
-      setLogs(auditEntries);
-      setIsLoadingLogs(false);
-    });
+    api.get(API.admin.auditLog.list())
+      .then((data) => {
+        setLogs(data);
+        setIsLoadingLogs(false);
+      })
+      .catch((error) => {
+        console.error('Error loading audit logs:', error);
+        setIsLoadingLogs(false);
+      });
   }, []);
 
   const handleFiltersChange = (newFilters: Partial<AuditFiltersType>) => {

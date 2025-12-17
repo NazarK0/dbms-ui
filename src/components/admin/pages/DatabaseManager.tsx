@@ -6,7 +6,7 @@ import {
   SelectedDatabaseAlert,
   DatabaseListView,
 } from '../database-manager';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid } from '../../ui/skeletons';
 
 // Lazy load modals (only needed when opened)
@@ -30,10 +30,15 @@ export default function DatabaseManager() {
 
   useEffect(() => {
     // Load databases
-    mockApiCall('databases/list', {}, 900).then((data) => {
-      setDatabases(userDatabases);
-      setIsLoadingDatabases(false);
-    });
+    api.get(API.admin.databaseManager.userDatabases.list())
+      .then((data) => {
+        setDatabases(data);
+        setIsLoadingDatabases(false);
+      })
+      .catch((error) => {
+        console.error('Error loading databases:', error);
+        setIsLoadingDatabases(false);
+      });
   }, []);
 
   const handleCreateDatabase = () => {

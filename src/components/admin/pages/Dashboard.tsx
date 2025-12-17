@@ -14,7 +14,7 @@ import {
   performanceMetrics,
 } from '../../../mockData/admin/dashboard';
 import { useEffect, useState } from 'react';
-import { mockApiCall } from '../../../utils/mockApi';
+import { API, api } from '../../../utils/api';
 import { SkeletonCardGrid, SkeletonChart } from '../../ui/skeletons';
 
 export default function Dashboard() {
@@ -40,29 +40,49 @@ export default function Dashboard() {
   const [performance, setPerformance] = useState(performanceMetrics);
 
   useEffect(() => {
-    // Імітація завантаження статистики
-    mockApiCall(statsData, 'fast').then((data) => {
-      setStats(data);
-      setIsLoadingStats(false);
-    });
+    // Load statistics
+    api.get(API.admin.dashboard.stats.overview())
+      .then((data) => {
+        setStats(data);
+        setIsLoadingStats(false);
+      })
+      .catch((error) => {
+        console.error('Error loading stats:', error);
+        setIsLoadingStats(false);
+      });
 
-    // Імітація завантаження активності
-    mockApiCall(recentActivity, 'normal').then((data) => {
-      setActivity(data);
-      setIsLoadingActivity(false);
-    });
+    // Load recent activity
+    api.get(API.admin.dashboard.activity.recent())
+      .then((data) => {
+        setActivity(data);
+        setIsLoadingActivity(false);
+      })
+      .catch((error) => {
+        console.error('Error loading activity:', error);
+        setIsLoadingActivity(false);
+      });
 
-    // Імітація завантаження з'єднань
-    mockApiCall(activeConnections, 'normal').then((data) => {
-      setConnections(data);
-      setIsLoadingConnections(false);
-    });
+    // Load active connections
+    api.get(API.admin.dashboard.activity.connections())
+      .then((data) => {
+        setConnections(data);
+        setIsLoadingConnections(false);
+      })
+      .catch((error) => {
+        console.error('Error loading connections:', error);
+        setIsLoadingConnections(false);
+      });
 
-    // Імітація завантаження метрик продуктивності
-    mockApiCall(performanceMetrics, 'normal').then((data) => {
-      setPerformance(data);
-      setIsLoadingPerformance(false);
-    });
+    // Load performance metrics
+    api.get(API.admin.dashboard.stats.performance())
+      .then((data) => {
+        setPerformance(data);
+        setIsLoadingPerformance(false);
+      })
+      .catch((error) => {
+        console.error('Error loading performance:', error);
+        setIsLoadingPerformance(false);
+      });
   }, []);
 
   return (
