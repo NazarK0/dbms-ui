@@ -1,0 +1,7 @@
+FROM Node:lts
+WORKDIR /app
+COPY dbms_ui/package*.json ./
+RUN npm install
+COPY dbms_ui/* .
+EXPOSE 3000
+CMD ["npm", "start"]

@@ -1,10 +1,17 @@
 
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
+  import { tanstackRouter } from '@tanstack/router-plugin/vite'
   import path from 'path';
 
   export default defineConfig({
-    plugins: [react()],
+    plugins: [
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+      }),
+      react()
+    ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -53,6 +60,8 @@
     },
     server: {
       port: 3000,
-      open: true,
+      host: true,
+      strictPort: true,
+      allowedHosts: ['pg.laguna.mk']
     },
   });
