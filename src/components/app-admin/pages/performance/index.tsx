@@ -1,16 +1,17 @@
+// Central exports for performance analyzer components
+import PerformanceHeader from './PerformanceHeader';
+import CacheStatsCards from './CacheStatsCards';
+import SlowQueriesAlert from './SlowQueriesAlert';
+import QueryStatsTable from './QueryStatsTable';
+import SlowQueriesCard from './SlowQueriesCard';
+import IndexUsageTable from './IndexUsageTable';
+import { exportPerformanceReport } from './utils/exportPerformanceReport';
+
+
 import { useState, useEffect } from 'react';
-import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../../mockData/admin';
-import {
-  PerformanceHeader,
-  CacheStatsCards,
-  SlowQueriesAlert,
-  QueryStatsTable,
-  SlowQueriesCard,
-  IndexUsageTable,
-  exportPerformanceReport,
-} from './performance';
-import { API, api } from '../../../utils/api';
-import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../ui/skeletons';
+import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../../../mockData/admin';
+import { API, api } from '../../../../utils/api';
+import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../../ui/skeletons';
 
 export default function PerformanceAnalyzer() {
   const [timeRange, setTimeRange] = useState('1h');
