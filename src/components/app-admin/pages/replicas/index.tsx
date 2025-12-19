@@ -1,20 +1,18 @@
+// Central exports for Replica Clusters components
+import ReplicaHeader from './ReplicaHeader';
+import ReplicationStats from './ReplicationStats';
+import { TopologyDiagram } from './topology-diagram'; // Now imports from modular structure
+import { ClusterDetailsTable } from './cluster-details'; // Now imports from modular structure
+import ReplicationActivityTable from './ReplicationActivityTable';
+import { AddReplicaDialog } from './add-replica'; // Now imports from modular structure
+
 import { useState, useEffect } from 'react';
-import {
-  ReplicaHeader,
-  ReplicationStats,
-  TopologyDiagram,
-  ClusterDetailsTable,
-  ReplicationActivityTable,
-  AddReplicaDialog,
-} from './replicas';
-import { replicationStats } from './replicas/data';
 import { 
   clusters as initialClusters, 
-  replicationActivity 
-} from '@/mockData/admin/replicas';
-import type { AddReplicaFormData } from './replicas/types';
-import { API, api } from '../../../utils/api';
-import { SkeletonCardGrid, SkeletonTable, SkeletonDiagram } from '../../ui/skeletons';
+} from '../../../../mockData/admin/replicas';
+import type { AddReplicaFormData } from './types';
+import { API, api } from '../../../../utils/api';
+import { SkeletonCardGrid, SkeletonTable, SkeletonDiagram } from '../../../ui/skeletons';
 
 export default function ReplicaClusters() {
   const [selectedCluster, setSelectedCluster] = useState<number | null>(null);
