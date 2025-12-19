@@ -2,9 +2,9 @@ import { useTabNavigation } from './hooks/useTabNavigation';
 import { useNavigationHandlers } from './hooks/useNavigationHandlers';
 import { mockUserRoles } from '../../mockData/user';
 import { UserApplicationLayout, ViewRouter } from './user-application';
-import type { UserApplicationProps } from './user-application';
 
-export default function UserApplication({ onBack }: UserApplicationProps) {
+
+export default function UserApplication() {
   // Use custom hooks for tab navigation
   const tabNavigation = useTabNavigation();
   const navigationHandlers = useNavigationHandlers({
@@ -52,7 +52,6 @@ export default function UserApplication({ onBack }: UserApplicationProps) {
       currentView={currentView}
       tabs={tabs}
       activeTabId={activeTabId}
-      onBack={onBack}
       onProfileToggle={handleProfileToggle}
       onTabChange={handleTabChange}
       onTabClose={handleTabClose}

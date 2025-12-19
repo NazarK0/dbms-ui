@@ -1,13 +1,11 @@
 import { Database, UserCog, Users, Shield, ArrowRight, Sparkles, Lock, Zap } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+import { Link } from '@tanstack/react-router';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 
-interface HomePageProps {
-  onNavigate: (view: 'home' | 'admin' | 'user') => void;
-}
+import { Badge } from './components/ui/badge';
+import { Button } from './components/ui/button';
 
-export default function HomePage({ onNavigate }: HomePageProps) {
+export default function PresentationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-violet-50">
       {/* Header */}
@@ -120,13 +118,14 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                   </div>
 
                   {/* Button */}
-                  <Button 
-                    onClick={() => onNavigate('admin')}
-                    className="w-full bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 shadow-lg hover:shadow-xl transition-all group/btn h-12 text-base"
-                  >
-                    <span>Відкрити адмін панель</span>
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                  <Button className="w-full bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 shadow-lg hover:shadow-xl transition-all group/btn h-12 text-base">
+                    <Link to="/admin" className="flex items-center justify-center w-full">
+                      <span>Відкрити адмін панель</span>
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+
                   </Button>
+                  
 
                   {/* Access Note */}
                   <div className="flex items-center gap-2 p-3 bg-lime-50 border border-lime-200 rounded-lg">
@@ -199,14 +198,12 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                   </div>
 
                   {/* Button */}
-                  <Button 
-                    onClick={() => onNavigate('user')}
-                    className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all group/btn h-12 text-base"
-                  >
-                    <span>Відкрити користувацький UI</span>
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                  <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all group/btn h-12 text-base">
+                    <Link to="/user" className="flex items-center justify-center w-full">
+                      <span>Відкрити користувацький UI</span>
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
                   </Button>
-
                   {/* Access Note */}
                   <div className="flex items-center gap-2 p-3 bg-violet-50 border border-violet-200 rounded-lg">
                     <Lock className="w-4 h-4 text-violet-700 flex-shrink-0" />

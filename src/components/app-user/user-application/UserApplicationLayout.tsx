@@ -12,7 +12,6 @@ export default function UserApplicationLayout({
   tabs,
   activeTabId,
   children,
-  onBack,
   onProfileToggle,
   onTabChange,
   onTabClose,
@@ -25,7 +24,6 @@ export default function UserApplicationLayout({
         <UserApplicationHeader
           userRoles={userRoles}
           currentView={currentView}
-          onBack={onBack}
           onProfileToggle={onProfileToggle}
         />
 

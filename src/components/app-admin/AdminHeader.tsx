@@ -1,12 +1,10 @@
 import { Database, Bell, Settings, Home } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 
-interface AdminHeaderProps {
-  onHomeClick: () => void;
-}
 
-export default function AdminHeader({ onHomeClick }: AdminHeaderProps) {
+export default function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-lime-200/50 bg-white/80 backdrop-blur-xl shadow-sm">
       <div className="container mx-auto px-6 py-4">
@@ -15,11 +13,12 @@ export default function AdminHeader({ onHomeClick }: AdminHeaderProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={onHomeClick}
               className="gap-2"
             >
-              <Home className="w-4 h-4" />
-              Home
+              <Link to="/" className="flex items-center gap-2">
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
             </Button>
             <div className="w-10 h-10 bg-gradient-to-br from-lime-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
               <Database className="w-6 h-6 text-white" />

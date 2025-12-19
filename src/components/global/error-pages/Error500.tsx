@@ -1,7 +1,7 @@
 import { ServerCrash, Home, RefreshCw, AlertCircle } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Button } from '../../ui/button';
+import { Card, CardContent } from '../../ui/card';
+import { Alert, AlertDescription } from '../../ui/alert';
 
 interface Error500Props {
   onRetry?: () => void;

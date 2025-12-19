@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
-import UserApplication from '../../../user/UserApplication';
+import UserApplication from '../../../app-user/UserApplication';
 import { UserPreviewProvider } from '../../../../contexts/UserPreviewContext';
 import { previewWindowTitle } from './data';
 import DeviceSelector from './DeviceSelector';

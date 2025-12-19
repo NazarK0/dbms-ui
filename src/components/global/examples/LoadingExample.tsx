@@ -4,17 +4,17 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
 import { RefreshCw, Download, TrendingUp } from 'lucide-react';
-import { API, api } from '../../utils/api';
+import { API, api } from '../../../utils/api';
 import {
   SkeletonCard,
   SkeletonCardGrid,
   SkeletonTable,
   SkeletonListCard,
-} from '../ui/skeletons';
+} from '../../ui/skeletons';
 
 interface ExampleData {
   id: number;

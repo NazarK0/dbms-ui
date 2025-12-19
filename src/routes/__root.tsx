@@ -1,12 +1,11 @@
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
-interface RootRouterContext {
-  auth: {
-    user: { role: 'admin' | 'user' } | 'home' | null
-    isLoading: boolean
-  }
-}
+const RootLayout = () => (
+  <>
+    <Outlet />
+    <TanStackRouterDevtools />
+  </>
+)
 
-export const Route = createRootRouteWithContext<RootRouterContext>()({
-  component: () => <Outlet />, // Your global layout (Navbar, etc.)
-})
+export const Route = createRootRoute({ component: RootLayout })

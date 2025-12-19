@@ -1,4 +1,4 @@
-import { StatCard } from '../../../admin/dashboard/StatCard';
+import { StatCard } from '../../dashboard/StatCard';
 import type { StatsGridProps } from './types';
 
 export default function StatsGrid({ stats, isCardVisible }: StatsGridProps) {

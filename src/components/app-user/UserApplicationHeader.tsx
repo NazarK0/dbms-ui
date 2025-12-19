@@ -1,7 +1,8 @@
-import { ArrowLeft, Bell, Settings, Users, Eye } from 'lucide-react';
+import { Home, Bell, Settings, Users, Eye } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useUserPreview } from '../../contexts/UserPreviewContext';
+import { Link } from '@tanstack/react-router';
 
 interface UserRole {
   id: number;
@@ -19,7 +20,6 @@ interface UserApplicationHeaderProps {
 export default function UserApplicationHeader({ 
   userRoles, 
   currentView, 
-  onBack, 
   onProfileToggle 
 }: UserApplicationHeaderProps) {
   const { config } = useUserPreview();
@@ -42,9 +42,15 @@ export default function UserApplicationHeader({
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={onBack} className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Home
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <Link to="/" className="flex items-center gap-2">
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
             </Button>
             <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
               <Users className="w-6 h-6 text-white" />

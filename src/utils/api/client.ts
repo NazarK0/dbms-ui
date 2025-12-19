@@ -1,50 +1,31 @@
 /**
  * API Client
- * 
+ *
  * Provides methods to interact with backend API endpoints.
  * In development mode, uses mock data from mockData directory.
  * In production, makes real HTTP requests to the backend.
  */
 
-import { 
+import {
   statsData,
   recentActivity,
   activeConnections,
   performanceMetrics,
 } from '../../mockData/admin/dashboard';
 import { userDatabases as adminUserDatabases } from '../../mockData/admin';
-import { 
-  queryStats, 
-  slowQueryDetails, 
-  cacheStats, 
-  indexUsage 
-} from '../../mockData/admin';
+import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../mockData/admin';
 import { configParams } from '../../mockData/admin/postgresConfig';
-import { 
-  clusters, 
-  replicationActivity,
-} from '../../mockData/admin/replicas';
-import { replicationStats } from '../../components/admin/pages/replicas/data';
-import { 
-  roles, 
-  adminRoles, 
-  userRoles, 
-  totalAdmins, 
-  totalUsers 
-} from '../../mockData/admin';
-import {
-  systemStats,
-  connections,
-  slowQueries,
-  databaseStats,
-} from '../../mockData/admin';
+import { clusters, replicationActivity } from '../../mockData/admin/replicas';
+import { replicationStats } from '../../components/app-admin/pages/replicas/data';
+import { roles, adminRoles, userRoles, totalAdmins, totalUsers } from '../../mockData/admin';
+import { systemStats, connections, slowQueries, databaseStats } from '../../mockData/admin';
 import { administrators, endUsers } from '../../mockData/admin/users';
 import { mockLogs, calculateLogStats } from '../../mockData/admin/logs';
 import { auditEntries, auditStatistics, actionTypeStats } from '../../mockData/admin/auditLog';
 import { tables as adminTables, tableSchema, tableData } from '../../mockData/admin/tableBrowser';
-import { 
-  dashboardDatabases, 
-  activityRecords, 
+import {
+  dashboardDatabases,
+  activityRecords,
   tableAccess,
   overviewStats,
   myDatabases,
@@ -134,7 +115,7 @@ function getMockDataForEndpoint(endpoint: string, params?: Record<string, any>):
 
   // User Databases endpoints
   if (endpoint === '/api/user/databases/list') return userDatabases;
-  
+
   // User Tables endpoints
   if (endpoint === '/api/user/tables/records') {
     const database = params?.database || '';
@@ -209,16 +190,8 @@ class ApiClient {
   /**
    * Make an API request
    */
-  async request<T = any>(
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
-    const {
-      method = 'GET',
-      body,
-      headers = {},
-      params = {},
-    } = options;
+  async request<T = any>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+    const { method = 'GET', body, headers = {}, params = {} } = options;
 
     // In development mode, use mock data
     if (isDevelopment) {
@@ -254,11 +227,11 @@ class ApiClient {
    */
   private async mockRequest<T = any>(
     endpoint: string,
-    options: { method?: string; body?: any; params?: any }
+    options: { method?: string; body?: any; params?: any },
   ): Promise<T> {
     // Simulate network delay
     const delay = Math.random() * 500 + 300; // 300-800ms
-    
+
     return new Promise((resolve) => {
       setTimeout(() => {
         const mockData = getMockDataForEndpoint(endpoint, options.params);
