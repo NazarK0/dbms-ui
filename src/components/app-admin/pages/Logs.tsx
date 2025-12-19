@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { mockLogs, type LogEntry } from '@/mockData/admin/logs';
-import { API, api } from '../../utils/api';
-import { SkeletonCardGrid, SkeletonTable } from '../ui/skeletons';
-import { filterLogs, calculateLogStats, calculatePagination } from './logs/utils';
-import { LogsHeader, LogStats, LogFilters, LogsTable, LogDetailsModal } from './logs';
-import type { LogStats as LogStatsType } from './logs/types';
+import { mockLogs, type LogEntry } from '../../../mockData/admin/logs';
+import { API, api } from '../../../utils/api';
+import { SkeletonCardGrid, SkeletonTable } from '../../ui/skeletons';
+import { filterLogs, calculateLogStats, calculatePagination } from '../logs/utils';
+import { LogsHeader, LogStats, LogFilters, LogsTable, LogDetailsModal } from '../logs';
+import type { LogStats as LogStatsType } from '../logs/types';
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');

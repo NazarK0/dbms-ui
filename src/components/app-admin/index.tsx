@@ -1,25 +1,14 @@
-import { useState, lazy, Suspense } from 'react';
-import { Tabs, TabsContent } from '../ui/tabs';
+import { useState } from 'react';
+import { Outlet } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Monitor } from 'lucide-react';
 import AdminHeader from './AdminHeader';
-import AdminTabsList from './AdminTabsList';
 import { AdminUserProvider } from '../../contexts/AdminUserContext';
 import { SkeletonCardGrid } from '../ui/skeletons';
 
-// Lazy load heavy page components
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const DatabaseManager = lazy(() => import('./pages/DatabaseManager'));
-const UsersManager = lazy(() => import('./pages/UsersManager'));
-const RolesManager = lazy(() => import('./pages/RolesManager'));
-const UserUIPreview = lazy(() => import('./pages/UserUIPreview'));
-const AuditLog = lazy(() => import('./pages/AuditLog'));
-const PostgresConfig = lazy(() => import('./pages/PostgresConfig'));
-const CLI = lazy(() => import('./pages/CLI'));
-const SystemMonitor = lazy(() => import('./pages/SystemMonitor'));
-const ReplicaClusters = lazy(() => import('./pages/ReplicaClusters'));
-const PerformanceAnalyzer = lazy(() => import('./pages/PerformanceAnalyzer'));
-const Logs = lazy(() => import('./Logs'));
+
+import NavBar from "./NavBar";
+
 
 type Tab = 'dashboard' | 'databases' | 'users' | 'roles' | 'userui' | 'audit' | 'config' | 'cli' | 'performance' | 'replicas' | 'monitor' | 'logs';
 
@@ -55,75 +44,10 @@ export default function AppAdmin() {
 
         {/* Desktop UI */}
         <div className="hidden md:block">
-          {/* Header */}
           <AdminHeader />
-
-          {/* Main Content */}
           <main className="p-6">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Tab)} className="space-y-6">
-              <AdminTabsList />
-
-              <TabsContent value="dashboard" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <Dashboard />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="databases" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <DatabaseManager />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="users" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <UsersManager />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="roles" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <RolesManager />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="userui" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <UserUIPreview />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="audit" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <AuditLog />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="config" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <PostgresConfig />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="cli" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <CLI />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="performance" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <PerformanceAnalyzer />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="replicas" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <ReplicaClusters />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="monitor" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <SystemMonitor />
-                </Suspense>
-              </TabsContent>
-              <TabsContent value="logs" className="mt-0">
-                <Suspense fallback={<TabLoading />}>
-                  <Logs />
-                </Suspense>
-              </TabsContent>
-            </Tabs>
+            <NavBar />
+            <Outlet />
           </main>
         </div>
       </div>
