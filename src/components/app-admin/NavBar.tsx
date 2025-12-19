@@ -26,7 +26,7 @@ export const adminTabs: AdminTab[] = [
     { value: '/admin/roles', icon: Shield, label: 'Ролі' },
     { value: '/admin/userui', icon: Eye, label: 'UI Користувача' },
     { value: '/admin/audit', icon: History, label: 'Аудит' },
-    { value: '/admin/config', icon: Settings, label: 'Конфігурація' },
+    { value: '/admin/pg-config', icon: Settings, label: 'Конфігурація' },
     { value: '/admin/cli', icon: Terminal, label: 'CLI' },
     { value: '/admin/performance', icon: Zap, label: 'Продуктивність' },
     { value: '/admin/replicas', icon: Copy, label: 'Репліки' },
