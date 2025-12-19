@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select';
+} from '../../../ui/select';
 import { itemsPerPageOptions } from './data';
 
 interface PaginationInfoProps {

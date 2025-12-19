@@ -1,4 +1,4 @@
-import { Badge } from '../../ui/badge';
+import { Badge } from '../../../ui/badge';
 import { getLevelBadge } from './utils';
 import type { LogLevel } from './types';
 

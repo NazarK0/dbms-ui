@@ -5,8 +5,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../ui/card';
-import { Badge } from '../../ui/badge';
+} from '../../../ui/card';
+import { Badge } from '../../../ui/badge';
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table';
+} from '../../../ui/table';
 import LogTableRow from './LogTableRow';
 import Pagination from './Pagination';
 import type { LogEntry } from './types';

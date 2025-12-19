@@ -1,7 +1,7 @@
 import { Eye } from 'lucide-react';
-import { TableCell, TableRow } from '../../ui/table';
-import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
+import { TableCell, TableRow } from '../../../ui/table';
+import { Badge } from '../../../ui/badge';
+import { Button } from '../../../ui/button';
 import LogLevelBadge from './LogLevelBadge';
 import type { LogEntry } from './types';
 

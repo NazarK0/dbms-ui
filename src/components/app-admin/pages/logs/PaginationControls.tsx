@@ -4,7 +4,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
-import { Button } from '../../ui/button';
+import { Button } from '../../../ui/button';
 import { getVisiblePages, shouldShowEllipsis } from './utils';
 
 interface PaginationControlsProps {
@@ -52,11 +52,10 @@ export default function PaginationControls({
                 variant={currentPage === page ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onPageChange(page)}
-                className={`h-8 w-8 p-0 ${
-                  currentPage === page
+                className={`h-8 w-8 p-0 ${currentPage === page
                     ? 'bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700'
                     : ''
-                }`}
+                  }`}
               >
                 {page}
               </Button>

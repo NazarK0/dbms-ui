@@ -1,13 +1,13 @@
 import { Search } from 'lucide-react';
-import { Card, CardContent } from '../../ui/card';
-import { Input } from '../../ui/input';
+import { Card, CardContent } from '../../../ui/card';
+import { Input } from '../../../ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select';
+} from '../../../ui/select';
 import { logLevels, logSources } from './data';
 
 interface LogFiltersProps {
