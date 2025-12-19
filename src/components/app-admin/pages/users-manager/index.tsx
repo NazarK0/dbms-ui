@@ -1,14 +1,13 @@
+// Central exports for UsersManager components
+import UserStatsCards from './UserStatsCards';
+import UserTableCard from './UserTableCard';
+import EditUserModalWrapper from './EditUserModalWrapper';
 import { useState, useEffect } from 'react';
-import {
-  UserStatsCards,
-  UserTableCard,
-  EditUserModalWrapper,
-  calculateUserStats,
-} from './users-manager';
-import { administrators, endUsers } from '../../../mockData/admin/users';
-import type { User, UserType } from './users-manager';
-import { API, api } from '../../../utils/api';
-import { SkeletonCardGrid, SkeletonTableWithPagination } from '../../ui/skeletons';
+import { administrators, endUsers } from '../../../../mockData/admin/users';
+import type { User, UserType } from './types';
+import { API, api } from '../../../../utils/api';
+import { SkeletonCardGrid, SkeletonTableWithPagination } from '../../../ui/skeletons';
+import { calculateUserStats } from './utils';
 
 export default function UsersManager() {
   const [activeTab, setActiveTab] = useState<UserType>('admin');
