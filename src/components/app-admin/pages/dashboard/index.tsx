@@ -7,15 +7,12 @@ import RecentActivityCard from './RecentActivityCard';
 import ActiveConnectionsCard from './ActiveConnectionsCard';
 
 import { useDashboardCustomization } from '../../hooks/useDashboardCustomization';
-import {
-  statsData,
-  recentActivity,
-  activeConnections,
-  performanceMetrics,
-} from '../../../../mockData/admin/dashboard';
 import { useEffect, useState } from 'react';
-import { API, api } from '../../../../utils/api';
+import { api, ApiEndpointFn } from '../../../../api';
 import { SkeletonCardGrid, SkeletonChart } from '../../../ui/skeletons';
+import { StatCard } from '../../dashboard/StatCard';
+import { useLocalStorage } from '../../../../hooks/useLocalStorage';
+import { Widget } from '../../dashboard/Widget';
 
 export default function Dashboard() {
   const {
@@ -27,63 +24,22 @@ export default function Dashboard() {
     visibleCount,
   } = useDashboardCustomization();
 
-  // Loading states
-  const [isLoadingStats, setIsLoadingStats] = useState(true);
-  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
-  const [isLoadingConnections, setIsLoadingConnections] = useState(true);
-  const [isLoadingPerformance, setIsLoadingPerformance] = useState(true);
 
-  // Data states
-  const [stats, setStats] = useState(statsData);
-  const [activity, setActivity] = useState(recentActivity);
-  const [connections, setConnections] = useState(activeConnections);
-  const [performance, setPerformance] = useState(performanceMetrics);
+  const widgetsList = (api.adminApp().get.dashboard.widgets.list as ApiEndpointFn)();
+  const databasesCount = (api.adminApp().get.dashboard.widgets.databasesCount as ApiEndpointFn)();
+  const adminsCount = (api.adminApp().get.dashboard.widgets.adminsCount as ApiEndpointFn)();
+  const usersCount = (api.adminApp().get.dashboard.widgets.usersCount as ApiEndpointFn)();
+  const tablesCount = (api.adminApp().get.dashboard.widgets.tablesCount as ApiEndpointFn)();
+  const usedStorage = (api.adminApp().get.dashboard.widgets.usedStorage as ApiEndpointFn)();
+  const performance = (api.adminApp().get.dashboard.widgets.performance as ApiEndpointFn)();
+  const activity = (api.adminApp().get.dashboard.widgets.recentActivity as ApiEndpointFn)();
+  const connections = (api.adminApp().get.dashboard.widgets.activeConnections as ApiEndpointFn)();
 
-  useEffect(() => {
-    // Load statistics
-    api.get(API.admin.dashboard.stats.overview())
-      .then((data) => {
-        setStats(data);
-        setIsLoadingStats(false);
-      })
-      .catch((error) => {
-        console.error('Error loading stats:', error);
-        setIsLoadingStats(false);
-      });
 
-    // Load recent activity
-    api.get(API.admin.dashboard.activity.recent())
-      .then((data) => {
-        setActivity(data);
-        setIsLoadingActivity(false);
-      })
-      .catch((error) => {
-        console.error('Error loading activity:', error);
-        setIsLoadingActivity(false);
-      });
 
-    // Load active connections
-    api.get(API.admin.dashboard.activity.connections())
-      .then((data) => {
-        setConnections(data);
-        setIsLoadingConnections(false);
-      })
-      .catch((error) => {
-        console.error('Error loading connections:', error);
-        setIsLoadingConnections(false);
-      });
+  const visibleWidgets = useLocalStorage<Array<string>>('admin-dashboard-visible-widgets', widgetsList.map(w => w.id));
 
-    // Load performance metrics
-    api.get(API.admin.dashboard.stats.performance())
-      .then((data) => {
-        setPerformance(data);
-        setIsLoadingPerformance(false);
-      })
-      .catch((error) => {
-        console.error('Error loading performance:', error);
-        setIsLoadingPerformance(false);
-      });
-  }, []);
+
 
   return (
     <div className="space-y-6">
@@ -106,39 +62,43 @@ export default function Dashboard() {
       {isLoadingStats ? (
         <SkeletonCardGrid count={5} columns={5} cardType="stat" />
       ) : (
-        <StatsGrid stats={stats} isCardVisible={isCardVisible} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {visibleWidgets.map((wgt) => (
+              <Widget key={wgt.id} {...wgt} visible={isCardVisible(wgt.id)} />
+            ))}
+        </div>
       )}
 
       {/* Performance Overview */}
-      {isLoadingPerformance ? (
+      {performance.isLoading ? (
         isCardVisible('performance') && <SkeletonChart type="bar" height={280} showLegend={false} />
       ) : (
         <PerformanceOverview
-          metrics={performance}
+          metrics={performance.data}
           visible={isCardVisible('performance')}
         />
       )}
 
       {/* Activity Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {isLoadingActivity ? (
+        {activity.isLoading ? (
           isCardVisible('activity') && (
             <SkeletonChart type="line" height={400} showHeader showLegend={false} />
           )
         ) : (
           <RecentActivityCard
-            activities={activity}
+            activities={activity.data}
             visible={isCardVisible('activity')}
           />
         )}
-        
-        {isLoadingConnections ? (
+
+        {connections.isLoading ? (
           isCardVisible('connections') && (
             <SkeletonChart type="line" height={400} showHeader showLegend={false} />
           )
         ) : (
           <ActiveConnectionsCard
-            connections={connections}
+            connections={connections.data}
             visible={isCardVisible('connections')}
           />
         )}
