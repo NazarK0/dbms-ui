@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
 import { Button } from '../../../ui/button';
 import { Badge } from '../../../ui/badge';
 import { Switch } from '../../../ui/switch';
-import { Label } from '../../../ui/label';
 import { Settings, Save, RotateCcw } from 'lucide-react';
 import {
   Dialog,
@@ -21,7 +20,7 @@ import {
 } from '../../../ui/dialog';
 import type { UserRole, RolePermissions } from './types';
 import { permissionConfigs, rolePermissions as defaultRolePermissions } from './data';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface PermissionMatrixManagerProps {
   roles: UserRole[];

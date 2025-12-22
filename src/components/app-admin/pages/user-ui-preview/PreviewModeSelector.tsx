@@ -4,7 +4,6 @@
  */
 
 import { Card, CardContent } from '../../../ui/card';
-import { Button } from '../../../ui/button';
 import { User, Settings } from 'lucide-react';
 
 export type PreviewMode = 'user' | 'manual';
