@@ -1,7 +1,8 @@
-import { LucideIcon, ArrowUp, ArrowDown } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
 import { getRandomInt } from '../../../utils/getRandomInt';
+import { CounterWidget, ListWidget, LoadWidget } from '../../global/widgets';
+
 
 interface Counter {
 	value: number | string;
@@ -30,8 +31,8 @@ enum WidgetType {
 interface WidgetProps<T extends object[] | Stats > {
   label: string;
   value: T;
-  wType: WidgetType;
   icon: LucideIcon;
+  change?: string | number;
 }
 
 const widgetBgColors = [
@@ -44,14 +45,24 @@ const widgetBgColors = [
 
 export function Widget<T>({ 
   label, 
-  value, 
-  type,
+  value,
   icon: Icon, 
   change,
 }: WidgetProps) {
-  const trend = change > 0 ? 'up' : 'down';
+  
   const colorIdx = getRandomInt(widgetBgColors.length -1);
   const color = widgetBgColors[colorIdx];
+
+  let type: WidgetType;
+
+  if (typeof value === 'object' && Array.isArray(value)) {
+    type = WidgetType.LIST;
+  } else if (typeof value === 'string' && value.endsWith('%')) {
+    type = WidgetType.LOAD;
+  } else {
+    type = WidgetType.COUNTER;
+  }
+
 
   return (
     <Card className="border-lime-200 shadow-sm hover:shadow-md transition-shadow">
@@ -64,9 +75,9 @@ export function Widget<T>({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-baseline justify-between">
-          
-        </div>
+        {type === WidgetType.COUNTER && <CounterWidget value={value} change={change} />}
+        {type === WidgetType.LOAD && <LoadWidget value={value} />}
+        {type === WidgetType.LIST && <ListWidget data={value} columns={[]} title={''} />}
       </CardContent>
     </Card>
   );
