@@ -6,34 +6,44 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../ui/table";
+} from "../../ui/table";
 import { useNavigate } from "@tanstack/react-router";
 
-export interface ColumnConfig<T> {
+export interface ColumnConfigRecord<T extends Record<string, any>> {
     key: string;
     header: string;
     render?: (row: T) => ReactNode;
     width?: string;
 }
 
-export interface TableProps<T> {
-    columns: ColumnConfig<T>[];
-    data: T[];
+export type ColumnConfig<T extends Record<string, any>> = ColumnConfigRecord<T>[];
+
+export interface TableProps<T extends Record<string, any>> {
+    title?: string;
+    columns: ColumnConfig<T>;
+    data: TableRows<T>;
     url?: string;
+    rowClassName?: (row: T) => string;
 }
 
+export type TableRows<T extends Record<string, any>> = T[]
+
 export function Table<T extends Record<string, any>>({
+    title,
     columns,
     data,
     url,
+    rowClassName,
 }: TableProps<T>) {
     const navigate = useNavigate();
-    
+
     return (
         <div>
-            <div className="mb-3">
-                <h2 className="font-medium">{title}</h2>
-            </div>
+            {title && (
+                <div className="mb-3">
+                    <h2 className="font-medium">{title}</h2>
+                </div>
+            )}
             <div className="rounded-lg border bg-card">
                 <UITable>
                     <TableHeader>
@@ -53,7 +63,7 @@ export function Table<T extends Record<string, any>>({
                                     to: `/${url}/${row.id}`,
                                     replace: true,
                                 }) : undefined}
-                                className={url ? "cursor-pointer" : ""}
+                                className={`${url ? "cursor-pointer" : ""} ${rowClassName?.(row) || ""}`}
                             >
                                 {columns.map((column, colIndex) => (
                                     <TableCell key={colIndex}>
@@ -69,17 +79,4 @@ export function Table<T extends Record<string, any>>({
     );
 }
 
-// Helper component for two-line cells
-interface TwoLineProps {
-    title: string;
-    subtitle?: string;
-}
-
-export function TwoLine({ title, subtitle }: TwoLineProps) {
-    return (
-        <div>
-            <div className="font-medium">{title}</div>
-            {subtitle && <div className="text-sm text-muted-foreground">{subtitle}</div>}
-        </div>
-    );
-}
+export { default as TwoLine } from './TwoLine';

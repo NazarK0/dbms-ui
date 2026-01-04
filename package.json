@@ -49,6 +49,8 @@
             "recharts": "^2.15.2",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
+            "ts-extras": "^0.16.1",
+            "type-fest": "^5.3.1",
             "vaul": "^1.1.2"
       },
       "devDependencies": {

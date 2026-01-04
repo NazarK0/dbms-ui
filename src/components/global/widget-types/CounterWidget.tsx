@@ -2,7 +2,7 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 import { Badge } from '../../ui/badge';
 
 interface CounterWidgetProps {
-    value: string;
+    value: string | number;
     change: string | number;
 }
 

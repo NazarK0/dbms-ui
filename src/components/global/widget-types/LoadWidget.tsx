@@ -2,16 +2,16 @@ import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
 
 interface LoadWidgetProps {
-    value: string;
+    value: number;
 }
 
 export default function LoadWidget({ value }: LoadWidgetProps) {
     let color: 'green' | 'yellow' | 'red' = 'green';
-    let valueNum = parseFloat(value);
 
-    if (valueNum > 70) {
+
+    if (value > 70) {
         color = 'red';
-    } else if (valueNum > 40) {
+    } else if (value > 40) {
         color = 'yellow';
     } else {
         color = 'green';
@@ -19,8 +19,8 @@ export default function LoadWidget({ value }: LoadWidgetProps) {
 
     return (
         <div className="flex items-center justify-between">
-            <Badge variant="outline">{value}</Badge>
-            <Progress color={color} value={valueNum} className="h-2" />
+            <Badge variant="outline">{value}%</Badge>
+            <Progress color={color} value={value} className="h-2" />
         </div>
     );
 }
