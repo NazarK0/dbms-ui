@@ -10,37 +10,7 @@
  */
 
 import type { PerformanceMetric } from '../types';
-import { performanceThresholds } from '../data';
 
-/**
- * Get performance metric status
- * 
- * Evaluates a metric value against configured thresholds.
- * 
- * @param metricLabel - Metric name (e.g., "CPU", "Memory")
- * @param value - Metric value (0-100)
- * @returns Status level
- * 
- * @example
- * ```ts
- * getPerformanceStatus('cpu', 45)   // "normal"
- * getPerformanceStatus('cpu', 75)   // "warning"
- * getPerformanceStatus('cpu', 95)   // "critical"
- * ```
- */
-export const getPerformanceStatus = (
-  metricLabel: string,
-  value: number
-): 'normal' | 'warning' | 'critical' => {
-  const key = metricLabel.toLowerCase() as keyof typeof performanceThresholds;
-  const thresholds = performanceThresholds[key];
-
-  if (!thresholds) return 'normal';
-
-  if (value >= thresholds.critical) return 'critical';
-  if (value >= thresholds.warning) return 'warning';
-  return 'normal';
-};
 
 /**
  * Calculate average metric value
