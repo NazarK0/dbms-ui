@@ -1,0 +1,30 @@
+# --- Python and uv ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/             # uv creates this for your local environment
+.python-version    # uv tool-chain version
+uv.lock            # DO NOT ignore if this is an application (keep for reproducibility)
+                   # DO ignore if you are building a shared library
+
+# --- Environment and Secrets ---
+.env               # Local secrets (Database URLs, API keys)
+.env.local
+.env.*.local
+
+# --- Docker & Compose ---
+.docker-compose.override.yml
+# Note: Keep docker-compose.yml and Dockerfile in Git
+
+# --- Testing and Quality ---
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/       # If using ruff for linting (standard in 2026)
+.mypy_cache/
+
+# --- IDE and OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

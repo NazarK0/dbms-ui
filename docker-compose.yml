@@ -7,14 +7,34 @@ services:
   #   ports:
   #     - "8080:8080"
 
-  react-dev:
+  ui_dev:
     build:
-      context: .
+      context: app_ui
       dockerfile: .docker/dev/Dockerfile
     ports:
       - "3000:3000"
     develop:
       watch:
         - action: sync
-          path: .
+          path: app_ui
           target: /app
+  backend_dev:
+    build: 
+      context: app_backend
+      dockerfile: .docker/dev/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Все ще потрібні змінні для надійності
+      - PYTHONPATH=/app/src
+      - WATCHFILES_FORCE_POLLING=true 
+      - UV_NO_DEV=0
+    # Використовуємо volumes замість develop/watch
+    volumes:
+      # Монтуємо вашу локальну папку src до цільової папки в контейнері
+      - ./app_backend/src:/app/src
+      # Якщо ви використовуєте .venv локально, його теж треба змонтувати, щоб не було конфліктів
+      - ./app_backend/.venv:/app/.venv 
+    
+    # Команда, яка запускає hot-reload
+    command: uv run fastapi dev src/main.py --host 0.0.0.0 --port 8000
