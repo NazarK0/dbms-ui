@@ -1,3 +1,4 @@
+name: dbms
 services:
   # react-prod:
   #   build:
