@@ -30,6 +30,11 @@ services:
       - PYTHONPATH=/app/src
       - WATCHFILES_FORCE_POLLING=true 
       - UV_NO_DEV=0
+      - DB_USER=user
+      - DB_PASSWORD=mysecretpassword
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=dbms_app
     # Використовуємо volumes замість develop/watch
     volumes:
       # Монтуємо вашу локальну папку src до цільової папки в контейнері
@@ -39,3 +44,15 @@ services:
     
     # Команда, яка запускає hot-reload
     command: uv run fastapi dev src/main.py --host 0.0.0.0 --port 8000
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: dbms_app
+    ports:
+      - "5454:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+volumes:
+  db_data:
