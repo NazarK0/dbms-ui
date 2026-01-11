@@ -2,12 +2,32 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.core import dependencies  # Dependency for DB session
+from src.app_admin.ui.pages.dashboard.widgets.list.schema import WidgetCategory, WidgetItem
 from src.app_admin.ui.pages.dashboard.widgets.active_connections.schema import ActiveConnectionsWidgetItem
 from src.app_admin.ui.pages.dashboard.widgets.recent_activity.schema import RecentActivityWidgetItem
 
 
 widgetRouterV1 = APIRouter()
 
+
+@widgetRouterV1.get("/list", response_model=List[WidgetItem])
+def get_list(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return [
+        {"id": 1, "category": "activity", "categoryTitle": "Активність", "title": "Активні з'єднання", "description": "Поточна кількість активних з'єднань до бази даних"},
+        {"id": 2, "category": "activity", "categoryTitle": "Активність", "title": "Остання активність", "description": "Нещодавні події в системі"},
+    ]
+
+@widgetRouterV1.get("/categories", response_model=List[WidgetCategory])
+def get_categories(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return [
+        {"id": 1, "category": "activity"},
+        {"id": 2, "category": "performance"},
+        {"id": 3, "category": "statistic"},
+    ]
 
 @widgetRouterV1.get("/active-connections", response_model=List[ActiveConnectionsWidgetItem])
 def get_active_connections(db: Session = Depends(dependencies.get_db)):

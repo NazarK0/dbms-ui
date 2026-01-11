@@ -2,12 +2,6 @@
  * CustomizeDialogFooter Component
  * 
  * Displays the footer section with cancel and apply buttons.
- * 
- * @component
- * @example
- * ```tsx
- * <CustomizeDialogFooter onClose={handleClose} />
- * ```
  */
 
 import { Button } from '../../../../ui/button';

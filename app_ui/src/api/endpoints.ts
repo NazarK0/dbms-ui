@@ -36,6 +36,9 @@ export const apiEndpoints = {
           list: {
             get: endpointMethods.get,
           },
+          categories: {
+            get: endpointMethods.get,
+          },
         },
       },
     },

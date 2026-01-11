@@ -9,33 +9,25 @@
  * - Real-time visibility toggling
  * - Visual feedback with eye icons
  * - Responsive modal design
- * 
- * @component
- * @example
- * ```tsx
- * <CustomizeDialog
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   visibleCards={dashboardCards}
- *   onToggleVisibility={handleToggle}
- * />
- * ```
  */
 
 import { Dialog, DialogContent } from '../../../../ui/dialog';
-import { getCategoryLabel, getCardsByCategory } from '../utils';
-import type { CustomizeDialogProps, DashboardCategory } from '../types';
+import type { CustomizeDialogProps } from './types';
 import CustomizeDialogHeader from './CustomizeDialogHeader';
 import CustomizeDialogFooter from './CustomizeDialogFooter';
 import CategorySection from './CategorySection';
+import { useWidgetListData } from './hooks/useWidgetList';
 
 export default function CustomizeDialog({
   open,
   onOpenChange,
-  visibleCards,
-  onToggleVisibility,
 }: CustomizeDialogProps) {
-  const categories: DashboardCategory[] = ['stats', 'performance', 'activity'];
+  const { data, isLoading, error } = useWidgetListData();
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  const byCategory = Object.groupBy(data!, ({ category }) => category);
+  console.log(byCategory);
 
   const handleClose = () => {
     onOpenChange(false);
@@ -47,16 +39,22 @@ export default function CustomizeDialog({
         <CustomizeDialogHeader />
 
         <div className="py-4 space-y-4">
-          {categories.map((category) => {
-            const categoryCards = getCardsByCategory(visibleCards, category);
+          {Object.entries(byCategory).map(([key, widgetData]) => {
+            if (!widgetData) return null;
+
+            const widgetCards = widgetData.map((widget) => {
+              // TODO: Map WidgetData to WidgetCardData
+              return {
+                ...widget,
+                visible: true,
+              };
+            });
 
             return (
               <CategorySection
-                key={category}
-                category={category}
-                categoryLabel={getCategoryLabel(category)}
-                cards={categoryCards}
-                onToggleVisibility={onToggleVisibility}
+                key={key}
+                categoryLabel={widgetCards[0].categoryTitle}
+                cards={widgetCards}
               />
             );
           })}
