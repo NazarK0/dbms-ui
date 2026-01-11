@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from src.app_admin.ui.pages.dashboard.widgets.endpoints import widgetRouter
+from src.app_admin.ui.pages.dashboard.widgets.endpoints import widgetRouterV1
 
-admin_api_router = APIRouter()
+admin_api_routerV1 = APIRouter()
 
 # Реєструємо окремі модулі як гілки API
-admin_api_router.include_router(widgetRouter, prefix="/widgets", tags=["widgets"])
+admin_api_routerV1.include_router(widgetRouterV1, prefix="/widgets", tags=["widgets"])
