@@ -1,10 +1,12 @@
 import { useQuery, QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
 import { ActiveConnectionsWidgetData } from './types';
+import API from '../../../../../../api/endpoints';
 
 export function useActiveConnectionsWidgetData() {
   const getActiveConnectionsWidgetData = async ({ signal }: QueryFunctionContext) => {
-    const { data } = await axios.get(`http://localhost:8000/admin/v1/widgets/active-connections`, {
+    const endpoint = API.admin.v1.dashboard.widgets.activeConnections.get;
+    const { data } = await axios[endpoint.method](`http://localhost:8000/${endpoint.url}`, {
       signal,
     });
     return data;

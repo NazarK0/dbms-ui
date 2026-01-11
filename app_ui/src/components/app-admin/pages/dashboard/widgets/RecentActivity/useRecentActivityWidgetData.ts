@@ -1,11 +1,13 @@
 import { useQuery, QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
 import { ActivityLog } from './types';
+import API from '../../../../../../api/endpoints';
 
 
 export function useRecentActivityWidgetData() {
   const getRecentActivityWidgetData = async ({ signal }: QueryFunctionContext) => {
-    const { data } = await axios.get(`http://localhost:8000/admin/v1/widgets/recent-activity`, {
+    const endpoint = API.admin.v1.dashboard.widgets.recentActivity.get
+    const { data } = await axios[endpoint.method](`http://localhost:8000/${endpoint.url}`, {
       signal,
     });
     return data;
