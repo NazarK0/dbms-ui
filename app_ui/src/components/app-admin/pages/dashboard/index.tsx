@@ -5,6 +5,12 @@ import CustomizeDialog from './customize-dialog';
 import { useDashboardCustomization } from '../../hooks/useDashboardCustomization';
 import RecentActivityWidget from './widgets/RecentActivity';
 import ActiveConnectionsWidget from './widgets/ActiveConnections';
+import DatabasesCountWidget from './widgets/UsersCount';
+import UsedStorageWidget from './widgets/UsedStorage';
+import AdminsCountWidget from './widgets/AdminsCount';
+import TablesCountWidget from './widgets/TablesCount';
+import UsersCountWidget from './widgets/UsersCount';
+
 
 export default function Dashboard() {
   const {
@@ -29,6 +35,11 @@ export default function Dashboard() {
       />
 
       <div className="grid ">
+        <DatabasesCountWidget />
+        <TablesCountWidget />
+        <AdminsCountWidget />
+        <UsersCountWidget />
+        <UsedStorageWidget />
         <RecentActivityWidget />
         <ActiveConnectionsWidget />
       </div>

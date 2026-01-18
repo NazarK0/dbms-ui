@@ -39,6 +39,21 @@ export const apiEndpoints = {
           categories: {
             get: endpointMethods.get,
           },
+          databasesCount: {
+            get: endpointMethods.get,
+          },
+          adminsCount: {
+            get: endpointMethods.get,
+          },
+          usersCount: {
+            get: endpointMethods.get,
+          },
+          tablesCount: {
+            get: endpointMethods.get,
+          },
+          usedStorage: {
+            get: endpointMethods.get,
+          },
         },
       },
     },

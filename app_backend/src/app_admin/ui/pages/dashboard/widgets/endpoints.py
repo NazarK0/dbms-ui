@@ -1,4 +1,9 @@
 from typing import List
+from app_admin.ui.pages.dashboard.widgets.admins_count.schema import AdminsCountWidgetItem
+from app_admin.ui.pages.dashboard.widgets.users_count.schema import UsersCountWidgetItem
+from app_admin.ui.pages.dashboard.widgets.tables_count.schema import TablesCountWidgetItem
+from app_admin.ui.pages.dashboard.widgets.usedStorage.schema import UsedStorageWidgetItem
+from app_admin.ui.pages.dashboard.widgets.databases_count.schema import DatabasesCountWidgetItem
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.core import dependencies  # Dependency for DB session
@@ -18,6 +23,38 @@ def get_list(db: Session = Depends(dependencies.get_db)):
         {"id": 1, "category": "activity", "categoryTitle": "Активність", "title": "Активні з'єднання", "description": "Поточна кількість активних з'єднань до бази даних"},
         {"id": 2, "category": "activity", "categoryTitle": "Активність", "title": "Остання активність", "description": "Нещодавні події в системі"},
     ]
+
+
+@widgetRouterV1.get("/databases-count", response_model=DatabasesCountWidgetItem)
+def get_databases_count(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": "12", "change": "+2"}
+
+@widgetRouterV1.get("/admins-count", response_model=AdminsCountWidgetItem)
+def get_admins_count(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": "12", "change": "+2"}
+
+@widgetRouterV1.get("/users-count", response_model=UsersCountWidgetItem)
+def get_users_count(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": "12", "change": "+2"}
+
+@widgetRouterV1.get("/tables-count", response_model=TablesCountWidgetItem)
+def get_tables_count(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": "12", "change": "+2"}
+
+@widgetRouterV1.get("/used-storage", response_model=UsedStorageWidgetItem)
+def get_used_storage(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": "3.2 ТБ", "change": "-0.4 ГБ"}
+
 
 @widgetRouterV1.get("/categories", response_model=List[WidgetCategory])
 def get_categories(db: Session = Depends(dependencies.get_db)):
