@@ -12,7 +12,6 @@ export * from './triggers';
 export * from './backups';
 export * from './tables';
 export * from './queries';
-export * from './dashboard';
 export * from './roles';
 export * from './users';
 export * from './permissions';

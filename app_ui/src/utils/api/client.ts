@@ -6,12 +6,6 @@
  * In production, makes real HTTP requests to the backend.
  */
 
-import {
-  statsData,
-  recentActivity,
-  activeConnections,
-  performanceMetrics,
-} from '../../mockData/admin/dashboard';
 import { userDatabases as adminUserDatabases } from '../../mockData/admin';
 import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../mockData/admin';
 import { configParams } from '../../mockData/admin/postgresConfig';
@@ -43,11 +37,6 @@ const isDevelopment = import.meta.env?.MODE === 'development' || !import.meta.en
  * Mock data mapper - maps API endpoints to mock data
  */
 function getMockDataForEndpoint(endpoint: string, params?: Record<string, any>): any {
-  // Dashboard endpoints
-  if (endpoint === '/api/admin/dashboard/stats/overview') return statsData;
-  if (endpoint === '/api/admin/dashboard/stats/performance') return performanceMetrics;
-  if (endpoint === '/api/admin/dashboard/activity/recent') return recentActivity;
-  if (endpoint === '/api/admin/dashboard/activity/connections') return activeConnections;
 
   // Database Manager endpoints
   if (endpoint === '/api/admin/database-manager/user-databases') return adminUserDatabases;
