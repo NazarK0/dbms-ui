@@ -68,6 +68,13 @@ export const apiEndpoints = {
           },
         },
       },
+      systemLog: {
+        widgets: {
+          table: {
+            get: endpointMethods.get,
+          },
+        },
+      },
     },
   },
 } as const;
@@ -122,8 +129,6 @@ function createApiProxy<T extends object>(obj: T, path: string[] = []): PathProx
     },
   }) as PathProxy<T>;
 }
-
-// --- Usage ---
 
 const API = createApiProxy(apiEndpoints);
 

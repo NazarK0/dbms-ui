@@ -3,7 +3,7 @@ import LogsHeader from './LogsHeader';
 import LogStats from './LogStats';
 import LogFilters from './LogFilters';
 import LogDetailsModal from './LogDetailsModal';
-import LogsTable from './LogsTable';
+import LogTable from './table';
 
 // Utils and types
 export * from './utils';
@@ -19,6 +19,7 @@ import { SkeletonCardGrid, SkeletonTable } from '../../../ui/skeletons';
 import { filterLogs, calculatePagination } from './utils';
 
 import type { LogStats as LogStatsType } from './types';
+
 
 export default function Logs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,16 +97,7 @@ export default function Logs() {
       {isLoadingLogs ? (
         <SkeletonTable rows={10} columns={6} showActions />
       ) : (
-        <LogsTable
-          logs={currentLogs}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          totalLogs={filteredLogs.length}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-          onLogClick={setSelectedLog}
-        />
+          <LogTable />
       )}
 
       {selectedLog && (
