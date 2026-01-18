@@ -54,6 +54,18 @@ export const apiEndpoints = {
           usedStorage: {
             get: endpointMethods.get,
           },
+          cpuUsage: {
+            get: endpointMethods.get,
+          },
+          ramUsage: {
+            get: endpointMethods.get,
+          },
+          diskIO: {
+            get: endpointMethods.get,
+          },
+          networkUsage: {
+            get: endpointMethods.get,
+          },
         },
       },
     },

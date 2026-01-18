@@ -1,5 +1,9 @@
 from typing import List
 from app_admin.ui.pages.dashboard.widgets.admins_count.schema import AdminsCountWidgetItem
+from app_admin.ui.pages.dashboard.widgets.cpu_usage.schema import CpuUsageWidgetItem
+from app_admin.ui.pages.dashboard.widgets.disk_io.schema import DiskIOWidgetItem
+from app_admin.ui.pages.dashboard.widgets.network_usage.schema import NetworkUsageWidgetItem
+from app_admin.ui.pages.dashboard.widgets.ram_usage.schema import RamUsageWidgetItem
 from app_admin.ui.pages.dashboard.widgets.users_count.schema import UsersCountWidgetItem
 from app_admin.ui.pages.dashboard.widgets.tables_count.schema import TablesCountWidgetItem
 from app_admin.ui.pages.dashboard.widgets.usedStorage.schema import UsedStorageWidgetItem
@@ -54,6 +58,30 @@ def get_used_storage(db: Session = Depends(dependencies.get_db)):
     # Тут має бути логіка отримання активних з'єднань з бази даних
     # Поки що повертаємо фіктивні дані для прикладу
     return {"value": "3.2 ТБ", "change": "-0.4 ГБ"}
+
+@widgetRouterV1.get("/cpu-usage", response_model=CpuUsageWidgetItem)
+def get_cpu_usage(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": 75}
+
+@widgetRouterV1.get("/network-usage", response_model=NetworkUsageWidgetItem)
+def get_network_usage(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": 25}
+
+@widgetRouterV1.get("/ram-usage", response_model=RamUsageWidgetItem)
+def get_ram_usage(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": 55}
+
+@widgetRouterV1.get("/disk-io", response_model=DiskIOWidgetItem)
+def get_disk_io(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання активних з'єднань з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {"value": 15}
 
 
 @widgetRouterV1.get("/categories", response_model=List[WidgetCategory])

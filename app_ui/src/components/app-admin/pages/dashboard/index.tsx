@@ -10,6 +10,10 @@ import UsedStorageWidget from './widgets/UsedStorage';
 import AdminsCountWidget from './widgets/AdminsCount';
 import TablesCountWidget from './widgets/TablesCount';
 import UsersCountWidget from './widgets/UsersCount';
+import CpuUsageWidget from './widgets/CpuUsage';
+import RamUsageWidget from './widgets/RamUsage';
+import DiskIOWidget from './widgets/DiskIO';
+import NetworkUsageWidget from './widgets/NetworkUsage';
 
 
 export default function Dashboard() {
@@ -40,6 +44,10 @@ export default function Dashboard() {
         <AdminsCountWidget />
         <UsersCountWidget />
         <UsedStorageWidget />
+        <CpuUsageWidget />
+        <RamUsageWidget />
+        <NetworkUsageWidget />
+        <DiskIOWidget />
         <RecentActivityWidget />
         <ActiveConnectionsWidget />
       </div>
