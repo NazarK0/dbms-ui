@@ -1,30 +1,48 @@
-import { UserCog } from 'lucide-react';
-import Widget, { ListWidgetData, WidgetType } from '../../../../global/Widget';
 import { useSystemLogWidgetData } from './useSystemLogWidgetData';
 import columns from './columns';
-import { getActivityColor } from './utils';
+import { getLogLevelColor } from './utils';
+import { Table } from '../../../../global/table';
+import { SkeletonTable } from '../../../../ui/skeletons';
+import LogFilters from './TableFilter';
+import { useState } from 'react';
 
 export default function LogTable() {
     const { data, isLoading, error } = useSystemLogWidgetData();
 
-    if (isLoading) return <div>Loading...</div>;
+      const [searchTerm, setSearchTerm] = useState('');
+      const [selectedLevel, setSelectedLevel] = useState('all');
+      const [selectedSource, setSelectedSource] = useState('all');
+
+
+    if (isLoading) return <SkeletonTable rows={10} columns={6} showActions />;
     if (error) return <div>Error: {error.message}</div>;
 
-    const url = "activity";
-
-    const widgetData: ListWidgetData = {
-        columns: columns as any,
-        data: data!,
-        url,
-        rowClassName: (row) => getActivityColor(row.type),
-    };
-
     return (
-        <Widget
-            title="Записи логів"
-            icon={UserCog}
-            type={WidgetType.LIST}
-            data={widgetData}
-        />
+        <>
+            <LogFilters
+                searchTerm={searchTerm}
+                selectedLevel={selectedLevel}
+                selectedSource={selectedSource}
+                onSearchChange={setSearchTerm}
+                onLevelChange={setSelectedLevel}
+                onSourceChange={setSelectedSource}
+            />
+            <Table
+                title="Записи логів"
+                columns={columns}
+                data={data!}
+                rowClassName={(row) => getLogLevelColor(row.level)}
+            />
+        </>
     );
 }
+
+
+
+
+{/* <Table
+    title="Записи логів"
+    columns={columns}
+    data={data!}
+    rowClassName={(row) => getLogLevelColor(row.level)}
+/> */}

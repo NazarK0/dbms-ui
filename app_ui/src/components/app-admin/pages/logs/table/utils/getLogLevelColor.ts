@@ -1,6 +1,6 @@
-import { ActivityType } from "../types";
+import { LogLevel } from "../types";
 
-const getActivityColor = (type: ActivityType) => {
+const getLogLevelColor = (type: LogLevel) => {
         switch (type) {
             case "success":
                 return "bg-green-50 hover:bg-green-100 dark:bg-green-950/20 dark:hover:bg-green-950/30";
@@ -16,4 +16,4 @@ const getActivityColor = (type: ActivityType) => {
         }
     };
 
-export default getActivityColor;    
+export default getLogLevelColor;    

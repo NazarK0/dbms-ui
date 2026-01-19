@@ -117,5 +117,5 @@ export function shouldShowEllipsis(
   if (currentPageIndex === 0) return false;
   const currentPage = visiblePages[currentPageIndex];
   const prevPage = visiblePages[currentPageIndex - 1];
-  return prevPage && currentPage - prevPage > 1;
+  return (prevPage && (currentPage - prevPage)) > 1;
 }
