@@ -1,6 +1,6 @@
 // Logs components
 import LogsHeader from './LogsHeader';
-import LogStats from './LogStats';
+import LogWidgetsPanel from './LogWidgetsPanel';
 import LogTable from './table';
 
 // Utils and types
@@ -44,7 +44,7 @@ export default function Logs() {
       {isLoadingStats ? (
         <SkeletonCardGrid count={4} columns={4} cardType="stat" />
       ) : stats ? (
-        <LogStats stats={stats} />
+        <LogWidgetsPanel stats={stats} />
       ) : null}
 
       <LogTable />

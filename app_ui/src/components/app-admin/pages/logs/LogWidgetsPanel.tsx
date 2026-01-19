@@ -7,7 +7,7 @@ interface LogStatsProps {
   stats: LogStatsType;
 }
 
-export default function LogStats({ stats }: LogStatsProps) {
+export default function LogWidgetsPanel({ stats }: LogStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <LogWidget label="Всього записів" value={stats.total} />
