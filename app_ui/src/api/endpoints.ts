@@ -69,12 +69,13 @@ export const apiEndpoints = {
         },
       },
       systemLog: {
-        widgets: {
+        stats: {
+            get: endpointMethods.get,
+          },
           table: {
             get: endpointMethods.get,
           },
         },
-      },
     },
   },
 } as const;

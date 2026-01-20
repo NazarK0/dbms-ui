@@ -1,20 +1,19 @@
 import { useQuery, QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
-import { SystemLog } from './types';
+import { LogStats } from './types';
 import API from '../../../../../api/endpoints';
 
-
-export function useSystemLogWidgetData() {
-  const getSystemLogWidgetData = async ({ signal }: QueryFunctionContext) => {
-    const endpoint = API.admin.v1.systemLog.widgets.table.get
+export function useSystemLogWidgetPanelData() {
+  const getSystemLogWidgetPanelData = async ({ signal }: QueryFunctionContext) => {
+    const endpoint = API.admin.v1.systemLog.stats.get;
     const { data } = await axios[endpoint.method](`http://localhost:8000/${endpoint.url}`, {
       signal,
     });
     return data;
   };
-  const { data, isLoading, error } = useQuery<SystemLog[]>({
+  const { data, isLoading, error } = useQuery<LogStats>({
     queryKey: ['system-log-widget-data'],
-    queryFn: getSystemLogWidgetData,
+    queryFn: getSystemLogWidgetPanelData,
     throwOnError: true,
   });
   return { data, isLoading, error };

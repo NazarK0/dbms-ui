@@ -13,12 +13,7 @@ export interface LogLevelConfig {
   className: string;
 }
 
-export interface LogStats {
-  total: number;
-  errors: number;
-  warnings: number;
-  info: number;
-}
+
 
 export interface LogFilters {
   searchTerm: string;

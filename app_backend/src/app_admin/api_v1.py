@@ -6,4 +6,4 @@ admin_api_routerV1 = APIRouter()
 
 
 admin_api_routerV1.include_router(widgetRouterV1, prefix="/dashboard/widgets", tags=["widgets"])
-admin_api_routerV1.include_router(system_log_page_routerV1, prefix="/system-log/widgets", tags=["system-log"])
+admin_api_routerV1.include_router(system_log_page_routerV1, prefix="/system-log", tags=["system-log"])

@@ -1,5 +1,6 @@
 from typing import List
-from app_admin.ui.pages.system_log.widgets.table.schema import SystemLogTableWidgetItem
+from app_admin.ui.pages.system_log.stats.schema import LogStats
+from app_admin.ui.pages.system_log.table.schema import SystemLogTableWidgetItem
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -10,7 +11,7 @@ from src.core import dependencies  # Dependency for DB session
 system_log_page_routerV1 = APIRouter()
 
 @system_log_page_routerV1.get("/table", response_model=List[SystemLogTableWidgetItem])
-def get_recent_activity(db: Session = Depends(dependencies.get_db)):
+def get_system_log_table(db: Session = Depends(dependencies.get_db)):
     # Тут має бути логіка отримання активних з'єднань з бази даних
     # Поки що повертаємо фіктивні дані для прикладу
     return [
@@ -165,3 +166,14 @@ def get_recent_activity(db: Session = Depends(dependencies.get_db)):
             "details": 'ERROR: insufficient disk space for backup operation',
         }
     ]
+
+@system_log_page_routerV1.get("/stats", response_model=LogStats)
+def get_system_log_stats(db: Session = Depends(dependencies.get_db)):
+    # Тут має бути логіка отримання статистики логів з бази даних
+    # Поки що повертаємо фіктивні дані для прикладу
+    return {
+        "errors": 150,
+        "warnings": 75,
+        "info": 300,
+        "success": 200,
+    }

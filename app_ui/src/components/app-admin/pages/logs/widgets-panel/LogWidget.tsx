@@ -1,5 +1,5 @@
-import { Card, CardContent } from '../../../ui/card';
-import { LogLevel } from './types';
+import { Card, CardContent } from '../../../../ui/card';
+import { LogLevel } from '../types';
 
 interface LogStatsCardProps {
   label: string;
@@ -11,20 +11,20 @@ interface LogStatsCardProps {
 
 
 const getBorderColorByLogLevel = (level: LogLevel) => {
-        switch (level) {
-          case "success":
-            return "border-l-green-500";
-          case "warning":
-            return "border-l-yellow-500";
-          case "error":
-            return "border-l-red-500";
-          case "info":
-            return "border-l-blue-500";
-            case "unknown":
-                return "";
-            default: return '';
-        }
-    };
+  switch (level) {
+    case "success":
+      return "border-l-green-500";
+    case "warning":
+      return "border-l-yellow-500";
+    case "error":
+      return "border-l-red-500";
+    case "info":
+      return "border-l-blue-500";
+    case "unknown":
+      return "";
+    default: return '';
+  }
+};
 
 
 const geTextColorByLogLevel = (level: LogLevel) => {

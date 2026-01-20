@@ -1,4 +1,4 @@
-import { useSystemLogWidgetData } from './useSystemLogWidgetData';
+import { useSystemLogTableData } from './useSystemLogTableData';
 import columns from './columns';
 import { getLogLevelColor } from './utils';
 import { Table } from '../../../../global/table';
@@ -7,7 +7,7 @@ import LogFilters from './TableFilter';
 import { useState } from 'react';
 
 export default function LogTable() {
-    const { data, isLoading, error } = useSystemLogWidgetData();
+    const { data, isLoading, error } = useSystemLogTableData();
 
       const [searchTerm, setSearchTerm] = useState('');
       const [selectedLevel, setSelectedLevel] = useState('all');
