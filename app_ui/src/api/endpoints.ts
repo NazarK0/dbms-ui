@@ -68,14 +68,22 @@ export const apiEndpoints = {
           },
         },
       },
+      auditLog: {
+        actionsStats: {
+          get: endpointMethods.get,
+        },
+        table: {
+          get: endpointMethods.get,
+        },
+      },
       systemLog: {
         stats: {
-            get: endpointMethods.get,
-          },
-          table: {
-            get: endpointMethods.get,
-          },
+          get: endpointMethods.get,
         },
+        table: {
+          get: endpointMethods.get,
+        },
+      },
     },
   },
 } as const;

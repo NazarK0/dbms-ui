@@ -4,6 +4,8 @@ import { useSystemLogWidgetPanelData } from './useSystemLogWidgetPanelData';
 
 export default function LogWidgetsPanel() {
   const { data: stats, isLoading, error } = useSystemLogWidgetPanelData();
+
+  console.log('sstats', stats)
   const total = stats!.errors + stats!.warnings + stats!.info + stats!.success;
   
   return (

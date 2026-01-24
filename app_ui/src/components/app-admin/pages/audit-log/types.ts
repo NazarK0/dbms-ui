@@ -58,6 +58,12 @@ export interface AuditFilters {
   filterCategory: string;
 }
 
+export interface AuditFiltersProps {
+  filters: AuditFilters;
+  onFiltersChange: (filters: Partial<AuditFilters>) => void;
+  totalEntries: number;
+  filteredCount: number;
+}
 export interface AuditStatisticsCardsProps {
   statistics: AuditStatistics;
 }
@@ -66,12 +72,6 @@ export interface ActionTypeStatsProps {
   statistics: ActionTypeStatistics;
 }
 
-export interface AuditFiltersProps {
-  filters: AuditFilters;
-  onFiltersChange: (filters: Partial<AuditFilters>) => void;
-  totalEntries: number;
-  filteredCount: number;
-}
 
 export interface AuditLogTableProps {
   entries: AuditEntry[];

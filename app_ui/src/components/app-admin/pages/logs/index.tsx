@@ -1,6 +1,6 @@
 // Logs components
 import LogsHeader from './LogsHeader';
-import LogWidgetsPanel from './widgets-panel/LogWidgetsPanel';
+import LogWidgetsPanel from './widgets-panel';
 import LogTable from './table';
 
 // Utils and types
