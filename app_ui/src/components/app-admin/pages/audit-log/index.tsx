@@ -2,17 +2,15 @@
 import { useState, useEffect } from 'react';
 
 import AuditStatisticsCards from './AuditStatisticsCards';
-import ActionTypeStats from './ActionTypeStats';
 import { API, api } from '../../../../utils/api';
-import { SkeletonCardGrid, SkeletonChart } from '../../../ui/skeletons';
+import { SkeletonCardGrid } from '../../../ui/skeletons';
 import LogTable from './table';
+import ActionStatsPanel from './actions-stats-panel';
 
 export default function AuditLog() {
     // Loading states
     const [isLoadingStats, setIsLoadingStats] = useState(true);
-    const [isLoadingChart, setIsLoadingChart] = useState(true);
     const [statistics, setStatistics] = useState<any>(null);
-    const [actionTypeStats, setActionTypeStats] = useState<any>(null);
 
 
     useEffect(() => {
@@ -26,17 +24,6 @@ export default function AuditLog() {
                 console.error('Error loading statistics:', error);
                 setIsLoadingStats(false);
             });
-
-        // Load action type stats
-        api.get(API.admin.auditLog.actionStats())
-            .then((data) => {
-                setActionTypeStats(data);
-                setIsLoadingChart(false);
-            })
-            .catch((error) => {
-                console.error('Error loading action stats:', error);
-                setIsLoadingChart(false);
-            });
     }, []);
 
     return (
@@ -48,13 +35,7 @@ export default function AuditLog() {
                 statistics && <AuditStatisticsCards statistics={statistics} />
             )}
 
-            {/* Action Type Statistics */}
-            {isLoadingChart ? (
-                <SkeletonChart />
-            ) : (
-                actionTypeStats && <ActionTypeStats statistics={actionTypeStats} />
-            )}
-
+            <ActionStatsPanel />
             <LogTable />
         </div>
     );

@@ -69,7 +69,7 @@ export const apiEndpoints = {
         },
       },
       auditLog: {
-        actionsStats: {
+        statsPanel: {
           get: endpointMethods.get,
         },
         table: {

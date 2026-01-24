@@ -1,21 +1,19 @@
-from app_admin.ui.pages.system_log.stats.schema import LogStats
-
-
+from app_admin.ui.pages.audit_log.stats_panel.schema import ActionStats
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.core import dependencies  # Dependency for DB session
 
 
 
-stats_router = APIRouter()
+stats_panel_router = APIRouter()
 
-@stats_router.get("/", response_model=LogStats)
-def get_system_log_stats(db: Session = Depends(dependencies.get_db)):
+@stats_panel_router.get("/", response_model=ActionStats)
+def get_audit_log_stats_panel(db: Session = Depends(dependencies.get_db)):
     # Тут має бути логіка отримання статистики логів з бази даних
     # Поки що повертаємо фіктивні дані для прикладу
     return {
-        "errors": 150,
-        "warnings": 75,
-        "info": 300,
-        "success": 200,
+        "create": 150,
+        "update": 75,
+        "delete": 300,
+        "query": 200,
     }
