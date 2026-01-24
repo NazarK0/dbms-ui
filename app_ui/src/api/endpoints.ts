@@ -75,6 +75,14 @@ export const apiEndpoints = {
         table: {
           get: endpointMethods.get,
         },
+        widgets: {
+          successActions: {
+            get: endpointMethods.get,
+          },
+          failureActions: {
+            get: endpointMethods.get,
+          },
+        },
       },
       systemLog: {
         stats: {
