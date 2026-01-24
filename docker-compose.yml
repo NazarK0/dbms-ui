@@ -19,6 +19,8 @@ services:
         - action: sync
           path: app_ui
           target: /app
+    depends_on:
+      - backend_dev
   backend_dev:
     build: 
       context: app_backend
@@ -35,13 +37,19 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=dbms_app
+      - PG_COLOR=always
+      
     # Використовуємо volumes замість develop/watch
     volumes:
       # Монтуємо вашу локальну папку src до цільової папки в контейнері
       - ./app_backend/src:/app/src
       # Якщо ви використовуєте .venv локально, його теж треба змонтувати, щоб не було конфліктів
       - ./app_backend/.venv:/app/.venv 
-    
+      - .psqlrc:/var/lib/postgresql/.psqlrc
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
     # Команда, яка запускає hot-reload
     command: uv run fastapi dev src/main.py --host 0.0.0.0 --port 8000
   db:

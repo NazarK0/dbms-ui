@@ -1,0 +1,34 @@
+-- 1. Silence startup messages
+\set QUIET 1
+
+-- 2. COLORIZED PROMPT: [Host] User@Database Status
+-- Green for host, Cyan for user, Yellow for DB, Red for transaction status (*)
+\set PROMPT1 '%[%033[1;32m%]%M %[%033[1;36m%]%n%[%033[0m%]@%[%033[1;33m%]%/%[%033[0m%]%x%R%# '
+
+-- Secondary prompt for multi-line queries
+\set PROMPT2 '%[%033[1;33m%]%/%[%033[0m%] %R%# '
+
+-- 3. COLORIZED OUTPUT DATA
+-- Display NULL values as a bold red 'NULL'
+\pset null '%[%033[1;31m%]NULL%[%033[0m%]'
+
+-- Use Unicode characters for cleaner table borders
+\pset linestyle unicode
+\pset border 2
+
+-- 4. READABILITY IMPROVEMENTS
+-- Automatically switch to 'expanded mode' for wide tables
+\x auto
+
+-- Show how long each query took to run
+\timing on
+
+-- 5. ENVIRONMENT SETTINGS
+-- Use uppercase for SQL keywords during tab-completion
+\set COMP_KEYWORD_CASE upper
+
+-- Ignore duplicate commands in history
+\set HISTCONTROL ignoredups
+
+-- Resume startup messages
+\set QUIET 0

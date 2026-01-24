@@ -13,6 +13,7 @@ enum APIMethod {
   POST = 'post',
   PUT = 'put',
   DELETE = 'delete',
+  WS = 'ws',
 }
 
 const endpointMethods = {
@@ -20,11 +21,25 @@ const endpointMethods = {
   post: APIMethod.POST,
   put: APIMethod.PUT,
   delete: APIMethod.DELETE,
+  ws: APIMethod.WS,
 } as const;
 
 export const apiEndpoints = {
   admin: {
     v1: {
+      cli: {
+        terminal: {
+          psql: {
+            connect: endpointMethods.ws,
+          },
+        },
+        sqlReference: {
+          get: endpointMethods.get,
+        },
+        history: {
+          get: endpointMethods.get,
+        },
+      },
       dashboard: {
         widgets: {
           recentActivity: {
@@ -121,7 +136,7 @@ const toKebabCase = (str: string): string =>
  * Define the keys that represent HTTP methods.
  * These will NOT be appended to the URL string.
  */
-const METHOD_KEYS = new Set(['get', 'post', 'put', 'delete', 'patch']);
+const METHOD_KEYS = new Set(['get', 'post', 'put', 'delete', 'patch', 'ws']);
 
 function createApiProxy<T extends object>(obj: T, path: string[] = []): PathProxy<T> {
   return new Proxy(obj, {

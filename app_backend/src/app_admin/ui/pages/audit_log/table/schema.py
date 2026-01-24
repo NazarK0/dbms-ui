@@ -7,9 +7,7 @@ ActionStatus = Literal["success", "failed"]
 
 class AuditLogTableItem(BaseModel):
     id: int
-    time: str = Field(
-        alias="time"
-    )  # Keep Python snake_case while accepting camelCase JSON
+    time: str
     user: str
     action: str
     category: str
