@@ -107,6 +107,16 @@ export const apiEndpoints = {
           get: endpointMethods.get,
         },
       },
+      performance: {
+        table: {
+          indexUsage: {
+            get: endpointMethods.get,
+          },
+          top5Queries: {
+            get: endpointMethods.get,
+          }
+        },
+      },
     },
   },
 } as const;

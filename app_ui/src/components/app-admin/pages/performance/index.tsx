@@ -2,26 +2,25 @@
 import PerformanceHeader from './PerformanceHeader';
 import CacheStatsCards from './CacheStatsCards';
 import SlowQueriesAlert from './SlowQueriesAlert';
-import QueryStatsTable from './QueryStatsTable';
 import SlowQueriesCard from './SlowQueriesCard';
-import IndexUsageTable from './IndexUsageTable';
+
 import { exportPerformanceReport } from './utils/exportPerformanceReport';
 
 
 import { useState, useEffect } from 'react';
 import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../../../mockData/admin';
 import { API, api } from '../../../../utils/api';
-import { SkeletonCardGrid, SkeletonTable, SkeletonListCard } from '../../../ui/skeletons';
+import { SkeletonCardGrid, SkeletonListCard } from '../../../ui/skeletons';
+import IndexUsageTable from './index-usage';
+import Top5QueriesTable from './tables/top5-queries';
 
 export default function PerformanceAnalyzer() {
   const [timeRange, setTimeRange] = useState('1h');
-  const [sortBy, setSortBy] = useState('total_time');
 
   // Loading states
   const [isLoadingCache, setIsLoadingCache] = useState(true);
-  const [isLoadingQueries, setIsLoadingQueries] = useState(true);
   const [isLoadingSlowQueries, setIsLoadingSlowQueries] = useState(true);
-  const [isLoadingIndexes, setIsLoadingIndexes] = useState(true);
+
 
   // Data states
   const [cacheData, setCacheData] = useState(cacheStats);
@@ -36,9 +35,7 @@ export default function PerformanceAnalyzer() {
   const loadPerformanceData = () => {
     // Reset loading states
     setIsLoadingCache(true);
-    setIsLoadingQueries(true);
     setIsLoadingSlowQueries(true);
-    setIsLoadingIndexes(true);
 
     // Load cache statistics
     api.get(API.admin.performanceAnalyzer.cache.stats(), { timeRange })
@@ -51,17 +48,6 @@ export default function PerformanceAnalyzer() {
         setIsLoadingCache(false);
       });
 
-    // Load query statistics
-    api.get(API.admin.performanceAnalyzer.queries.stats(), { timeRange })
-      .then((data) => {
-        setQueriesData(data);
-        setIsLoadingQueries(false);
-      })
-      .catch((error) => {
-        console.error('Error loading query stats:', error);
-        setIsLoadingQueries(false);
-      });
-
     // Load slow queries
     api.get(API.admin.performanceAnalyzer.queries.slow(), { timeRange })
       .then((data) => {
@@ -71,17 +57,6 @@ export default function PerformanceAnalyzer() {
       .catch((error) => {
         console.error('Error loading slow queries:', error);
         setIsLoadingSlowQueries(false);
-      });
-
-    // Load index usage
-    api.get(API.admin.performanceAnalyzer.indexes.usage(), { timeRange })
-      .then((data) => {
-        setIndexData(data);
-        setIsLoadingIndexes(false);
-      })
-      .catch((error) => {
-        console.error('Error loading index usage:', error);
-        setIsLoadingIndexes(false);
       });
   };
 
@@ -117,15 +92,7 @@ export default function PerformanceAnalyzer() {
 
       {!isLoadingSlowQueries && <SlowQueriesAlert count={slowQueries.length} />}
 
-      {isLoadingQueries ? (
-        <SkeletonTable rows={10} columns={7} />
-      ) : (
-        <QueryStatsTable
-          stats={queriesData}
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
-        />
-      )}
+      <Top5QueriesTable />
 
       {isLoadingSlowQueries ? (
         <SkeletonListCard items={5} />
@@ -133,11 +100,7 @@ export default function PerformanceAnalyzer() {
         <SlowQueriesCard queries={slowQueries} />
       )}
 
-      {isLoadingIndexes ? (
-        <SkeletonTable rows={8} columns={6} />
-      ) : (
-        <IndexUsageTable indexes={indexData} />
-      )}
+      <IndexUsageTable />
     </div>
   );
 }
