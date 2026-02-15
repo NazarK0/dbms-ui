@@ -3,26 +3,67 @@ import SaveProfileDialog from './SaveProfileDialog';
 import ImportDialog from './ImportDialog';
 import { ProfileCard, ProfilesHeader, EmptyState } from './profiles-manager';
 import type { ProfilesManagerProps } from './profiles-manager/types';
+import { useState } from 'react';
+import { savedProfiles as initialProfiles } from '../../../../mockData/admin/postgresConfig';
 
-export default function ProfilesManager({
-  profiles,
-  saveDialogOpen,
-  importDialogOpen,
-  parametersCount,
-  onSaveDialogChange,
-  onImportDialogChange,
-  onSaveProfile,
-  onImportFile,
-  onApplyProfile,
-  onDownloadProfile,
-  onDeleteProfile,
-}: ProfilesManagerProps) {
+export default function ProfilesManager() {
+
+  const [hasChanges, setHasChanges] = useState(false);
+    const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    const [importDialogOpen, setImportDialogOpen] = useState(false);
+    const [profiles, setProfiles] = useState(initialProfiles);
+  
+    // Loading states
+    const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+    const [config, setConfig] = useState<any[]>([]);
+    const [statistics, setStatistics] = useState<any>(null);
+
+  const handleSaveProfile = (name: string, description: string) => {
+    const newProfile = {
+      id: Date.now().toString(),
+      name,
+      description,
+      createdAt: new Date().toLocaleString('uk-UA'),
+      parametersCount: statistics.totalParams,
+    };
+    setProfiles([...profiles, newProfile]);
+    console.log('Profile saved:', newProfile);
+  };
+
+  const handleImportFile = (file: File) => {
+    console.log('Importing file:', file.name);
+  };
+
+  const handleApplyProfile = (profileId: string) => {
+    console.log('Applying profile:', profileId);
+  };
+
+  const handleDownloadProfile = (profileId: string) => {
+    console.log('Downloading profile:', profileId);
+  };
+
+  const handleDeleteProfile = (profileId: string) => {
+    setProfiles(profiles.filter(p => p.id !== profileId));
+    console.log('Profile deleted:', profileId);
+  };
+
+  const handleApplyPreset = (presetType: 'development' | 'production' | 'highload') => {
+    console.log('Applying preset:', presetType);
+    setHasChanges(true);
+  };
+
+
+
+
+
+
+
   return (
     <>
       <Card className="border-slate-200 shadow-sm">
         <ProfilesHeader 
-          onImport={() => onImportDialogChange(true)}
-          onSave={() => onSaveDialogChange(true)}
+          onImport={() => setImportDialogOpen(true)}
+          onSave={() => setSaveDialogOpen(true)}
         />
         <CardContent>
           <div className="space-y-3">
@@ -30,14 +71,14 @@ export default function ProfilesManager({
               <ProfileCard
                 key={profile.id}
                 profile={profile}
-                onApply={onApplyProfile}
-                onDownload={onDownloadProfile}
-                onDelete={onDeleteProfile}
+                onApply={handleApplyProfile}
+                onDownload={handleDownloadProfile}
+                onDelete={handleDeleteProfile}
               />
             ))}
 
             {profiles.length === 0 && (
-              <EmptyState onCreateProfile={() => onSaveDialogChange(true)} />
+              <EmptyState onCreateProfile={() => setSaveDialogOpen(true)} />
             )}
           </div>
         </CardContent>
@@ -45,15 +86,15 @@ export default function ProfilesManager({
 
       <SaveProfileDialog
         open={saveDialogOpen}
-        onOpenChange={onSaveDialogChange}
-        parametersCount={parametersCount}
-        onSave={onSaveProfile}
+        onOpenChange={setSaveDialogOpen}
+        parametersCount={statistics?.totalParams || 0}
+        onSave={handleSaveProfile}
       />
 
       <ImportDialog
         open={importDialogOpen}
-        onOpenChange={onImportDialogChange}
-        onImport={onImportFile}
+        onOpenChange={setImportDialogOpen}
+        onImport={handleImportFile}
       />
     </>
   );

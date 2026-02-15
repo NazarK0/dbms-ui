@@ -1,13 +1,16 @@
-import type { ConfigParam } from '../types';
-
-/**
- * Props for ConfigAccordionHeader component
- */
-export interface ConfigAccordionHeaderProps {
-  hasChanges: boolean;
-  onSave?: () => void;
-  onReset?: () => void;
+export interface ConfigParam {
+  name: string;
+  value: string;
+  defaultValue: string;
+  unit?: string;
+  description: string;
+  requiresRestart: boolean;
+  category: string;
 }
+
+
+
+
 
 /**
  * Props for ConfigCategoryItem component

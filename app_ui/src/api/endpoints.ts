@@ -117,6 +117,12 @@ export const apiEndpoints = {
           }
         },
       },
+      pgConfig: {
+        params: {
+          get: endpointMethods.get,
+          update: endpointMethods.post,
+        },
+      },
     },
   },
 } as const;

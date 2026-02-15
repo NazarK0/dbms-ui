@@ -7,7 +7,9 @@ ActionStatus = Literal["success", "failed"]
 
 class IndexUsageEntry(BaseModel):
     database: str
-    schema: str
+    db_schema: str = Field(
+        alias="schema"
+    )
     table: str
     index: str
     size: str

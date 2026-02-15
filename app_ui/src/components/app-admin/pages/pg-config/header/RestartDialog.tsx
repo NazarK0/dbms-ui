@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Power } from 'lucide-react';
-import { Button } from '../../../ui/button';
+import { Button } from '../../../../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../../ui/dialog';
+} from '../../../../ui/dialog';
 
 interface RestartDialogProps {
   open: boolean;
@@ -21,7 +21,7 @@ export default function RestartDialog({ open, onOpenChange, onRestart }: Restart
 
   const handleRestartServer = () => {
     setIsRestarting(true);
-    
+
     // Simulate server restart
     setTimeout(() => {
       setIsRestarting(false);
@@ -60,8 +60,8 @@ export default function RestartDialog({ open, onOpenChange, onRestart }: Restart
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isRestarting}>
             Скасувати
           </Button>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             onClick={handleRestartServer}
             disabled={isRestarting}
             className="gap-2"
