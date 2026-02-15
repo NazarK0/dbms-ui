@@ -2,20 +2,15 @@ import { Card, CardContent } from '../../../ui/card';
 import SaveProfileDialog from './SaveProfileDialog';
 import ImportDialog from './ImportDialog';
 import { ProfileCard, ProfilesHeader, EmptyState } from './profiles-manager';
-import type { ProfilesManagerProps } from './profiles-manager/types';
+
 import { useState } from 'react';
 import { savedProfiles as initialProfiles } from '../../../../mockData/admin/postgresConfig';
 
 export default function ProfilesManager() {
-
-  const [hasChanges, setHasChanges] = useState(false);
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [profiles, setProfiles] = useState(initialProfiles);
   
-    // Loading states
-    const [isLoadingConfig, setIsLoadingConfig] = useState(true);
-    const [config, setConfig] = useState<any[]>([]);
     const [statistics, setStatistics] = useState<any>(null);
 
   const handleSaveProfile = (name: string, description: string) => {
@@ -46,17 +41,6 @@ export default function ProfilesManager() {
     setProfiles(profiles.filter(p => p.id !== profileId));
     console.log('Profile deleted:', profileId);
   };
-
-  const handleApplyPreset = (presetType: 'development' | 'production' | 'highload') => {
-    console.log('Applying preset:', presetType);
-    setHasChanges(true);
-  };
-
-
-
-
-
-
 
   return (
     <>

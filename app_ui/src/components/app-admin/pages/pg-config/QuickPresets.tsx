@@ -2,6 +2,7 @@ import { Cpu, Database, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../ui/card';
 import { Button } from '../../../ui/button';
 import { quickPresets } from '../../../../mockData/admin/postgresConfig';
+import { useState } from 'react';
 
 interface QuickPresetsProps {
   onApplyPreset?: (presetType: 'development' | 'production' | 'highload') => void;
@@ -15,6 +16,13 @@ const iconMap = {
 } as const;
 
 export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
+  const [hasChanges, setHasChanges] = useState(false);
+  const handleApplyPreset = (presetType: 'development' | 'production' | 'highload') => {
+    console.log('Applying preset:', presetType);
+    setHasChanges(true);
+  };
+
+  
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader>
@@ -38,7 +46,7 @@ export default function QuickPresets({ onApplyPreset }: QuickPresetsProps) {
                   variant="outline" 
                   size="sm" 
                   className="w-full"
-                  onClick={() => onApplyPreset?.(preset.id)}
+                  onClick={() => handleApplyPreset(preset.id)}
                 >
                   Застосувати
                 </Button>
