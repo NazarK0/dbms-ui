@@ -18,8 +18,8 @@ import {
   updateUiDisplaySetting,
   toggleRlsPolicy,
   updateRlsPolicy,
-} from './create-role-modal';
-import type { CreateRoleModalProps, RlsPolicy } from './create-role-modal';
+} from './create-role-dialog';
+import type { CreateRoleModalProps, RlsPolicy } from './create-role-dialog';
 
 export default function CreateRoleModal({
   open,

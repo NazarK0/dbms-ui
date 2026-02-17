@@ -1,7 +1,7 @@
 import { useQuery, QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
 import { IndexUsageEntry } from './types';
-import API from '../../../../../api/endpoints';
+import API from '../../../../../../api/endpoints';
 
 
 export function useIndexUsageTableData() {

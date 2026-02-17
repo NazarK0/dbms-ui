@@ -11,8 +11,8 @@ import {
   updateUiDisplaySetting,
   toggleRlsPolicy,
   updateRlsPolicy,
-} from './create-role-modal';
-import type { RlsPolicy } from './create-role-modal';
+} from './create-role-dialog';
+import type { RlsPolicy } from './create-role-dialog';
 import { useEffect, useState } from 'react';
 
 interface EditUserRoleModalProps {

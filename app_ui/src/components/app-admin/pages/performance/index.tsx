@@ -1,31 +1,35 @@
 // Central exports for performance analyzer components
 import PerformanceHeader from './PerformanceHeader';
-import CacheStatsCards from './CacheStatsCards';
 import SlowQueriesAlert from './SlowQueriesAlert';
-import SlowQueriesCard from './SlowQueriesCard';
+
 
 import { exportPerformanceReport } from './utils/exportPerformanceReport';
 
 
 import { useState, useEffect } from 'react';
-import { queryStats, slowQueryDetails, cacheStats, indexUsage } from '../../../../mockData/admin';
+import { queryStats, cacheStats, indexUsage } from '../../../../mockData/admin';
 import { API, api } from '../../../../utils/api';
-import { SkeletonCardGrid, SkeletonListCard } from '../../../ui/skeletons';
-import IndexUsageTable from './index-usage';
+import { SkeletonListCard } from '../../../ui/skeletons';
+import IndexUsageTable from './tables/index-usage';
 import Top5QueriesTable from './tables/top5-queries';
+import SlowQueries from './slow-queries';
+import { usePgSlowQueriesData } from './useSlowQueriesData';
+import WidgetPane from './WidgetPane';
 
 export default function PerformanceAnalyzer() {
+  const { data: slowQueries, isLoading: isLoadingSlowQueries, error } = usePgSlowQueriesData();
+
+
   const [timeRange, setTimeRange] = useState('1h');
 
   // Loading states
   const [isLoadingCache, setIsLoadingCache] = useState(true);
-  const [isLoadingSlowQueries, setIsLoadingSlowQueries] = useState(true);
 
 
   // Data states
   const [cacheData, setCacheData] = useState(cacheStats);
   const [queriesData, setQueriesData] = useState(queryStats);
-  const [slowQueries, setSlowQueries] = useState(slowQueryDetails);
+
   const [indexData, setIndexData] = useState(indexUsage);
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export default function PerformanceAnalyzer() {
   const loadPerformanceData = () => {
     // Reset loading states
     setIsLoadingCache(true);
-    setIsLoadingSlowQueries(true);
+
 
     // Load cache statistics
     api.get(API.admin.performanceAnalyzer.cache.stats(), { timeRange })
@@ -48,17 +52,11 @@ export default function PerformanceAnalyzer() {
         setIsLoadingCache(false);
       });
 
-    // Load slow queries
-    api.get(API.admin.performanceAnalyzer.queries.slow(), { timeRange })
-      .then((data) => {
-        setSlowQueries(data);
-        setIsLoadingSlowQueries(false);
-      })
-      .catch((error) => {
-        console.error('Error loading slow queries:', error);
-        setIsLoadingSlowQueries(false);
-      });
   };
+
+
+  if (isLoadingSlowQueries) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   const handleRefresh = () => {
     console.log('Refreshing performance data...');
@@ -69,7 +67,7 @@ export default function PerformanceAnalyzer() {
     exportPerformanceReport({
       timeRange,
       queryStats: queriesData,
-      slowQueries: slowQueries,
+      slowQueries: slowQueries!,
       cacheStats: cacheData,
       indexUsage: indexData,
     });
@@ -84,20 +82,16 @@ export default function PerformanceAnalyzer() {
         onExport={handleExport}
       />
 
-      {isLoadingCache ? (
-        <SkeletonCardGrid count={4} columns={4} cardType="stat" />
-      ) : (
-        <CacheStatsCards stats={cacheData} />
-      )}
+      <WidgetPane />
 
-      {!isLoadingSlowQueries && <SlowQueriesAlert count={slowQueries.length} />}
+      {!isLoadingSlowQueries && <SlowQueriesAlert count={slowQueries!.length} />}
 
       <Top5QueriesTable />
 
       {isLoadingSlowQueries ? (
         <SkeletonListCard items={5} />
       ) : (
-        <SlowQueriesCard queries={slowQueries} />
+          <SlowQueries queries={slowQueries!} />
       )}
 
       <IndexUsageTable />

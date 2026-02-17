@@ -1,8 +1,8 @@
 import { Save } from 'lucide-react';
 import { DialogFooter } from '../../../../ui/dialog';
 import { Button } from '../../../../ui/button';
-import { buttonLabels } from '../create-role-modal';
-import type { RoleType } from '../create-role-modal';
+import { buttonLabels } from '../create-role-dialog';
+import type { RoleType } from '../create-role-dialog';
 
 interface EditModalFooterProps {
   roleType: RoleType;

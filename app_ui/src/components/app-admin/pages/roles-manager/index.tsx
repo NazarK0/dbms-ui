@@ -8,7 +8,7 @@ import CreateRoleModal from './CreateRoleModal';
 import EditAdminRoleModal from './EditAdminRoleModal';
 import EditUserRoleModal from './EditUserRoleModal';
 import RBACMatrix from './RBACMatrix';
-import StatsCards from './stats-cards/StatsCards';
+import RolesWidgets from './widgets';
 import { roles, adminRoles, userRoles, totalAdmins, totalUsers, type RoleType } from '../../../../mockData/admin';
 import type { Role } from './role-card/types';
 import { API, api } from '../../../../utils/api';
@@ -118,11 +118,7 @@ export default function RolesManager() {
             {isLoadingStats ? (
                 <SkeletonCardGrid count={3} columns={3} cardType="stat" />
             ) : (
-                <StatsCards
-                    totalRoles={statsData.totalRoles}
-                    totalAdmins={statsData.totalAdmins}
-                    totalUsers={statsData.totalUsers}
-                />
+                    <RolesWidgets />
             )}
 
             {/* Admin Roles Section */}

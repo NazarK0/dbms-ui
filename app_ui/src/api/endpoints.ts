@@ -7,6 +7,7 @@
  */
 
 import { AdminAppAPI } from ".";
+import { slowQueries } from "../mockData/admin";
 
 enum APIMethod {
   GET = 'get',
@@ -115,6 +116,23 @@ export const apiEndpoints = {
           top5Queries: {
             get: endpointMethods.get,
           }
+        },
+        slowQueries: {
+          get: endpointMethods.get,
+        },
+        widgets: {
+          cacheHitRate: {
+            get: endpointMethods.get,
+          },
+          blocksFromCache: {
+            get: endpointMethods.get,
+          },
+          blocksFromDisk: {
+            get: endpointMethods.get,
+          },
+          blocksWritten: {
+            get: endpointMethods.get,
+          },
         },
       },
       pgConfig: {

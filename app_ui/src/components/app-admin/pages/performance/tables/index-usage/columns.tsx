@@ -1,4 +1,4 @@
-import { ColumnConfig } from "../../../../global/table";
+import { ColumnConfig } from "../../../../../global/table";
 import { IndexCell, StatusCell, UsageCell} from "./cells";
 
 

@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../ui/card';
-import { Table } from '../../../../global/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../../ui/card';
+import { Table } from '../../../../../global/table';
 import columns from './columns';
 import { useIndexUsageTableData } from './useIndexUsageTableData';
-import { SkeletonTable } from '../../../../ui/skeletons';
+import { SkeletonTable } from '../../../../../ui/skeletons';
 
 export default function IndexUsageTable() {
     const { data, isLoading, error } = useIndexUsageTableData();

@@ -1,8 +1,8 @@
 import { Input } from '../../../../ui/input';
 import { Textarea } from '../../../../ui/textarea';
 import { Label } from '../../../../ui/label';
-import { getRoleNamePlaceholder, labels, placeholders } from '../create-role-modal';
-import type { RoleType } from '../create-role-modal';
+import { getRoleNamePlaceholder, labels, placeholders } from '../create-role-dialog';
+import type { RoleType } from '../create-role-dialog';
 
 interface EditableBasicInfoProps {
   roleType: RoleType;

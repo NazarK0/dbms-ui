@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../../../../ui/dialog';
-import type { RoleType } from '../create-role-modal';
+import type { RoleType } from '../create-role-dialog';
 
 interface EditModalHeaderProps {
   roleType: RoleType;

@@ -1,19 +1,15 @@
-/**
- * SingleStatCard Component
- * Renders a single statistics card with icon, value, title, and description
- */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../ui/card';
 import { Badge } from '../../../../ui/badge';
-import type { SingleStatCardProps } from './types';
+import type { WidgetCardProps } from './types';
 
-export default function SingleStatCard({
+export default function WidgetCard({
   icon: Icon,
   gradient,
   value,
   title,
   description,
-}: SingleStatCardProps) {
+}: WidgetCardProps) {
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader className="pb-3">

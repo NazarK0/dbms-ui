@@ -20,8 +20,6 @@ export * from './performance';
 export * from './navigation';
 export * from './auditLog';
 export * from './cli';
-export * from './tableBrowser';
-export * from './schemaVisualizer';
+
 export * from './postgresConfig';
 export * from './logs';
-export * from './replicas';

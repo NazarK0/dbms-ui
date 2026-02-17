@@ -1,21 +1,23 @@
-from app_admin.ui.pages.audit_log.widgets.schema import AuditLogWidget
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from src.core import dependencies  # Dependency for DB session
+from fastapi import APIRouter
+
+from src.app_admin.ui.pages.performance.widgets.blocks_from_cache.endpoints import blocks_from_cache_widget_router
+from src.app_admin.ui.pages.performance.widgets.blocks_from_disk.endpoints import blocks_from_disk_widget_router
+from src.app_admin.ui.pages.performance.widgets.blocks_written.endpoints import blocks_written_widget_router
+from src.app_admin.ui.pages.performance.widgets.cache_hit_rate.endpoints import cache_hit_rate_widget_router
 
 
-
-widgets_router = APIRouter()
-
-@widgets_router.get("/success-actions", response_model=AuditLogWidget)
-def get_audit_log_widget_success_actions(db: Session = Depends(dependencies.get_db)):
-    # Тут має бути логіка отримання статистики логів з бази даних
-    # Поки що повертаємо фіктивні дані для прикладу
-    return {"value": 12, "change": "+2"}
+performance_widgets_router = APIRouter()
 
 
-@widgets_router.get("/failure-actions", response_model=AuditLogWidget)
-def get_audit_log_widget_failure_actions(db: Session = Depends(dependencies.get_db)):
-    # Тут має бути логіка отримання статистики логів з бази даних
-    # Поки що повертаємо фіктивні дані для прикладу
-    return {"value": 7, "change": "-3"}
+performance_widgets_router.include_router(
+    blocks_from_cache_widget_router, prefix="/blocks-from-cache", tags=["blocks-from-cache"]
+)
+performance_widgets_router.include_router(
+    blocks_written_widget_router, prefix="/blocks-written", tags=["blocks-written"]
+)
+performance_widgets_router.include_router(
+    blocks_from_disk_widget_router, prefix="/blocks-from-disk", tags=["blocks-from-disk"]
+)
+performance_widgets_router.include_router(
+    cache_hit_rate_widget_router, prefix="/cache-hit-rate", tags=["cache-hit-rate"]
+)
