@@ -129,6 +129,16 @@ export const apiEndpoints = {
           delete: endpointMethods.delete,
         },
       },
+      replicas: {
+        table: {
+          activity: {
+            get: endpointMethods.get,
+          },
+        },
+        clusters: {
+          get: endpointMethods.get,
+        },
+      },
     },
   },
 } as const;

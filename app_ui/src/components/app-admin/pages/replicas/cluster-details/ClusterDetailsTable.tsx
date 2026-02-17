@@ -14,50 +14,27 @@ import ClusterTableHeader from './ClusterTableHeader';
 import ClusterTableRow from './ClusterTableRow';
 
 interface ClusterDetailsTableProps {
-  /**
-   * Array of cluster servers
-   */
   clusters: ClusterServer[];
-  
-  /**
-   * Callback when cluster row is selected
-   */
-  onSelectCluster?: (clusterId: number) => void;
-  
-  /**
-   * Callback to configure cluster
-   */
-  onConfigureCluster?: (clusterId: number) => void;
-  
-  /**
-   * Callback to promote replica to primary
-   */
-  onPromoteReplica?: (clusterId: number) => void;
 }
 
-/**
- * Cluster Details Table Component
- * 
- * Displays comprehensive information about database cluster topology.
- * Includes primary server and all replica servers with their health status,
- * location, connection info, and management actions.
- * 
- * Columns:
- * 1. Name - Server name with icon
- * 2. Role - Primary or Replica badge
- * 3. Status - Health status with icon
- * 4. Location - Geographic region
- * 5. Host - Host:port in code format
- * 6. Connections - Active connection count
- * 7. Replication Lag - Lag time with color coding
- * 8. Actions - Configure and Promote buttons
- */
+
 export default function ClusterDetailsTable({
-  clusters,
-  onSelectCluster,
-  onConfigureCluster,
-  onPromoteReplica,
+  clusters
 }: ClusterDetailsTableProps) {
+
+  const handleSelectCluster = (clusterId: number) => {
+    
+    console.log('Selected cluster:', clusterId);
+  };
+
+  const handleConfigureCluster = (clusterId: number) => {
+    console.log('Configuring cluster:', clusterId);
+  };
+
+  const handlePromoteReplica = (clusterId: number) => {
+    console.log('Promoting replica to primary:', clusterId);
+  };
+
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader>
@@ -74,9 +51,9 @@ export default function ClusterDetailsTable({
               <ClusterTableRow
                 key={cluster.id}
                 cluster={cluster}
-                onSelect={onSelectCluster}
-                onConfigure={onConfigureCluster}
-                onPromote={onPromoteReplica}
+                onSelect={handleSelectCluster}
+                onConfigure={handleConfigureCluster}
+                onPromote={handlePromoteReplica}
               />
             ))}
           </TableBody>
