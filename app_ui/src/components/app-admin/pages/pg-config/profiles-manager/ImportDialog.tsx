@@ -1,6 +1,6 @@
 import { Upload } from 'lucide-react';
-import { Button } from '../../../ui/button';
-import { Input } from '../../../ui/input';
+import { Button } from '../../../../ui/button';
+import { Input } from '../../../../ui/input';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../../ui/dialog';
+} from '../../../../ui/dialog';
 
 interface ImportDialogProps {
   open: boolean;

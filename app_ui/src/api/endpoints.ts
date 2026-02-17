@@ -122,6 +122,12 @@ export const apiEndpoints = {
           get: endpointMethods.get,
           update: endpointMethods.post,
         },
+        profiles: {
+          get: endpointMethods.get,
+          create: endpointMethods.post,
+          update: endpointMethods.put,
+          delete: endpointMethods.delete,
+        },
       },
     },
   },

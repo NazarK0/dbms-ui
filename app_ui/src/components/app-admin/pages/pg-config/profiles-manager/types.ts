@@ -1,4 +1,12 @@
-import type { ConfigProfile } from '../types';
+
+
+export interface ConfigProfile {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  parametersCount: number;
+}
 
 /**
  * Props for ProfileCard component

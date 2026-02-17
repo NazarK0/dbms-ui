@@ -10,12 +10,14 @@ import { usePgConfigData } from './usePgConfigData';
 
 export default function ConfigManager() {
     const { data: params, isLoading, error } = usePgConfigData();
+    const [hasChanges, setHasChanges] = useState(false);
         
+    
+    
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
+    
     const categories = getCategories(params!);
-
-    const [hasChanges, setHasChanges] = useState(false);
 
     const handleParamChange = (paramName: string, value: string) => {
         setHasChanges(true);

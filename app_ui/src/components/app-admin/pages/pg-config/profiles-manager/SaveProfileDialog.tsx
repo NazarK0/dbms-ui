@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Save, CheckCircle } from 'lucide-react';
-import { Button } from '../../../ui/button';
-import { Input } from '../../../ui/input';
-import { Label } from '../../../ui/label';
-import { Alert, AlertDescription } from '../../../ui/alert';
+import { Button } from '../../../../ui/button';
+import { Input } from '../../../../ui/input';
+import { Label } from '../../../../ui/label';
+import { Alert, AlertDescription } from '../../../../ui/alert';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../../ui/dialog';
+} from '../../../../ui/dialog';
 
 interface SaveProfileDialogProps {
   open: boolean;

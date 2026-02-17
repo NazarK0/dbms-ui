@@ -1,6 +1,5 @@
 import RestartAlert from './RestartAlert';
-import ProfilesManager from './ProfilesManager';
-import QuickPresets from './QuickPresets';
+import ProfilesManager from './profiles-manager';
 import PgConfigHeader from './header';
 import ConfigManager from './config-manager';
 
@@ -12,7 +11,6 @@ export default function PostgresConfig() {
       <RestartAlert />
       <ConfigManager />
       <ProfilesManager />
-      <QuickPresets />
     </div>
   );
 }
