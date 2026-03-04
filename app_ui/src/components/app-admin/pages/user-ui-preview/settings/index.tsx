@@ -16,7 +16,7 @@ import UserSelector from './UserSelector';
 import PreviewModeSelector from './PreviewModeSelector';
 import UserLookupPanel from './UserLookupPanel';
 import type { PreviewMode } from './PreviewModeSelector';
-import type { DeviceType } from './types';
+import type { DeviceType } from '../shared/types';
 import { CustomRole, Role, RoleConfiguration } from './role-permission-mapper/types';
 
 
