@@ -4,17 +4,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 interface PerformanceHeaderProps {
   timeRange: string;
-  onTimeRangeChange: (value: string) => void;
-  onRefresh?: () => void;
-  onExport?: () => void;
 }
 
-export default function PerformanceHeader({
-  timeRange,
-  onTimeRangeChange,
-  onRefresh,
-  onExport,
-}: PerformanceHeaderProps) {
+export default function PerformanceHeader({timeRange}: PerformanceHeaderProps) {
+
+  const exportHandler = () => {}
+  const refreshHandler = () => {}
+  const timeChangeHandler = () => {}
+
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -24,7 +21,7 @@ export default function PerformanceHeader({
         </p>
       </div>
       <div className="flex items-center gap-3">
-        <Select value={timeRange} onValueChange={onTimeRangeChange}>
+        <Select value={timeRange} onValueChange={timeChangeHandler}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
           </SelectTrigger>
@@ -35,18 +32,14 @@ export default function PerformanceHeader({
             <SelectItem value="7d">Останні 7 днів</SelectItem>
           </SelectContent>
         </Select>
-        {onRefresh && (
-          <Button variant="outline" onClick={onRefresh}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Оновити
-          </Button>
-        )}
-        {onExport && (
-          <Button onClick={onExport}>
-            <Download className="w-4 h-4 mr-2" />
-            Експорт звіту
-          </Button>
-        )}
+        <Button variant="outline" onClick={refreshHandler}>
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Оновити
+        </Button>
+        <Button onClick={exportHandler}>
+          <Download className="w-4 h-4 mr-2" />
+          Експорт звіту
+        </Button>
       </div>
     </div>
   );

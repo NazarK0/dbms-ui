@@ -4,8 +4,6 @@
 
 import { LucideIcon } from 'lucide-react';
 
-// Re-export types from mockData to avoid duplication
-export type { LogLevel, LogSource, LogEntry } from '@/mockData/admin/logs';
 
 export interface LogLevelConfig {
   variant: 'destructive' | 'default' | 'secondary' | 'outline';
