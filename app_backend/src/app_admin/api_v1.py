@@ -6,6 +6,7 @@ from src.app_admin.ui.pages.cli.endpoints import cli_page_router
 from src.app_admin.ui.pages.performance.endpoints import performance_page_router
 from src.app_admin.ui.pages.pg_config.endpoints import pg_config_page_router
 from src.app_admin.ui.pages.replicas.endpoints import replicas_page_router
+from src.app_admin.ui.pages.users.endpoints import users_page_router
 
 admin_api_routerV1 = APIRouter()
 
@@ -17,3 +18,4 @@ admin_api_routerV1.include_router(cli_page_router, prefix="/cli", tags=["cli-pag
 admin_api_routerV1.include_router(performance_page_router, prefix="/performance", tags=["performance-page"])
 admin_api_routerV1.include_router(pg_config_page_router, prefix="/pg-config", tags=["pg-config-page"])
 admin_api_routerV1.include_router(replicas_page_router, prefix="/replicas", tags=["replicas-page"])
+admin_api_routerV1.include_router(users_page_router, prefix="/users", tags=["users-page"])

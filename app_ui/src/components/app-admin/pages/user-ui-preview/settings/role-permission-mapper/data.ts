@@ -45,6 +45,7 @@ export const permissionConfigs: PermissionConfig[] = [
 ];
 
 export const rolePermissions: RolePermissions = {
+  // Default roles and their permissions
   'data-analyst': {
     createProjects: true,
     deleteProjects: true,

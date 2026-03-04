@@ -157,6 +157,11 @@ export const apiEndpoints = {
           get: endpointMethods.get,
         },
       },
+      users: {
+        table: {
+          get: endpointMethods.get
+        }
+      }
     },
   },
 } as const;

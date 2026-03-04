@@ -1,7 +1,6 @@
 interface UserAvatarProps {
   avatar: string;
   name: string;
-  roleColor: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -19,13 +18,12 @@ const textSizeClasses = {
 
 export default function UserAvatar({ 
   avatar, 
-  name, 
-  roleColor, 
+  name,
   size = 'md' 
 }: UserAvatarProps) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`${sizeClasses[size]} bg-gradient-to-br ${roleColor} rounded-full flex items-center justify-center text-white ${textSizeClasses[size]}`}>
+      <div className={`${sizeClasses[size]} bg-gradient-to-br from-lime-500 to-green-600 rounded-full flex items-center justify-center text-white ${textSizeClasses[size]}`}>
         {avatar}
       </div>
       <span className="text-slate-900">{name}</span>

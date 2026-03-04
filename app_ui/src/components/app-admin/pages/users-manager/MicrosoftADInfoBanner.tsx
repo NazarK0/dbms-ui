@@ -1,13 +1,15 @@
 import { Info } from 'lucide-react';
-import { microsoftADInfo } from './data';
-import type { MicrosoftADInfoBannerProps } from './types';
 
-export default function MicrosoftADInfoBanner({
-  className = 'mb-6',
-}: MicrosoftADInfoBannerProps) {
+
+export default function MicrosoftADInfoBanner() {
+  const microsoftADInfo = {
+    title: 'Управління через Microsoft Active Directory',
+    description:
+      'Користувачі автоматично синхронізуються з корпоративного Active Directory. Для створення нових облікових записів зверніться до системного адміністратора вашої організації.',
+  };
   return (
     <div
-      className={`bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 ${className}`}
+      className={`bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 mb-6`}
     >
       <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
       <div>
