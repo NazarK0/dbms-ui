@@ -48,15 +48,7 @@ export interface DeviceSelectorProps {
   onDeviceChange: (device: DeviceType) => void;
 }
 
-export interface PreviewWindowProps {
-  deviceType: DeviceType;
-  deviceSize: DeviceSize;
-  selectedRole: string;
-  roleName: string;
-  permissions: UserPermissions;
-  username?: string;
-  userId?: string;
-}
+
 
 export interface MockUserInterfaceProps {
   deviceType: DeviceType;

@@ -2,7 +2,7 @@
 import LogTable from './table';
 import ActionStatsPanel from './actions-stats-panel';
 import SuccessActionsWidget from './widgets/SuccessActions';
-import FailureActionsWidget from './widgets/FailureActions ';
+import FailureActionsWidget from './widgets/FailureActions';
 
 export default function AuditLog() {
     return (

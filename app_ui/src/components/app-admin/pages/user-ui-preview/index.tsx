@@ -1,27 +1,15 @@
-import PreviewWindow from './PreviewWindow';
-import PermissionsPanel from './PermissionsPanel';
-
-
-
-
-
-
-
-
-
-
-
+import PreviewWindow from './preview-window';
+import PermissionsPanel from './permissions-panel';
 import { useState, useEffect } from 'react';
 import { Button } from '../../../ui/button';
 import { Settings, Eye } from 'lucide-react';
-import UserUIPreviewSettings from './UserUIPreviewSettings';
+import UserUIPreviewSettings, { userRoles } from './settings';
 import type { DeviceType } from './types';
 import { defaultDeviceType, deviceSizes } from './data';
-import type { PreviewMode } from './PreviewModeSelector';
-import type { RoleConfiguration, CustomRole } from './types-extended';
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
-import { userRoles } from '../../../../mockData/admin/roles';
 import { getPermissionsForRole } from './utils';
+import type { PreviewMode } from './settings/PreviewModeSelector';
+import type { CustomRole, RoleConfiguration } from './settings/role-permission-mapper/types';
 
 export default function UserUIPreview() {
     const [showSettings, setShowSettings] = useState(false);
